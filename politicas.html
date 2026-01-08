@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Políticas - FinanGest Software</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --text-primary: #e4e4e7;
+            --text-secondary: #8892b0;
+            --accent-cyan: #00d4ff;
+            --accent-green: #2ecc71;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+        .navbar-custom {
+            background: var(--bg-secondary);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0,212,255,0.1);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .content-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        .policy-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        h1 {
+            color: var(--accent-cyan);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        h2 {
+            color: var(--accent-green);
+            margin: 30px 0 15px;
+            font-size: 1.5rem;
+        }
+        h3 {
+            color: var(--text-primary);
+            margin: 20px 0 10px;
+            font-size: 1.2rem;
+        }
+        p, li {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        ul {
+            padding-left: 25px;
+        }
+        .nav-tabs-custom {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .nav-tab {
+            padding: 12px 24px;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--accent-cyan);
+            color: #000;
+            border-color: var(--accent-cyan);
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            color: var(--accent-green);
+        }
+        .update-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .contact-box {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        .contact-box a {
+            color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-custom">
+        <div class="container">
+            <a href="finangest.html" class="logo text-decoration-none">
+                <i class="fas fa-chart-line me-2"></i>FinanGest
+            </a>
+        </div>
+    </nav>
+
+    <div class="content-section">
+        <a href="finangest.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver a FinanGest
+        </a>
+
+        <div class="nav-tabs-custom">
+            <a href="#privacidad" class="nav-tab active" onclick="showSection('privacidad')">Política de Privacidad</a>
+            <a href="#terminos" class="nav-tab" onclick="showSection('terminos')">Términos de Uso</a>
+            <a href="#cookies" class="nav-tab" onclick="showSection('cookies')">Política de Cookies</a>
+        </div>
+
+        <!-- Política de Privacidad -->
+        <div id="privacidad" class="policy-card">
+            <h1><i class="fas fa-shield-alt me-3"></i>Política de Privacidad</h1>
+            <p class="update-date"><i class="fas fa-calendar me-2"></i>Última actualización: Enero 2026</p>
+
+            <h2>1. Información que Recopilamos</h2>
+            <p>FinanGest Software recopila la siguiente información para proporcionar nuestros servicios:</p>
+            <ul>
+                <li><strong>Datos de cuenta:</strong> Nombre, correo electrónico, teléfono y contraseña encriptada</li>
+                <li><strong>Datos de clientes:</strong> Información de los clientes que usted registra en el sistema</li>
+                <li><strong>Datos financieros:</strong> Montos de préstamos, pagos y transacciones registradas</li>
+                <li><strong>Datos de uso:</strong> Información sobre cómo utiliza nuestra plataforma</li>
+            </ul>
+
+            <h2>2. Uso de la Información</h2>
+            <p>Utilizamos su información para:</p>
+            <ul>
+                <li>Proporcionar y mantener nuestros servicios</li>
+                <li>Procesar transacciones y enviar notificaciones relacionadas</li>
+                <li>Mejorar y personalizar la experiencia del usuario</li>
+                <li>Comunicarnos con usted sobre actualizaciones y soporte</li>
+                <li>Cumplir con obligaciones legales</li>
+            </ul>
+
+            <h2>3. Protección de Datos</h2>
+            <p>Implementamos medidas de seguridad técnicas y organizativas para proteger sus datos:</p>
+            <ul>
+                <li>Encriptación de contraseñas con algoritmos seguros (bcrypt)</li>
+                <li>Conexiones seguras mediante HTTPS</li>
+                <li>Acceso restringido a datos personales</li>
+                <li>Copias de seguridad regulares</li>
+                <li>Almacenamiento en servidores seguros (MongoDB Atlas)</li>
+            </ul>
+
+            <h2>4. Compartir Información</h2>
+            <p>No vendemos, alquilamos ni compartimos su información personal con terceros, excepto:</p>
+            <ul>
+                <li>Cuando sea requerido por ley</li>
+                <li>Para proteger nuestros derechos legales</li>
+                <li>Con proveedores de servicios que nos ayudan a operar (hosting, base de datos)</li>
+            </ul>
+
+            <h2>5. Sus Derechos</h2>
+            <p>Usted tiene derecho a:</p>
+            <ul>
+                <li>Acceder a sus datos personales</li>
+                <li>Rectificar datos incorrectos</li>
+                <li>Solicitar la eliminación de sus datos</li>
+                <li>Exportar sus datos en formato legible</li>
+                <li>Retirar su consentimiento en cualquier momento</li>
+            </ul>
+
+            <h2>6. Retención de Datos</h2>
+            <p>Conservamos sus datos mientras mantenga una cuenta activa. Si solicita la eliminación de su cuenta, eliminaremos sus datos en un plazo de 30 días, excepto cuando la ley requiera su conservación.</p>
+
+            <div class="contact-box">
+                <h3><i class="fas fa-envelope me-2"></i>Contacto</h3>
+                <p>Para consultas sobre privacidad, contáctenos en:<br>
+                <a href="mailto:fzuluaga548@gmail.com">fzuluaga548@gmail.com</a></p>
+            </div>
+        </div>
+
+        <!-- Términos de Uso -->
+        <div id="terminos" class="policy-card" style="display: none;">
+            <h1><i class="fas fa-file-contract me-3"></i>Términos de Uso</h1>
+            <p class="update-date"><i class="fas fa-calendar me-2"></i>Última actualización: Enero 2026</p>
+
+            <h2>1. Aceptación de los Términos</h2>
+            <p>Al acceder y utilizar FinanGest Software, usted acepta estos términos de uso. Si no está de acuerdo con alguna parte de estos términos, no debe utilizar nuestro servicio.</p>
+
+            <h2>2. Descripción del Servicio</h2>
+            <p>FinanGest es un software de gestión financiera que permite:</p>
+            <ul>
+                <li>Administrar clientes y préstamos</li>
+                <li>Registrar y dar seguimiento a pagos</li>
+                <li>Generar reportes y estadísticas</li>
+                <li>Gestionar equipos de trabajo</li>
+            </ul>
+
+            <h2>3. Registro y Cuenta</h2>
+            <ul>
+                <li>Debe proporcionar información veraz y actualizada</li>
+                <li>Es responsable de mantener la confidencialidad de su contraseña</li>
+                <li>Debe notificarnos inmediatamente sobre cualquier uso no autorizado</li>
+                <li>Una cuenta por persona/empresa</li>
+            </ul>
+
+            <h2>4. Uso Aceptable</h2>
+            <p>Usted se compromete a:</p>
+            <ul>
+                <li>Usar el servicio solo para fines legales</li>
+                <li>No intentar acceder a cuentas de otros usuarios</li>
+                <li>No interferir con el funcionamiento del servicio</li>
+                <li>Cumplir con las leyes locales aplicables a servicios financieros</li>
+                <li>No usar el servicio para actividades fraudulentas</li>
+            </ul>
+
+            <h2>5. Suscripción y Pagos</h2>
+            <ul>
+                <li>El servicio requiere una suscripción mensual de R$ 99,00</li>
+                <li>El pago se realiza mediante PIX</li>
+                <li>La suscripción se activa tras verificación del pago</li>
+                <li>No hay reembolsos por períodos parciales</li>
+            </ul>
+
+            <h2>6. Propiedad Intelectual</h2>
+            <p>Todo el contenido, diseño, código y funcionalidades de FinanGest son propiedad exclusiva de FinanGest Software. No está permitido copiar, modificar o distribuir ninguna parte del servicio.</p>
+
+            <h2>7. Limitación de Responsabilidad</h2>
+            <p>FinanGest se proporciona "tal cual". No garantizamos que el servicio sea ininterrumpido o libre de errores. No somos responsables por:</p>
+            <ul>
+                <li>Pérdidas financieras derivadas del uso del software</li>
+                <li>Decisiones comerciales basadas en los datos del sistema</li>
+                <li>Interrupciones temporales del servicio</li>
+                <li>Pérdida de datos por causas fuera de nuestro control</li>
+            </ul>
+
+            <h2>8. Terminación</h2>
+            <p>Podemos suspender o terminar su cuenta si:</p>
+            <ul>
+                <li>Viola estos términos de uso</li>
+                <li>No paga la suscripción</li>
+                <li>Usa el servicio para actividades ilegales</li>
+            </ul>
+
+            <h2>9. Modificaciones</h2>
+            <p>Nos reservamos el derecho de modificar estos términos. Los cambios serán notificados por correo electrónico y entrarán en vigor 30 días después de la notificación.</p>
+
+            <div class="contact-box">
+                <h3><i class="fas fa-gavel me-2"></i>Jurisdicción</h3>
+                <p>Estos términos se rigen por las leyes de Brasil. Cualquier disputa será resuelta en los tribunales competentes.</p>
+            </div>
+        </div>
+
+        <!-- Política de Cookies -->
+        <div id="cookies" class="policy-card" style="display: none;">
+            <h1><i class="fas fa-cookie-bite me-3"></i>Política de Cookies</h1>
+            <p class="update-date"><i class="fas fa-calendar me-2"></i>Última actualización: Enero 2026</p>
+
+            <h2>1. ¿Qué son las Cookies?</h2>
+            <p>Las cookies son pequeños archivos de texto que se almacenan en su dispositivo cuando visita nuestro sitio web. Nos ayudan a mejorar su experiencia y a recordar sus preferencias.</p>
+
+            <h2>2. Cookies que Utilizamos</h2>
+            
+            <h3>Cookies Esenciales</h3>
+            <ul>
+                <li><strong>Sesión de usuario:</strong> Mantiene su sesión iniciada</li>
+                <li><strong>Preferencias:</strong> Guarda su configuración de tema (claro/oscuro)</li>
+                <li><strong>Seguridad:</strong> Protege contra accesos no autorizados</li>
+            </ul>
+
+            <h3>Cookies de Rendimiento</h3>
+            <ul>
+                <li>Analizan cómo utiliza el sitio para mejorar el servicio</li>
+                <li>No recopilan información personal identificable</li>
+            </ul>
+
+            <h2>3. Control de Cookies</h2>
+            <p>Puede controlar las cookies a través de la configuración de su navegador:</p>
+            <ul>
+                <li>Chrome: Configuración → Privacidad y seguridad → Cookies</li>
+                <li>Firefox: Opciones → Privacidad y seguridad</li>
+                <li>Safari: Preferencias → Privacidad</li>
+                <li>Edge: Configuración → Cookies y permisos del sitio</li>
+            </ul>
+
+            <h2>4. Cookies de Terceros</h2>
+            <p>Utilizamos servicios de terceros que pueden establecer cookies:</p>
+            <ul>
+                <li><strong>Chart.js:</strong> Para gráficos y visualizaciones</li>
+                <li><strong>Leaflet:</strong> Para mapas de ubicación</li>
+                <li><strong>Bootstrap:</strong> Para estilos y componentes</li>
+            </ul>
+
+            <div class="contact-box">
+                <h3><i class="fas fa-question-circle me-2"></i>¿Preguntas?</h3>
+                <p>Si tiene dudas sobre nuestra política de cookies, contáctenos en:<br>
+                <a href="mailto:fzuluaga548@gmail.com">fzuluaga548@gmail.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(section) {
+            document.querySelectorAll('.policy-card').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(section).style.display = 'block';
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
