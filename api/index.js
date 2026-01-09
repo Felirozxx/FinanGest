@@ -15,8 +15,6 @@ const EMAIL_PASS = process.env.EMAIL_PASS;
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'finangest-admin-2026';
 
 let db;
-let verificationCodes = {};
-let resetCodes = {};
 
 // Funciones de encriptación de contraseñas
 function hashPassword(password) {
@@ -103,6 +101,7 @@ app.post('/api/send-code', async (req, res) => {
         const { email, nombre, username } = req.body;
         const database = await connectDB();
         const users = database.collection('users');
+        const codes = database.collection('verification_codes');
         
         const existingEmail = await users.findOne({ email });
         if (existingEmail) return res.json({ success: false, error: 'Este email ya está registrado' });
@@ -113,7 +112,13 @@ app.post('/api/send-code', async (req, res) => {
         }
         
         const code = Math.floor(100000 + Math.random() * 900000).toString();
-        verificationCodes[email] = { code, nombre, username, expires: Date.now() + 600000 };
+        
+        // Guardar código en MongoDB
+        await codes.updateOne(
+            { email },
+            { $set: { code, nombre, username, expires: new Date(Date.now() + 600000) } },
+            { upsert: true }
+        );
         
         if (EMAIL_PASS) {
             await transporter.sendMail({
@@ -134,17 +139,18 @@ app.post('/api/send-code', async (req, res) => {
 app.post('/api/verify-code', async (req, res) => {
     try {
         const { email, code, password, username } = req.body;
-        const stored = verificationCodes[email];
+        const database = await connectDB();
+        const users = database.collection('users');
+        const codes = database.collection('verification_codes');
         
-        if (!stored || stored.expires < Date.now()) {
+        const stored = await codes.findOne({ email });
+        
+        if (!stored || new Date(stored.expires) < new Date()) {
             return res.json({ success: false, error: 'Código expirado' });
         }
         if (stored.code !== code) {
             return res.json({ success: false, error: 'Código incorrecto' });
         }
-        
-        const database = await connectDB();
-        const users = database.collection('users');
         
         // Guardar contraseña encriptada
         const result = await users.insertOne({
@@ -157,7 +163,7 @@ app.post('/api/verify-code', async (req, res) => {
             createdAt: new Date()
         });
         
-        delete verificationCodes[email];
+        await codes.deleteOne({ email });
         
         res.json({ success: true, user: { id: result.insertedId, nombre: stored.nombre, email } });
     } catch (e) {
@@ -171,12 +177,19 @@ app.post('/api/forgot-password', async (req, res) => {
         const { email } = req.body;
         const database = await connectDB();
         const users = database.collection('users');
+        const codes = database.collection('reset_codes');
         
         const user = await users.findOne({ email });
         if (!user) return res.json({ success: false, error: 'Email no encontrado' });
         
         const code = Math.floor(100000 + Math.random() * 900000).toString();
-        resetCodes[email] = { code, expires: Date.now() + 600000 };
+        
+        // Guardar código en MongoDB
+        await codes.updateOne(
+            { email },
+            { $set: { code, expires: new Date(Date.now() + 600000) } },
+            { upsert: true }
+        );
         
         if (EMAIL_PASS) {
             await transporter.sendMail({
@@ -197,21 +210,22 @@ app.post('/api/forgot-password', async (req, res) => {
 app.post('/api/reset-password', async (req, res) => {
     try {
         const { email, code, newPassword } = req.body;
-        const stored = resetCodes[email];
+        const database = await connectDB();
+        const users = database.collection('users');
+        const codes = database.collection('reset_codes');
         
-        if (!stored || stored.expires < Date.now()) {
+        const stored = await codes.findOne({ email });
+        
+        if (!stored || new Date(stored.expires) < new Date()) {
             return res.json({ success: false, error: 'Código expirado' });
         }
         if (stored.code !== code) {
             return res.json({ success: false, error: 'Código incorrecto' });
         }
         
-        const database = await connectDB();
-        const users = database.collection('users');
-        
         // Guardar contraseña encriptada
         await users.updateOne({ email }, { $set: { password: hashPassword(newPassword) } });
-        delete resetCodes[email];
+        await codes.deleteOne({ email });
         
         res.json({ success: true, message: 'Contraseña actualizada' });
     } catch (e) {
