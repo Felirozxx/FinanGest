@@ -1,15 +1,5 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server-mongodb.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server-mongodb.js"
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/server-mongodb.js" }
   ]
 }
