@@ -1942,7 +1942,7 @@
 
         function buildNavMenu() {
             const menu = document.getElementById('navMenu');
-            const isAdmin = currentUser.isAdmin;
+            const isAdmin = currentUser.role === 'admin' || currentUser.isAdmin;
             if (isAdmin) {
                 menu.innerHTML = `
                     <div class="nav-item active" onclick="showSection('adminUsuarios')"><i class="fas fa-users"></i>Usuarios</div>
@@ -2057,7 +2057,7 @@
                 const gastosRes = await fetch(API_URL + '/api/gastos?userId=' + currentUser.id);
                 gastos = await gastosRes.json();
                 
-                if (currentUser.isAdmin) {
+                if (currentUser.role === 'admin' || currentUser.isAdmin) {
                     const usersRes = await fetch(API_URL + '/api/users');
                     allUsers = await usersRes.json();
                     showSection('adminUsuarios');
@@ -4823,3 +4823,4 @@
     </script>
 </body>
 </html>
+
