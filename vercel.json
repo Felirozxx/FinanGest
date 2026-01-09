@@ -1,5 +1,18 @@
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/server-mongodb.js" }
+  "builds": [
+    {
+      "src": "server-mongodb.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server-mongodb.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 }
