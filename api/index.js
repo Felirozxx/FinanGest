@@ -2,18 +2,38 @@ const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://felirozxx:Pipe16137356@cluster0.luvtqa7.mongodb.net/finangest?retryWrites=true&w=majority';
-const EMAIL_USER = process.env.EMAIL_USER || 'fzuluaga548@gmail.com';
-const EMAIL_PASS = process.env.EMAIL_PASS || '';
+// Credenciales desde variables de entorno (configurar en Vercel)
+const MONGODB_URI = process.env.MONGODB_URI;
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'finangest-admin-2026';
 
 let db;
 let verificationCodes = {};
 let resetCodes = {};
+
+// Funciones de encriptación de contraseñas
+function hashPassword(password) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    return `${salt}:${hash}`;
+}
+
+function verifyPassword(password, stored) {
+    if (!stored || !stored.includes(':')) {
+        // Contraseña antigua sin encriptar - comparar directo
+        return password === stored;
+    }
+    const [salt, hash] = stored.split(':');
+    const verifyHash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    return hash === verifyHash;
+}
 
 async function connectDB() {
     if (db) return db;
@@ -40,7 +60,6 @@ app.post('/api/login', async (req, res) => {
         const database = await connectDB();
         const users = database.collection('users');
         
-        // Buscar por email O por username si es Felirozxx (admin)
         let user = await users.findOne({ email: email });
         if (!user && email === 'Felirozxx') {
             user = await users.findOne({ username: 'Felirozxx' });
@@ -50,9 +69,19 @@ app.post('/api/login', async (req, res) => {
         }
         
         if (!user) return res.json({ success: false, error: 'Usuario no encontrado' });
-        if (user.password !== password) return res.json({ success: false, error: 'Contraseña incorrecta' });
+        
+        // Verificar contraseña (soporta encriptada y sin encriptar)
+        if (!verifyPassword(password, user.password)) {
+            return res.json({ success: false, error: 'Contraseña incorrecta' });
+        }
+        
         if (!user.paid && user.role !== 'admin') {
             return res.json({ success: false, needsPayment: true, userId: user._id, nombre: user.nombre, email: user.email });
+        }
+        
+        // Si la contraseña estaba sin encriptar, actualizarla
+        if (!user.password.includes(':')) {
+            await users.updateOne({ _id: user._id }, { $set: { password: hashPassword(password) } });
         }
         
         res.json({ success: true, user: {
@@ -75,11 +104,9 @@ app.post('/api/send-code', async (req, res) => {
         const database = await connectDB();
         const users = database.collection('users');
         
-        // Verificar email único
         const existingEmail = await users.findOne({ email });
         if (existingEmail) return res.json({ success: false, error: 'Este email ya está registrado' });
         
-        // Verificar username único
         if (username) {
             const existingUsername = await users.findOne({ username });
             if (existingUsername) return res.json({ success: false, error: 'Este nombre de usuario ya existe' });
@@ -93,7 +120,7 @@ app.post('/api/send-code', async (req, res) => {
                 from: EMAIL_USER,
                 to: email,
                 subject: 'Código de Verificación - FinanGest',
-                html: `<h2>Bienvenido a FinanGest</h2><p>Tu código de verificación es: <strong style="font-size:24px">${code}</strong></p><p>Este código expira en 10 minutos.</p>`
+                html: `<h2>Bienvenido a FinanGest</h2><p>Tu código: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
             });
         }
         
@@ -119,11 +146,12 @@ app.post('/api/verify-code', async (req, res) => {
         const database = await connectDB();
         const users = database.collection('users');
         
+        // Guardar contraseña encriptada
         const result = await users.insertOne({
             nombre: stored.nombre,
             username: username || stored.username,
             email,
-            password,
+            password: hashPassword(password),
             role: 'client',
             paid: false,
             createdAt: new Date()
@@ -137,7 +165,7 @@ app.post('/api/verify-code', async (req, res) => {
     }
 });
 
-// Forgot password - enviar código
+// Forgot password
 app.post('/api/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
@@ -155,7 +183,7 @@ app.post('/api/forgot-password', async (req, res) => {
                 from: EMAIL_USER,
                 to: email,
                 subject: 'Recuperar Contraseña - FinanGest',
-                html: `<h2>Recuperar Contraseña</h2><p>Tu código para cambiar la contraseña es: <strong style="font-size:24px">${code}</strong></p><p>Este código expira en 10 minutos.</p><p>Si no solicitaste este cambio, ignora este mensaje.</p>`
+                html: `<h2>Recuperar Contraseña</h2><p>Tu código: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
             });
         }
         
@@ -165,7 +193,7 @@ app.post('/api/forgot-password', async (req, res) => {
     }
 });
 
-// Reset password - cambiar contraseña
+// Reset password
 app.post('/api/reset-password', async (req, res) => {
     try {
         const { email, code, newPassword } = req.body;
@@ -181,7 +209,8 @@ app.post('/api/reset-password', async (req, res) => {
         const database = await connectDB();
         const users = database.collection('users');
         
-        await users.updateOne({ email }, { $set: { password: newPassword } });
+        // Guardar contraseña encriptada
+        await users.updateOne({ email }, { $set: { password: hashPassword(newPassword) } });
         delete resetCodes[email];
         
         res.json({ success: true, message: 'Contraseña actualizada' });
@@ -190,13 +219,20 @@ app.post('/api/reset-password', async (req, res) => {
     }
 });
 
-// Make admin
-app.get('/api/make-admin/:name', async (req, res) => {
+// Make admin - PROTEGIDO con secreto
+app.post('/api/make-admin', async (req, res) => {
     try {
+        const { name, secret } = req.body;
+        
+        // Verificar secreto
+        if (secret !== ADMIN_SECRET) {
+            return res.json({ success: false, error: 'No autorizado' });
+        }
+        
         const database = await connectDB();
         const users = database.collection('users');
         const result = await users.updateOne(
-            { $or: [{ nombre: req.params.name }, { username: req.params.name }] },
+            { $or: [{ nombre: name }, { username: name }] },
             { $set: { role: 'admin', isAdmin: true, paid: true } }
         );
         res.json({ success: result.modifiedCount > 0, modified: result.modifiedCount });
@@ -210,7 +246,9 @@ app.get('/api/users', async (req, res) => {
     try {
         const database = await connectDB();
         const users = await database.collection('users').find({}).toArray();
-        res.json(users);
+        // No enviar contraseñas
+        const safeUsers = users.map(u => ({ ...u, password: undefined }));
+        res.json(safeUsers);
     } catch (e) {
         res.json({ error: e.message });
     }
@@ -220,7 +258,11 @@ app.get('/api/users', async (req, res) => {
 app.post('/api/users', async (req, res) => {
     try {
         const database = await connectDB();
-        const result = await database.collection('users').insertOne(req.body);
+        const userData = { ...req.body };
+        if (userData.password) {
+            userData.password = hashPassword(userData.password);
+        }
+        const result = await database.collection('users').insertOne(userData);
         res.json({ success: true, id: result.insertedId });
     } catch (e) {
         res.json({ success: false, error: e.message });
@@ -231,9 +273,13 @@ app.post('/api/users', async (req, res) => {
 app.put('/api/users/:id', async (req, res) => {
     try {
         const database = await connectDB();
+        const updateData = { ...req.body };
+        if (updateData.password) {
+            updateData.password = hashPassword(updateData.password);
+        }
         await database.collection('users').updateOne(
             { _id: new ObjectId(req.params.id) },
-            { $set: req.body }
+            { $set: updateData }
         );
         res.json({ success: true });
     } catch (e) {
@@ -343,7 +389,7 @@ app.post('/api/expenses', async (req, res) => {
     }
 });
 
-// PIX Payment (manual fallback)
+// PIX Payment (manual)
 app.post('/api/crear-pago-pix', async (req, res) => {
     try {
         res.json({ 
