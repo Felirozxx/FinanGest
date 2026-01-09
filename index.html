@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinanGestPay - Gestión Financiera Profesional</title>
+    <title>FinanGest - Gestión Financiera Profesional</title>
     <!-- PWA Meta Tags -->
     <meta name="description" content="FinanGest - Gestión financiera personal. Organiza tus cuentas, controla pagos y gastos.">
     <meta name="theme-color" content="#00d4ff">
@@ -319,8 +319,8 @@
                 <!-- Login Form -->
                 <div id="loginForm">
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Usuario o Email</label>
-                        <input type="text" class="form-control form-control-dark" id="loginEmail" placeholder="tu@email.com" autocomplete="off">
+                        <label class="form-label text-secondary">Email</label>
+                        <input type="email" class="form-control form-control-dark" id="loginEmail" placeholder="tu@email.com" autocomplete="off">
                     </div>
                     <div class="mb-4">
                         <label class="form-label text-secondary">Contraseña</label>
@@ -330,31 +330,77 @@
                         <i class="fas fa-sign-in-alt me-2"></i>Ingresar
                     </button>
                     <div class="text-center mt-3">
-                        <a href="#" onclick="alert('Contacta a soporte para recuperar tu contraseña')" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">
+                        <a href="#" onclick="showForgotPassword()" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">
                             <i class="fas fa-key me-1"></i>¿Olvidaste tu contraseña?
                         </a>
                     </div>
-                    <!-- Soporte Section -->
-                    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                        <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; margin-bottom: 15px;">
-                            <i class="fas fa-headset me-1"></i>¿Necesitas ayuda? Contáctanos
-                        </p>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="mailto:fzuluaga548@gmail.com" style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); text-decoration: none; padding: 10px; background: var(--bg-hover); border-radius: 8px; transition: all 0.3s;">
-                                <i class="fas fa-envelope" style="color: var(--accent-cyan); width: 20px;"></i>
-                                <span style="font-size: 0.9rem;">fzuluaga548@gmail.com</span>
-                            </a>
-                            <a href="tel:+79998555813" style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); text-decoration: none; padding: 10px; background: var(--bg-hover); border-radius: 8px; transition: all 0.3s;">
-                                <i class="fas fa-phone" style="color: var(--accent-green); width: 20px;"></i>
-                                <span style="font-size: 0.9rem;">+7 999 855 5813</span>
-                            </a>
-                            <div style="text-align: center; margin-top: 10px;">
-                                <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 10px;">
-                                    <i class="fab fa-whatsapp me-1" style="color: #25D366;"></i>WhatsApp
-                                </p>
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://wa.me/79998555813&bgcolor=1a1a2e&color=00d4ff" 
-                                     alt="WhatsApp QR" style="border-radius: 10px; border: 2px solid var(--border-color);">
-                            </div>
+                </div>
+                <!-- Forgot Password Form -->
+                <div id="forgotPasswordForm" style="display: none;">
+                    <div id="forgotStep1">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-lock fa-3x mb-3" style="color: var(--accent-cyan);"></i>
+                            <h5>Recuperar Contraseña</h5>
+                            <p class="text-secondary">Ingresa tu email para recibir un código</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Email</label>
+                            <input type="email" class="form-control form-control-dark" id="forgotEmail" placeholder="tu@email.com">
+                        </div>
+                        <button class="btn btn-primary-custom w-100" onclick="sendResetCode()" id="btnSendResetCode">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Código
+                        </button>
+                        <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="backToLogin()">
+                            <i class="fas fa-arrow-left me-1"></i>Volver al Login
+                        </button>
+                    </div>
+                    <div id="forgotStep2" style="display: none;">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-envelope-open-text fa-3x mb-3" style="color: var(--accent-cyan);"></i>
+                            <h5>Verifica tu Código</h5>
+                            <p class="text-secondary">Enviamos un código a <span id="forgotEmailSent" style="color: var(--accent-cyan);"></span></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary">Código de Verificación</label>
+                            <input type="text" class="form-control form-control-dark text-center" id="resetCode" 
+                                   placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px;">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary">Nueva Contraseña</label>
+                            <input type="password" class="form-control form-control-dark" id="newPassword" placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Confirmar Contraseña</label>
+                            <input type="password" class="form-control form-control-dark" id="confirmPassword" placeholder="Repite la contraseña">
+                        </div>
+                        <button class="btn btn-success-custom w-100" onclick="resetPassword()" id="btnResetPassword">
+                            <i class="fas fa-check me-2"></i>Cambiar Contraseña
+                        </button>
+                        <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="resendResetCode()">
+                            ¿No recibiste el código? Reenviar
+                        </button>
+                    </div>
+                </div>
+                <!-- Soporte Section -->
+                <div id="supportSection" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; margin-bottom: 15px;">
+                        <i class="fas fa-headset me-1"></i>¿Necesitas ayuda? Contáctanos
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="mailto:fzuluaga548@gmail.com" style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); text-decoration: none; padding: 10px; background: var(--bg-hover); border-radius: 8px; transition: all 0.3s;">
+                            <i class="fas fa-envelope" style="color: var(--accent-cyan); width: 20px;"></i>
+                            <span style="font-size: 0.9rem;">fzuluaga548@gmail.com</span>
+                        </a>
+                        <a href="tel:+79998555813" style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); text-decoration: none; padding: 10px; background: var(--bg-hover); border-radius: 8px; transition: all 0.3s;">
+                            <i class="fas fa-phone" style="color: var(--accent-green); width: 20px;"></i>
+                            <span style="font-size: 0.9rem;">+7 999 855 5813</span>
+                        </a>
+                        <div style="text-align: center; margin-top: 10px;">
+                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 10px;">
+                                <i class="fab fa-whatsapp me-1" style="color: #25D366;"></i>WhatsApp
+                            </p>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://wa.me/79998555813&bgcolor=1a1a2e&color=00d4ff" 
+                                 alt="WhatsApp QR" style="border-radius: 10px; border: 2px solid var(--border-color);">
                         </div>
                     </div>
                 </div>
@@ -366,8 +412,13 @@
                             <input type="text" class="form-control form-control-dark" id="regNombre" placeholder="Tu nombre">
                         </div>
                         <div class="mb-3">
+                            <label class="form-label text-secondary">Nombre de Usuario</label>
+                            <input type="text" class="form-control form-control-dark" id="regUsername" placeholder="usuario123" autocomplete="off">
+                            <small class="text-secondary">Único, sin espacios</small>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label text-secondary">Email</label>
-                            <input type="email" class="form-control form-control-dark" id="regEmail" placeholder="tu@email.com">
+                            <input type="email" class="form-control form-control-dark" id="regEmail" placeholder="tu@gmail.com">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Contraseña</label>
@@ -1652,8 +1703,95 @@
             event.target.classList.add('active');
             document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
             document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('supportSection').style.display = 'block';
             document.getElementById('registerStep1').style.display = 'block';
             document.getElementById('registerStep2').style.display = 'none';
+        }
+
+        // Forgot Password Functions
+        function showForgotPassword() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'block';
+            document.getElementById('forgotStep1').style.display = 'block';
+            document.getElementById('forgotStep2').style.display = 'none';
+            document.getElementById('supportSection').style.display = 'none';
+        }
+
+        function backToLogin() {
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('supportSection').style.display = 'block';
+            document.querySelectorAll('.auth-tab').forEach((t, i) => {
+                t.classList.toggle('active', i === 0);
+            });
+        }
+
+        async function sendResetCode() {
+            const email = document.getElementById('forgotEmail').value;
+            if (!email) return alert('Ingresa tu email');
+            const btn = document.getElementById('btnSendResetCode');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
+            try {
+                const res = await fetch(API_URL + '/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('forgotStep1').style.display = 'none';
+                    document.getElementById('forgotStep2').style.display = 'block';
+                    document.getElementById('forgotEmailSent').textContent = email;
+                } else {
+                    alert(data.error || 'Error al enviar código');
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Enviar Código';
+        }
+
+        async function resendResetCode() {
+            await sendResetCode();
+        }
+
+        async function resetPassword() {
+            const email = document.getElementById('forgotEmail').value;
+            const code = document.getElementById('resetCode').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (!code || code.length !== 6) return alert('Ingresa el código de 6 dígitos');
+            if (!newPassword || newPassword.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
+            if (newPassword !== confirmPassword) return alert('Las contraseñas no coinciden');
+            const btn = document.getElementById('btnResetPassword');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Cambiando...';
+            try {
+                const res = await fetch(API_URL + '/api/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code, newPassword })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('¡Contraseña cambiada exitosamente! Ahora puedes iniciar sesión.');
+                    backToLogin();
+                    document.getElementById('forgotEmail').value = '';
+                    document.getElementById('resetCode').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    alert(data.error || 'Error al cambiar contraseña');
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Cambiar Contraseña';
         }
 
         async function handleLogin() {
@@ -1690,10 +1828,12 @@
 
         async function sendVerificationCode() {
             const nombre = document.getElementById('regNombre').value;
+            const username = document.getElementById('regUsername').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
             const acceptTerms = document.getElementById('acceptTerms').checked;
-            if (!nombre || !email || !password) return alert('Completa todos los campos');
+            if (!nombre || !username || !email || !password) return alert('Completa todos los campos');
+            if (username.includes(' ')) return alert('El nombre de usuario no puede tener espacios');
             if (password.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
             if (!acceptTerms) return alert('Debes aceptar los Términos de Uso y la Política de Privacidad');
             const btn = document.getElementById('btnSendCode');
@@ -1703,7 +1843,7 @@
                 const res = await fetch(API_URL + '/api/send-code', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, nombre })
+                    body: JSON.stringify({ email, nombre, username })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -1725,12 +1865,13 @@
             const code = document.getElementById('verificationCode').value;
             const password = document.getElementById('regPassword').value;
             const nombre = document.getElementById('regNombre').value;
+            const username = document.getElementById('regUsername').value;
             if (!code || code.length !== 6) return alert('Ingresa el código de 6 dígitos');
             try {
                 const res = await fetch(API_URL + '/api/verify-code', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, code, password })
+                    body: JSON.stringify({ email, code, password, username })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -4823,4 +4964,3 @@
     </script>
 </body>
 </html>
-
