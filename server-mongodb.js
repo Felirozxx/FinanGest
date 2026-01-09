@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-const path = require('path');
 const bcrypt = require('bcryptjs');
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
@@ -16,7 +15,6 @@ async function connectDB() {
         const client = new MongoClient(process.env.MONGODB_URI);
         await client.connect();
         db = client.db('finangest');
-        console.log('Conectado a MongoDB');
     } catch (e) { console.error('Error MongoDB:', e.message); }
 }
 connectDB();
@@ -87,8 +85,6 @@ app.get('/api/backups', async (req, res) => { try { const u = await db.collectio
 app.get('/api/backup/download', async (req, res) => { try { const users = await db.collection('users').find({}).toArray(); const clientes = await db.collection('clientes').find({}).toArray(); const gastos = await db.collection('gastos').find({}).toArray(); res.json({ fecha: new Date().toISOString(), users, clientes, gastos }); } catch (e) { res.status(500).json({ error: 'Error' }); } });
 app.post('/api/backup/restore', async (req, res) => { try { const { clientes, gastos } = req.body; if (clientes?.length) { await db.collection('clientes').deleteMany({}); await db.collection('clientes').insertMany(clientes.map(c => { const { _id, id, ...r } = c; return r; })); } if (gastos?.length) { await db.collection('gastos').deleteMany({}); await db.collection('gastos').insertMany(gastos.map(g => { const { _id, id, ...r } = g; return r; })); } res.json({ success: true }); } catch (e) { res.status(500).json({ error: 'Error' }); } });
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'finangest.html')));
-app.get('/finangest.html', (req, res) => res.sendFile(path.join(__dirname, 'finangest.html')));
-app.get('/politicas.html', (req, res) => res.sendFile(path.join(__dirname, 'politicas.html')));
+app.get('/', (req, res) => { res.redirect('/finangest.html'); });
 
 module.exports = app;
