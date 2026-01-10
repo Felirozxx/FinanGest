@@ -4176,6 +4176,7 @@
                 const dia = current.getDate();
                 const mes = current.getMonth();
                 const anio = current.getFullYear();
+                const currentDateStr = current.toISOString().split('T')[0];
                 const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                 labels.push(dia + ' ' + meses[mes]);
                 
@@ -4187,6 +4188,8 @@
                     if (fechaCliente.getDate() === dia && fechaCliente.getMonth() === mes && fechaCliente.getFullYear() === anio) {
                         prestadoDia += parseFloat(c.montoTotal) || 0;
                     }
+                    
+                    // Cobros reales (pagos ya hechos)
                     if (c.pagos) {
                         c.pagos.forEach(p => {
                             const fechaPago = new Date(p.fecha);
@@ -4202,6 +4205,27 @@
                                 cobradoDia += parseFloat(p.monto) || 0;
                             }
                         });
+                    }
+                    
+                    // Cobros proyectados (parcelas esperadas para fechas futuras)
+                    if (c.estado === 'ativo' && c.fechaInicio && c.valorParcela && c.numeroParcelas) {
+                        const fechaInicioCliente = new Date(c.fechaInicio);
+                        fechaInicioCliente.setHours(0, 0, 0, 0);
+                        const currentCheck = new Date(current);
+                        currentCheck.setHours(0, 0, 0, 0);
+                        
+                        // Calcular qué parcela corresponde a este día
+                        const diffDias = Math.floor((currentCheck - fechaInicioCliente) / (1000 * 60 * 60 * 24));
+                        
+                        // Si es un día válido de cobro (desde día 1 hasta el número de parcelas)
+                        if (diffDias >= 0 && diffDias < (c.numeroParcelas || 0)) {
+                            // Verificar si esta parcela ya fue pagada
+                            const parcelasPagas = c.parcelasPagas || 0;
+                            if (diffDias >= parcelasPagas) {
+                                // Esta parcela aún no está pagada, es proyección
+                                cobradoDia += parseFloat(c.valorParcela) || 0;
+                            }
+                        }
                     }
                 });
                 
