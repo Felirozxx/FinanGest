@@ -572,6 +572,102 @@ exports.handler = async (event, context) => {
             return respond(200, { success: result.modifiedCount > 0 });
         }
 
+        // ============ BACKUPS DE TRABAJADOR ============
+        
+        // GET backups de un trabajador
+        if (path.match(/^\/admin\/backups-trabajador\/(.+)$/) && method === 'GET') {
+            const userId = path.split('/').pop();
+            const backups = await db.collection('backups')
+                .find({ creadoPor: userId })
+                .sort({ fecha: -1 })
+                .limit(20)
+                .toArray();
+            return respond(200, backups.map(b => ({
+                id: b._id.toString(),
+                fecha: b.fecha,
+                clientes: b.clientes?.length || 0,
+                gastos: b.gastos?.length || 0,
+                auto: b.auto || false
+            })));
+        }
+        
+        // POST crear backup de trabajador
+        if (path.match(/^\/admin\/backup-trabajador\/(.+)$/) && method === 'POST') {
+            const userId = path.split('/').pop();
+            
+            // Obtener datos del trabajador
+            const clientesData = await db.collection('clientes').find({ creadoPor: userId }).toArray();
+            const gastosData = await db.collection('gastos').find({ creadoPor: userId }).toArray();
+            
+            const backup = {
+                creadoPor: userId,
+                fecha: new Date().toISOString(),
+                clientes: clientesData,
+                gastos: gastosData,
+                auto: body.auto || false
+            };
+            
+            const result = await db.collection('backups').insertOne(backup);
+            
+            // Mantener solo los últimos 7 días de backups (limpiar antiguos)
+            const hace7Dias = new Date();
+            hace7Dias.setDate(hace7Dias.getDate() - 7);
+            await db.collection('backups').deleteMany({
+                creadoPor: userId,
+                fecha: { $lt: hace7Dias.toISOString() }
+            });
+            
+            return respond(200, { success: true, backupId: result.insertedId.toString() });
+        }
+        
+        // POST restaurar backup de trabajador
+        if (path.match(/^\/admin\/restore-trabajador\/(.+)$/) && method === 'POST') {
+            const backupId = path.split('/').pop();
+            
+            let backup;
+            try {
+                backup = await db.collection('backups').findOne({ _id: new ObjectId(backupId) });
+            } catch (e) {
+                return respond(400, { success: false, error: 'ID de backup inválido' });
+            }
+            
+            if (!backup) {
+                return respond(404, { success: false, error: 'Backup no encontrado' });
+            }
+            
+            const userId = backup.creadoPor;
+            
+            // Eliminar datos actuales del trabajador
+            await db.collection('clientes').deleteMany({ creadoPor: userId });
+            await db.collection('gastos').deleteMany({ creadoPor: userId });
+            
+            // Restaurar datos del backup
+            if (backup.clientes && backup.clientes.length > 0) {
+                // Remover _id para evitar duplicados
+                const clientesSinId = backup.clientes.map(c => {
+                    const { _id, ...rest } = c;
+                    return { ...rest, id: c.id || _id?.toString() || crypto.randomUUID() };
+                });
+                await db.collection('clientes').insertMany(clientesSinId);
+            }
+            
+            if (backup.gastos && backup.gastos.length > 0) {
+                const gastosSinId = backup.gastos.map(g => {
+                    const { _id, ...rest } = g;
+                    return { ...rest, id: g.id || _id?.toString() || crypto.randomUUID() };
+                });
+                await db.collection('gastos').insertMany(gastosSinId);
+            }
+            
+            return respond(200, { 
+                success: true, 
+                restored: { 
+                    clientes: backup.clientes?.length || 0, 
+                    gastos: backup.gastos?.length || 0 
+                } 
+            });
+        }
+
         // Not found
         return respond(404, { error: 'Endpoint no encontrado', path });
 
