@@ -1096,6 +1096,32 @@
                     <div id="clientesEliminados"><!-- Se llena dinámicamente --></div>
                 </div>
             </div>
+            <!-- Mis Backups Section (Trabajadores) -->
+            <div id="misBackups" class="section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5><i class="fas fa-database me-2" style="color: var(--accent-cyan);"></i>Mis Backups</h5>
+                    <button class="btn btn-success-custom" onclick="crearMiBackup()">
+                        <i class="fas fa-plus me-2"></i>Crear Backup Ahora
+                    </button>
+                </div>
+                <div class="card-dark p-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div style="width: 40px; height: 40px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-shield-alt" style="color: #fff;"></i>
+                        </div>
+                        <div>
+                            <strong>Sistema de Backups Automáticos</strong>
+                            <p class="text-secondary mb-0" style="font-size: 0.85rem;">
+                                Tus datos se guardan automáticamente cada hora. Se mantienen los últimos 7 días de backups.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-dark p-3">
+                    <h6 class="mb-3"><i class="fas fa-clock-rotate-left me-2" style="color: var(--accent-cyan);"></i>Backups Disponibles</h6>
+                    <div id="misBackupsList"><!-- Se llena dinámicamente --></div>
+                </div>
+            </div>
             <!-- Mapa Section -->
             <div id="mapa" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1202,7 +1228,7 @@
                         <div>
                             <strong>Sistema de Backups Automáticos</strong>
                             <p class="text-secondary mb-0" style="font-size: 0.85rem;">
-                                Los datos se guardan automáticamente cada hora. Se mantienen los últimos 30 backups.
+                                Los datos se guardan automáticamente cada hora. Se mantienen los últimos 7 días de backups.
                             </p>
                         </div>
                     </div>
@@ -1843,6 +1869,15 @@
                 if (data.success) {
                     currentUser = data.user;
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                    
+                    // Backup automático
+                    if (currentUser.isAdmin || currentUser.role === 'admin') {
+                        fetch(API_URL + '/api/admin/backup-auto', { method: 'POST' }).catch(() => {});
+                    } else {
+                        // Backup automático del trabajador
+                        fetch(API_URL + '/api/backup-trabajador-auto/' + currentUser.id, { method: 'POST' }).catch(() => {});
+                    }
+                    
                     showMainApp();
                 } else if (data.needsPayment) {
                     // Usuario necesita pagar - mostrar pantalla de pago
@@ -2159,6 +2194,7 @@
                     <div class="nav-item" onclick="showSection('gastos')"><i class="fas fa-wallet"></i>Gastos</div>
                     <div class="nav-item" onclick="showSection('mapa')"><i class="fas fa-map-marked-alt"></i>Mapa</div>
                     <div class="nav-item" onclick="showSection('historial')"><i class="fas fa-history"></i>Mi Historial</div>
+                    <div class="nav-item" onclick="showSection('misBackups')"><i class="fas fa-database"></i>Backups</div>
                 `;
                 // Autoclick en Dashboard para trabajadores
                 setTimeout(() => {
@@ -2190,10 +2226,14 @@
             if (id === 'adminBackups') {
                 cargarBackups();
             }
+            if (id === 'misBackups') {
+                cargarMisBackups();
+            }
             
             const titles = {
                 dashboard: 'Dashboard', clientes: 'Clientes', estadisticas: 'Mis Estadísticas', cobros: 'Cobros del Día',
-                gastos: 'Gastos Personales', historial: 'Mi Historial', mapa: 'Mapa de Clientes', adminUsuarios: 'Usuarios Registrados',
+                gastos: 'Gastos Personales', historial: 'Mi Historial', mapa: 'Mapa de Clientes', misBackups: 'Mis Backups',
+                adminUsuarios: 'Usuarios Registrados',
                 adminCalendario: 'Calendario de Clientes', adminHistorial: 'Historial de Trabajador', 
                 adminVerTodo: 'Control Total - Trabajador', adminBackups: 'Backups del Sistema'
             };
@@ -4203,6 +4243,80 @@
             } else {
                 div.style.display = 'none';
                 icon.className = 'fas fa-chevron-down ms-2';
+            }
+        }
+
+        // ============ FUNCIONES DE MIS BACKUPS (TRABAJADORES) ============
+        async function cargarMisBackups() {
+            try {
+                const res = await fetch(API_URL + '/api/admin/backups-trabajador/' + currentUser.id);
+                const backups = await res.json();
+                const container = document.getElementById('misBackupsList');
+                
+                if (!backups || backups.length === 0) {
+                    container.innerHTML = '<p class="text-secondary text-center py-3">No hay backups disponibles. Se crearán automáticamente.</p>';
+                    return;
+                }
+                
+                container.innerHTML = backups.map((b, i) => {
+                    const fecha = new Date(b.fecha).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    const backupId = b.id || b._id;
+                    return `
+                    <div class="d-flex justify-content-between align-items-center py-2 ${i > 0 ? 'border-top' : ''}" style="border-color: var(--border-color) !important;">
+                        <div>
+                            <strong><i class="fas fa-file-archive me-2" style="color: var(--accent-cyan);"></i>Backup ${fecha}</strong>
+                            <br><small class="text-secondary">${fecha} - ${b.clientes || 0} clientes, ${b.gastos || 0} gastos ${b.auto ? '(Auto)' : '(Manual)'}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm" style="background: var(--accent-yellow); color: #000;" onclick="restaurarMiBackup('${backupId}')" title="Restaurar">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                document.getElementById('misBackupsList').innerHTML = '<p class="text-secondary text-center py-3">Error al cargar backups</p>';
+            }
+        }
+
+        async function crearMiBackup() {
+            if (!confirm('¿Crear un backup de tus datos ahora?')) return;
+            try {
+                const res = await fetch(API_URL + '/api/admin/backup-trabajador/' + currentUser.id, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Backup creado correctamente');
+                    cargarMisBackups();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo crear'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function restaurarMiBackup(backupId) {
+            const password = prompt('🔐 RESTAURAR MI BACKUP\n\n⚠️ Esto reemplazará TODOS tus datos actuales con los del backup.\n\nIngresa la contraseña para continuar:');
+            
+            if (!password) return;
+            if (password !== 'Pipe16137356') {
+                alert('❌ Contraseña incorrecta');
+                return;
+            }
+            
+            try {
+                const res = await fetch(API_URL + '/api/admin/restore-trabajador/' + backupId, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Backup restaurado correctamente');
+                    cargarMisBackups();
+                    // Recargar datos
+                    await cargarDatos();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo restaurar'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
             }
         }
 

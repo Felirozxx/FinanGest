@@ -862,14 +862,67 @@ app.get('/api/users-status', async (req, res) => {
 app.get('/api/admin/backups', async (req, res) => {
     try {
         const database = await connectDB();
-        const backups = await database.collection('backups').find({}).sort({ fecha: -1 }).toArray();
+        const backups = await database.collection('backups').find({}).sort({ fecha: -1 }).limit(30).toArray();
         res.json(backups);
     } catch (e) {
         res.json([]);
     }
 });
 
-// Admin backups - crear backup
+// Admin backups - crear backup automático cada hora
+app.post('/api/admin/backup-auto', async (req, res) => {
+    try {
+        const database = await connectDB();
+        
+        // Verificar si ya hay backup en la última hora
+        const hace1Hora = new Date(Date.now() - 60 * 60 * 1000);
+        
+        const backupReciente = await database.collection('backups').findOne({
+            fecha: { $gte: hace1Hora }
+        });
+        
+        if (backupReciente) {
+            return res.json({ success: true, message: 'Ya existe backup reciente', skipped: true });
+        }
+        
+        // Crear backup
+        const users = await database.collection('users').find({}).toArray();
+        const clients = await database.collection('clients').find({}).toArray();
+        const gastos = await database.collection('gastos').find({}).toArray();
+        
+        const backup = {
+            id: Date.now().toString(),
+            fecha: new Date(),
+            usuarios: users.length,
+            clientes: clients.length,
+            gastos: gastos.length,
+            data: { users, clients, gastos },
+            auto: true
+        };
+        
+        await database.collection('backups').insertOne(backup);
+        
+        // Eliminar backups antiguos (mantener solo 168 = 7 días x 24 horas)
+        const totalBackups = await database.collection('backups').countDocuments();
+        if (totalBackups > 168) {
+            const backupsAntiguos = await database.collection('backups')
+                .find({})
+                .sort({ fecha: 1 })
+                .limit(totalBackups - 168)
+                .toArray();
+            
+            for (const b of backupsAntiguos) {
+                await database.collection('backups').deleteOne({ _id: b._id });
+            }
+        }
+        
+        res.json({ success: true, message: 'Backup automático creado' });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin backups - crear backup manual
 app.post('/api/admin/backup', async (req, res) => {
     try {
         const database = await connectDB();
@@ -883,10 +936,26 @@ app.post('/api/admin/backup', async (req, res) => {
             usuarios: users.length,
             clientes: clients.length,
             gastos: gastos.length,
-            data: { users, clients, gastos }
+            data: { users, clients, gastos },
+            manual: true
         };
         
         await database.collection('backups').insertOne(backup);
+        
+        // Eliminar backups antiguos (mantener solo 168 = 7 días x 24 horas)
+        const totalBackups = await database.collection('backups').countDocuments();
+        if (totalBackups > 168) {
+            const backupsAntiguos = await database.collection('backups')
+                .find({})
+                .sort({ fecha: 1 })
+                .limit(totalBackups - 30)
+                .toArray();
+            
+            for (const b of backupsAntiguos) {
+                await database.collection('backups').deleteOne({ _id: b._id });
+            }
+        }
+        
         res.json({ success: true, archivo: `Backup creado: ${users.length} usuarios, ${clients.length} clientes, ${gastos.length} gastos` });
     } catch (e) {
         res.json({ success: false, error: e.message });
@@ -1027,10 +1096,80 @@ app.delete('/api/admin/gasto/:id', async (req, res) => {
 app.get('/api/admin/backups-trabajador/:userId', async (req, res) => {
     try {
         const database = await connectDB();
-        const backups = await database.collection('backups_trabajador').find({ userId: req.params.userId }).sort({ fecha: -1 }).toArray();
+        const backups = await database.collection('backups_trabajador').find({ userId: req.params.userId }).sort({ fecha: -1 }).limit(168).toArray();
         res.json(backups);
     } catch (e) {
         res.json([]);
+    }
+});
+
+// Backup automático de trabajador (cada hora al iniciar sesión)
+app.post('/api/backup-trabajador-auto/:userId', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const userId = req.params.userId;
+        
+        // Verificar si ya hay backup en la última hora
+        const hace1Hora = new Date(Date.now() - 60 * 60 * 1000);
+        const backupReciente = await database.collection('backups_trabajador').findOne({
+            userId: userId,
+            fecha: { $gte: hace1Hora }
+        });
+        
+        if (backupReciente) {
+            return res.json({ success: true, message: 'Ya existe backup reciente', skipped: true });
+        }
+        
+        // Obtener nombre del usuario
+        let userName = 'Trabajador';
+        try {
+            const user = await database.collection('users').findOne({ _id: new ObjectId(userId) });
+            if (user) userName = user.nombre || user.username || 'Trabajador';
+        } catch (e) {
+            const user = await database.collection('users').findOne({ id: userId });
+            if (user) userName = user.nombre || user.username || 'Trabajador';
+        }
+        
+        // Buscar clientes y gastos del trabajador
+        const clients = await database.collection('clients').find({ 
+            $or: [{ creadoPor: userId }, { creadoPor: userId.toString() }]
+        }).toArray();
+        const gastos = await database.collection('gastos').find({ 
+            $or: [{ creadoPor: userId }, { creadoPor: userId.toString() }]
+        }).toArray();
+        
+        const fechaStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+        
+        const backup = {
+            id: Date.now().toString(),
+            fecha: new Date(),
+            nombre: `Backup ${userName} - ${fechaStr}`,
+            userId: userId,
+            clientes: clients.length,
+            gastos: gastos.length,
+            data: { clients, gastos },
+            auto: true
+        };
+        
+        await database.collection('backups_trabajador').insertOne(backup);
+        
+        // Eliminar backups antiguos (mantener solo 168 = 7 días x 24 horas)
+        const totalBackups = await database.collection('backups_trabajador').countDocuments({ userId: userId });
+        if (totalBackups > 168) {
+            const backupsAntiguos = await database.collection('backups_trabajador')
+                .find({ userId: userId })
+                .sort({ fecha: 1 })
+                .limit(totalBackups - 168)
+                .toArray();
+            
+            for (const b of backupsAntiguos) {
+                await database.collection('backups_trabajador').deleteOne({ _id: b._id });
+            }
+        }
+        
+        res.json({ success: true, message: 'Backup automático creado' });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
     }
 });
 
