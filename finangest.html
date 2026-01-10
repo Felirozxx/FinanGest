@@ -4481,11 +4481,11 @@
                     <td>${c.parcelasPagas || 0}/${c.numeroParcelas}</td>
                     <td><span class="badge-status badge-${statusClass}">${c.estado}</span></td>
                     <td>
-                        ${c.estado === 'finalizado' && !c.renovado ? `
+                        ${(c.estado === 'finalizado' || c.estado === 'pagado') && !c.renovado ? `
                         <button class="btn btn-sm me-1" style="background: var(--accent-purple); color: #fff;" onclick="renovarCliente('${c.id}')" title="Renovar préstamo">
                             <i class="fas fa-redo"></i>
                         </button>
-                        ` : c.estado !== 'finalizado' ? `
+                        ` : c.estado !== 'finalizado' && c.estado !== 'pagado' ? `
                         <button class="btn btn-sm btn-success-custom me-1" onclick="abrirPago('${c.id}')" title="Registrar pago">
                             <i class="fas fa-dollar-sign"></i>
                         </button>
