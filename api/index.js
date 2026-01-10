@@ -397,8 +397,14 @@ app.get('/api/clients', async (req, res) => {
     try {
         const database = await connectDB();
         const clients = await database.collection('clients').find({}).toArray();
-        // Mapear _id a id
-        const safeClients = clients.map(c => ({ ...c, id: c._id.toString() }));
+        // Mapear _id a id y aplanar estructura si está anidada
+        const safeClients = clients.map(c => {
+            if (c.cliente) {
+                // Estructura anidada - aplanar
+                return { ...c.cliente, id: c._id.toString(), _id: c._id.toString() };
+            }
+            return { ...c, id: c._id.toString() };
+        });
         res.json(safeClients);
     } catch (e) {
         res.json({ error: e.message });
@@ -409,9 +415,20 @@ app.get('/api/clients', async (req, res) => {
 app.get('/api/clientes', async (req, res) => {
     try {
         const database = await connectDB();
-        const clients = await database.collection('clients').find({}).toArray();
-        // Mapear _id a id
-        const safeClients = clients.map(c => ({ ...c, id: c._id.toString() }));
+        const { userId } = req.query;
+        let query = {};
+        if (userId && userId !== 'admin') {
+            query = { $or: [{ creadoPor: userId }, { 'cliente.creadoPor': userId }] };
+        }
+        const clients = await database.collection('clients').find(query).toArray();
+        // Mapear _id a id y aplanar estructura si está anidada
+        const safeClients = clients.map(c => {
+            if (c.cliente) {
+                // Estructura anidada - aplanar
+                return { ...c.cliente, id: c._id.toString(), _id: c._id.toString() };
+            }
+            return { ...c, id: c._id.toString() };
+        });
         res.json(safeClients);
     } catch (e) {
         res.json({ error: e.message });
