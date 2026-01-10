@@ -546,8 +546,9 @@ exports.handler = async (event, context) => {
             const mpData = await mpResponse.json();
             
             if (mpData.status === 'approved') {
+                // Calcular fecha de expiración: mismo día del próximo mes
                 const subscriptionExpires = new Date();
-                subscriptionExpires.setDate(subscriptionExpires.getDate() + 30);
+                subscriptionExpires.setMonth(subscriptionExpires.getMonth() + 1);
                 
                 await db.collection('users').updateOne(
                     { $or: [{ _id: new ObjectId(userId) }, { id: userId }] },
