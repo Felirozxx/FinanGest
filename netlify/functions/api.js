@@ -237,6 +237,12 @@ exports.handler = async (event, context) => {
             return respond(200, { success: true, pendingPayment: true, user: { nombre: stored.nombre, email, username: username || stored.username } });
         }
 
+        // GET PENDING USERS (usuarios que verificaron email pero no pagaron)
+        if (path === '/pending-users' && method === 'GET') {
+            const pendingUsers = await db.collection('pending_users').find({}).toArray();
+            return respond(200, pendingUsers.map(u => ({ ...u, id: u._id.toString() })));
+        }
+
         // FORGOT PASSWORD
         if (path === '/forgot-password' && method === 'POST') {
             const { email } = body;
@@ -730,6 +736,16 @@ exports.handler = async (event, context) => {
                 success: true, 
                 user: { id: result.insertedId, nombre: pendingUser.nombre, email: pendingUser.email }
             });
+        }
+
+        // RECHAZAR USUARIO PENDIENTE
+        if (path === '/rechazar-usuario-pendiente' && method === 'POST') {
+            const { email } = body;
+            
+            const pendingUsers = db.collection('pending_users');
+            const result = await pendingUsers.deleteOne({ email });
+            
+            return respond(200, { success: result.deletedCount > 0 });
         }
 
         // MAKE ADMIN
