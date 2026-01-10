@@ -4093,36 +4093,45 @@
         // Función para establecer rango de fechas rápido
         function setChartRange(range) {
             const hoy = new Date();
-            let fechaFin = new Date();
-            let fechaInicio = new Date(hoy);
+            let fechaInicio = new Date();
             
             // Actualizar botones activos
             document.querySelectorAll('.chart-range-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
             switch(range) {
-                case '1w': // 1 semana hacia adelante
-                    fechaFin.setDate(hoy.getDate() + 7);
+                case '1w': // 1 semana atrás
+                    fechaInicio.setDate(hoy.getDate() - 7);
                     break;
-                case '1m': // 1 mes hacia adelante
-                    fechaFin.setMonth(hoy.getMonth() + 1);
+                case '1m': // 1 mes atrás
+                    fechaInicio.setMonth(hoy.getMonth() - 1);
                     break;
-                case '3m': // 3 meses hacia adelante
-                    fechaFin.setMonth(hoy.getMonth() + 3);
+                case '3m': // 3 meses atrás
+                    fechaInicio.setMonth(hoy.getMonth() - 3);
                     break;
-                case '6m': // 6 meses hacia adelante
-                    fechaFin.setMonth(hoy.getMonth() + 6);
+                case '6m': // 6 meses atrás
+                    fechaInicio.setMonth(hoy.getMonth() - 6);
                     break;
-                case '1y': // 1 año hacia adelante
-                    fechaFin.setFullYear(hoy.getFullYear() + 1);
+                case '1y': // 1 año atrás
+                    fechaInicio.setFullYear(hoy.getFullYear() - 1);
                     break;
-                case 'all': // Todo - desde hoy hasta 30 días
-                    fechaFin.setDate(hoy.getDate() + 30);
+                case 'all': // Todo - desde el primer cliente
+                    fechaInicio = new Date(hoy);
+                    fechaInicio.setDate(fechaInicio.getDate() - 30);
+                    if (clientes && clientes.length > 0) {
+                        const fechas = clientes.map(c => new Date(c.fechaCreacion || c.fechaInicio || c.fechaRegistro)).filter(f => !isNaN(f.getTime()));
+                        if (fechas.length > 0) {
+                            const fechaMasAntigua = new Date(Math.min(...fechas.map(f => f.getTime())));
+                            if (fechaMasAntigua < fechaInicio) {
+                                fechaInicio = fechaMasAntigua;
+                            }
+                        }
+                    }
                     break;
             }
             
             document.getElementById('chartFechaInicio').value = fechaInicio.toISOString().split('T')[0];
-            document.getElementById('chartFechaFin').value = fechaFin.toISOString().split('T')[0];
+            document.getElementById('chartFechaFin').value = hoy.toISOString().split('T')[0];
             renderChart();
         }
         
@@ -4168,15 +4177,14 @@
                     inputFin.value = fechaFin.toISOString().split('T')[0];
                 }
             } else {
-                // Por defecto: desde hoy hacia 7 días en el futuro
+                // Por defecto: últimos 7 días hasta hoy
                 const hoy = new Date();
-                fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
-                fechaFin = new Date(fechaInicio);
-                fechaFin.setDate(fechaFin.getDate() + 6);
-                fechaFin.setHours(23, 59, 59);
+                fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+                fechaInicio = new Date(fechaFin);
+                fechaInicio.setDate(fechaInicio.getDate() - 6);
                 
                 inputInicio.value = fechaInicio.toISOString().split('T')[0];
-                inputFin.value = fechaFin.toISOString().split('T')[0];
+                inputFin.value = hoy.toISOString().split('T')[0];
             }
             
             // Variables para acumular totales
@@ -4189,7 +4197,6 @@
                 const dia = current.getDate();
                 const mes = current.getMonth();
                 const anio = current.getFullYear();
-                const currentDateStr = current.toISOString().split('T')[0];
                 const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                 labels.push(dia + ' ' + meses[mes]);
                 
@@ -4202,7 +4209,7 @@
                         prestadoDia += parseFloat(c.montoTotal) || 0;
                     }
                     
-                    // Cobros reales (pagos ya hechos)
+                    // Cobros reales (pagos ya hechos) - de TODOS los clientes
                     if (c.pagos) {
                         c.pagos.forEach(p => {
                             const fechaPago = new Date(p.fecha);
@@ -4218,27 +4225,6 @@
                                 cobradoDia += parseFloat(p.monto) || 0;
                             }
                         });
-                    }
-                    
-                    // Cobros proyectados (parcelas esperadas para fechas futuras)
-                    if (c.estado === 'ativo' && c.fechaInicio && c.valorParcela && c.numeroParcelas) {
-                        const fechaInicioCliente = new Date(c.fechaInicio);
-                        fechaInicioCliente.setHours(0, 0, 0, 0);
-                        const currentCheck = new Date(current);
-                        currentCheck.setHours(0, 0, 0, 0);
-                        
-                        // Calcular qué parcela corresponde a este día
-                        const diffDias = Math.floor((currentCheck - fechaInicioCliente) / (1000 * 60 * 60 * 24));
-                        
-                        // Si es un día válido de cobro (desde día 1 hasta el número de parcelas)
-                        if (diffDias >= 0 && diffDias < (c.numeroParcelas || 0)) {
-                            // Verificar si esta parcela ya fue pagada
-                            const parcelasPagas = c.parcelasPagas || 0;
-                            if (diffDias >= parcelasPagas) {
-                                // Esta parcela aún no está pagada, es proyección
-                                cobradoDia += parseFloat(c.valorParcela) || 0;
-                            }
-                        }
                     }
                 });
                 
