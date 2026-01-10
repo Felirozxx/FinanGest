@@ -4338,39 +4338,33 @@
         }
         
         async function cerrarTodasSesionesAdmin() {
-            mostrarModalConfirmacion(
-                'Cerrar Todas las Sesiones',
-                '⚠️ Esto cerrará la sesión de TODOS los usuarios (excepto tú). Esta acción no se puede deshacer.',
-                async () => {
-                    try {
-                        const res = await fetch(API_URL + '/api/users');
-                        const users = await res.json();
-                        
-                        for (const user of users) {
-                            if (user._id !== currentUser.id && user.id !== currentUser.id) {
-                                await fetch(API_URL + '/api/users/' + (user._id || user.id), {
-                                    method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ forceLogout: true, lastSeen: null })
-                                });
-                            }
-                        }
-                        
-                        // Cerrar sesiones en la colección sessions
-                        await fetch(API_URL + '/api/sessions/admin/close-all-users', {
-                            method: 'POST',
+            if (!confirm('⚠️ Esto cerrará la sesión de TODOS los usuarios (excepto tú). ¿Continuar?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                
+                for (const user of users) {
+                    if (user._id !== currentUser.id && user.id !== currentUser.id) {
+                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                            method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ exceptUserId: currentUser.id })
-                        }).catch(() => {});
-                        
-                        registrarLogSeguridad('Cerró todas las sesiones de usuarios');
-                        alert('✅ Todas las sesiones han sido cerradas');
-                        cargarEstadisticasSeguridad();
-                    } catch (e) {
-                        alert('Error al cerrar sesiones');
+                            body: JSON.stringify({ forceLogout: true, lastSeen: null })
+                        });
                     }
                 }
-            );
+                
+                // Cerrar sesiones en la colección sessions
+                await fetch(API_URL + '/api/sessions/admin/close-all-users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ exceptUserId: currentUser.id })
+                }).catch(() => {});
+                
+                alert('✅ Todas las sesiones han sido cerradas');
+            } catch (e) {
+                alert('Error al cerrar sesiones');
+            }
         }
         
         async function bloquearTodosUsuarios() {
