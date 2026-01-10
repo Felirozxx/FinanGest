@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7530,38 +7530,6 @@
                                         <option value="malo" ${cliente.tipoCliente === 'malo' ? 'selected' : ''}>❌ Mala Paga</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">💰 Monto Prestado (R$)</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditMonto" value="${cliente.montoTotal || 0}" step="0.01">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">� Tootal a Pagar (R$)</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditTotalPagar" value="${cliente.totalAPagar || 0}" step="0.01">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">� Comisión a(%)</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditComision" value="${cliente.comisionPorcentaje || 20}" step="1">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">✔️ Parcelas Pagas</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditParcelasPagas" value="${cliente.parcelasPagas || 0}">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">🗓️ Total Parcelas</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditTotalParcelas" value="${cliente.numeroParcelas || 0}">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">🛡️ Microseguro (R$)</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditMicroseguro" value="${cliente.microseguro || 0}" step="0.01">
-                                </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">🏪 Tipo de Negocio</label>
                                     <select class="form-control form-control-dark" id="adminEditTipoNegocio">
@@ -7582,11 +7550,41 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">💰 Monto Prestado (R$)</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditMonto" value="${cliente.montoTotal || 0}" step="0.01">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">📋 Total a Pagar (R$)</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditTotalPagar" value="${cliente.totalAPagar || 0}" step="0.01">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">📈 Comisión (%)</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditComision" value="${cliente.comisionPorcentaje || 20}" step="1">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">🗓️ Total Parcelas</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditTotalParcelas" value="${cliente.numeroParcelas || 0}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">✔️ Parcelas Pagas</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditParcelasPagas" value="${cliente.parcelasPagas || 0}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">🛡️ Microseguro (R$)</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditMicroseguro" value="${cliente.microseguro || 0}" step="0.01">
+                                </div>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">📍 Ubicación / Dirección</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control form-control-dark" id="adminEditUbicacion" value="${cliente.ubicacion || ''}" placeholder="Dirección del cliente">
-                                    <button class="btn btn-primary-custom" type="button" onclick="obtenerUbicacionAdmin()" title="Usar ubicación actual">
+                                    <button class="btn btn-primary-custom" type="button" onclick="obtenerUbicacionAdmin()" title="Buscar ubicación">
                                         <i class="fas fa-crosshairs"></i>
                                     </button>
                                     ${cliente.lat && cliente.lng ? '<button class="btn btn-success-custom" type="button" onclick="verMapaAdmin(' + cliente.lat + ', ' + cliente.lng + ')" title="Ver en mapa"><i class="fas fa-map-marker-alt"></i></button>' : ''}
@@ -7598,7 +7596,7 @@
                                 </small>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">� Notas sobre erl cliente</label>
+                                <label class="form-label">📝 Notas sobre el cliente</label>
                                 <textarea class="form-control form-control-dark" id="adminEditNotas" rows="2" placeholder="Información adicional...">${cliente.notas || ''}</textarea>
                             </div>
                         </div>
