@@ -892,42 +892,42 @@
             </div>
             <!-- Estadísticas Section -->
             <div id="estadisticas" class="section">
-                <h5 class="mb-4"><i class="fas fa-chart-bar me-2" style="color: var(--accent-purple);"></i>Mis Estadísticas</h5>
+                <h5 class="mb-4"><i class="fas fa-chart-bar me-2" style="color: var(--accent-purple);"></i><span data-translate="misEstadisticas">Mis Estadísticas</span></h5>
                 
                 <!-- Filtros de fecha -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-eye me-2"></i>Ver por</label>
+                            <label class="form-label"><i class="fas fa-eye me-2"></i><span data-translate="verPor">Ver por</span></label>
                             <select class="form-control form-control-dark" id="estVista" onchange="renderEstadisticas()">
-                                <option value="dia">Día específico</option>
-                                <option value="semana">Esta semana</option>
-                                <option value="mes" selected>Este mes</option>
-                                <option value="anio">Este año</option>
-                                <option value="todo">Todo el tiempo</option>
+                                <option value="dia" data-translate="diaEspecifico">Día específico</option>
+                                <option value="semana" data-translate="estaSemana">Esta semana</option>
+                                <option value="mes" selected data-translate="esteMes">Este mes</option>
+                                <option value="anio" data-translate="esteAnio">Este año</option>
+                                <option value="todo" data-translate="todoTiempo">Todo el tiempo</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar me-2"></i>Fecha</label>
+                            <label class="form-label"><i class="fas fa-calendar me-2"></i><span data-translate="fecha">Fecha</span></label>
                             <input type="date" class="form-control form-control-dark" id="estFecha" onchange="renderEstadisticas()">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Mes</label>
+                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i><span data-translate="mes">Mes</span></label>
                             <select class="form-control form-control-dark" id="estMes" onchange="renderEstadisticas()">
-                                <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
-                                <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
-                                <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
-                                <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+                                <option value="0" data-translate="enero">Enero</option><option value="1" data-translate="febrero">Febrero</option><option value="2" data-translate="marzo">Marzo</option>
+                                <option value="3" data-translate="abril">Abril</option><option value="4" data-translate="mayo">Mayo</option><option value="5" data-translate="junio">Junio</option>
+                                <option value="6" data-translate="julio">Julio</option><option value="7" data-translate="agosto">Agosto</option><option value="8" data-translate="septiembre">Septiembre</option>
+                                <option value="9" data-translate="octubre">Octubre</option><option value="10" data-translate="noviembre">Noviembre</option><option value="11" data-translate="diciembre">Diciembre</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Año</label>
+                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i><span data-translate="anio">Año</span></label>
                             <select class="form-control form-control-dark" id="estAnio" onchange="renderEstadisticas()"></select>
                         </div>
                     </div>
@@ -938,25 +938,25 @@
                     <div class="col-md-3 col-6">
                         <div class="stat-card">
                             <div class="stat-value" id="estClientes">0</div>
-                            <div class="stat-label"><i class="fas fa-users me-2"></i>Clientes</div>
+                            <div class="stat-label"><i class="fas fa-users me-2"></i><span data-translate="clientes">Clientes</span></div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="stat-card green">
                             <div class="stat-value" id="estPrestado">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-hand-holding-usd me-2"></i>Prestado</div>
+                            <div class="stat-label"><i class="fas fa-hand-holding-usd me-2"></i><span data-translate="prestado">Prestado</span></div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="stat-card yellow">
                             <div class="stat-value" id="estCobrado">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-coins me-2"></i>Cobrado</div>
+                            <div class="stat-label"><i class="fas fa-coins me-2"></i><span data-translate="cobrado">Cobrado</span></div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="stat-card red">
                             <div class="stat-value" id="estPendiente">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-clock me-2"></i>Pendiente</div>
+                            <div class="stat-label"><i class="fas fa-clock me-2"></i><span data-translate="pendiente">Pendiente</span></div>
                         </div>
                     </div>
                 </div>
@@ -965,40 +965,40 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
                         <div class="card-dark">
-                            <h6 class="mb-3"><i class="fas fa-money-bill-wave me-2" style="color: var(--accent-green);"></i>Pagos Recibidos</h6>
+                            <h6 class="mb-3"><i class="fas fa-money-bill-wave me-2" style="color: var(--accent-green);"></i><span data-translate="pagosRecibidos">Pagos Recibidos</span></h6>
                             <div class="row text-center">
                                 <div class="col-6">
                                     <div style="color: var(--accent-green); font-size: 1.5rem; font-weight: bold;" id="estPagosCount">0</div>
-                                    <small class="text-secondary">Cantidad</small>
+                                    <small class="text-secondary" data-translate="cantidad">Cantidad</small>
                                 </div>
                                 <div class="col-6">
                                     <div style="color: var(--accent-green); font-size: 1.5rem; font-weight: bold;" id="estPagosTotal">R$ 0</div>
-                                    <small class="text-secondary">Total</small>
+                                    <small class="text-secondary" data-translate="total">Total</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card-dark">
-                            <h6 class="mb-3"><i class="fas fa-wallet me-2" style="color: var(--accent-red);"></i>Gastos</h6>
+                            <h6 class="mb-3"><i class="fas fa-wallet me-2" style="color: var(--accent-red);"></i><span data-translate="gastos">Gastos</span></h6>
                             <div class="row text-center">
                                 <div class="col-6">
                                     <div style="color: var(--accent-red); font-size: 1.5rem; font-weight: bold;" id="estGastosCount">0</div>
-                                    <small class="text-secondary">Cantidad</small>
+                                    <small class="text-secondary" data-translate="cantidad">Cantidad</small>
                                 </div>
                                 <div class="col-6">
                                     <div style="color: var(--accent-red); font-size: 1.5rem; font-weight: bold;" id="estGastosTotal">R$ 0</div>
-                                    <small class="text-secondary">Total</small>
+                                    <small class="text-secondary" data-translate="total">Total</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card-dark">
-                            <h6 class="mb-3"><i class="fas fa-balance-scale me-2" style="color: var(--accent-cyan);"></i>Balance</h6>
+                            <h6 class="mb-3"><i class="fas fa-balance-scale me-2" style="color: var(--accent-cyan);"></i><span data-translate="balance">Balance</span></h6>
                             <div class="text-center">
                                 <div style="font-size: 2rem; font-weight: bold;" id="estBalance">R$ 0</div>
-                                <small class="text-secondary">Cobrado - Gastos</small>
+                                <small class="text-secondary" data-translate="cobradoMenosGastos">Cobrado - Gastos</small>
                             </div>
                         </div>
                     </div>
@@ -1006,49 +1006,49 @@
                 
                 <!-- Por tipo de cliente -->
                 <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-star me-2" style="color: var(--accent-yellow);"></i>Por Tipo de Cliente</h6>
+                    <h6 class="mb-3"><i class="fas fa-star me-2" style="color: var(--accent-yellow);"></i><span data-translate="porTipoCliente">Por Tipo de Cliente</span></h6>
                     <div class="row text-center">
                         <div class="col-3">
                             <div style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold;" id="estNuevos">0</div>
-                            <small class="text-secondary">🆕 Nuevos</small>
+                            <small class="text-secondary">🆕 <span data-translate="nuevos">Nuevos</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-green); font-size: 1.3rem; font-weight: bold;" id="estBuenos">0</div>
-                            <small class="text-secondary">✅ Buenos</small>
+                            <small class="text-secondary">✅ <span data-translate="buenos">Buenos</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-yellow); font-size: 1.3rem; font-weight: bold;" id="estRegulares">0</div>
-                            <small class="text-secondary">⚠️ Regulares</small>
+                            <small class="text-secondary">⚠️ <span data-translate="regulares">Regulares</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-red); font-size: 1.3rem; font-weight: bold;" id="estMalos">0</div>
-                            <small class="text-secondary">❌ Mala Paga</small>
+                            <small class="text-secondary">❌ <span data-translate="malaPaga">Mala Paga</span></small>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Por estado -->
                 <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-tasks me-2" style="color: var(--accent-cyan);"></i>Por Estado</h6>
+                    <h6 class="mb-3"><i class="fas fa-tasks me-2" style="color: var(--accent-cyan);"></i><span data-translate="porEstado">Por Estado</span></h6>
                     <div class="row text-center">
                         <div class="col-4">
                             <div style="color: var(--accent-green); font-size: 1.5rem; font-weight: bold;" id="estActivos">0</div>
-                            <small class="text-secondary">Activos</small>
+                            <small class="text-secondary" data-translate="activos">Activos</small>
                         </div>
                         <div class="col-4">
                             <div style="color: var(--accent-cyan); font-size: 1.5rem; font-weight: bold;" id="estFinalizados">0</div>
-                            <small class="text-secondary">Finalizados</small>
+                            <small class="text-secondary" data-translate="finalizados">Finalizados</small>
                         </div>
                         <div class="col-4">
                             <div style="color: var(--accent-red); font-size: 1.5rem; font-weight: bold;" id="estAtrasados">0</div>
-                            <small class="text-secondary">Atrasados</small>
+                            <small class="text-secondary" data-translate="atrasados">Atrasados</small>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Lista de actividad reciente -->
                 <div class="card-dark">
-                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i>Actividad del Período</h6>
+                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i><span data-translate="actividadPeriodo">Actividad del Período</span></h6>
                     <div id="estActividad" style="max-height: 300px; overflow-y: auto;">
                         <!-- Se llena dinámicamente -->
                     </div>
@@ -1057,10 +1057,10 @@
             <!-- Cobros Section -->
             <div id="cobros" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5><i class="fas fa-calendar-day me-2" style="color: var(--accent-yellow);"></i>Cobros del Día</h5>
+                    <h5><i class="fas fa-calendar-day me-2" style="color: var(--accent-yellow);"></i><span data-translate="cobros">Cobros del Día</span></h5>
                     <div class="d-flex gap-2 align-items-center">
                         <button class="btn btn-primary-custom btn-sm" onclick="setFechaHoy()">
-                            <i class="fas fa-calendar-check me-1"></i>Hoy
+                            <i class="fas fa-calendar-check me-1"></i><span data-translate="hoy">Hoy</span>
                         </button>
                         <input type="date" class="form-control form-control-dark" id="fechaCobros" style="width: auto;" onchange="renderCobros()">
                     </div>
@@ -1069,15 +1069,15 @@
                 <div class="card-dark mb-4">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-8">
-                            <label class="form-label"><i class="fas fa-search me-2"></i>Buscar Cliente</label>
-                            <input type="text" class="form-control form-control-dark" id="cobrosBuscar" placeholder="Nombre o teléfono..." oninput="renderCobros()">
+                            <label class="form-label"><i class="fas fa-search me-2"></i><span data-translate="buscarCliente">Buscar Cliente</span></label>
+                            <input type="text" class="form-control form-control-dark" id="cobrosBuscar" data-translate-placeholder="nombreTelefono" placeholder="Nombre o teléfono..." oninput="renderCobros()">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label"><i class="fas fa-filter me-2"></i>Estado</label>
+                            <label class="form-label"><i class="fas fa-filter me-2"></i><span data-translate="estado">Estado</span></label>
                             <select class="form-control form-control-dark" id="cobrosFiltroEstado" onchange="renderCobros()">
-                                <option value="">Todos</option>
-                                <option value="pendiente">Pendientes</option>
-                                <option value="pagado">Pagados Hoy</option>
+                                <option value="" data-translate="todos">Todos</option>
+                                <option value="pendiente" data-translate="pendientes">Pendientes</option>
+                                <option value="pagado" data-translate="pagadosHoy">Pagados Hoy</option>
                             </select>
                         </div>
                     </div>
@@ -2487,6 +2487,23 @@
                 mes: 'Mes',
                 todosMeses: 'Todos los meses',
                 diaEspecifico: 'Día específico',
+                // Meses
+                enero: 'Enero', febrero: 'Febrero', marzo: 'Marzo', abril: 'Abril',
+                mayo: 'Mayo', junio: 'Junio', julio: 'Julio', agosto: 'Agosto',
+                septiembre: 'Septiembre', octubre: 'Octubre', noviembre: 'Noviembre', diciembre: 'Diciembre',
+                // Estadísticas
+                misEstadisticas: 'Mis Estadísticas',
+                verPor: 'Ver por',
+                todoTiempo: 'Todo el tiempo',
+                pagosRecibidos: 'Pagos Recibidos',
+                porEstado: 'Por Estado',
+                actividadPeriodo: 'Actividad del Período',
+                nuevos: 'Nuevos',
+                buenos: 'Buenos',
+                regulares: 'Regulares',
+                malaPaga: 'Mala Paga',
+                buscarCliente: 'Buscar Cliente',
+                nombreTelefono: 'Nombre o teléfono...',
                 activos: 'Activos',
                 finalizados: 'Finalizados',
                 atrasados: 'Atrasados',
@@ -2642,6 +2659,23 @@
                 mes: 'Mês',
                 todosMeses: 'Todos os meses',
                 diaEspecifico: 'Dia específico',
+                // Meses
+                enero: 'Janeiro', febrero: 'Fevereiro', marzo: 'Março', abril: 'Abril',
+                mayo: 'Maio', junio: 'Junho', julio: 'Julho', agosto: 'Agosto',
+                septiembre: 'Setembro', octubre: 'Outubro', noviembre: 'Novembro', diciembre: 'Dezembro',
+                // Estatísticas
+                misEstadisticas: 'Minhas Estatísticas',
+                verPor: 'Ver por',
+                todoTiempo: 'Todo o período',
+                pagosRecibidos: 'Pagamentos Recebidos',
+                porEstado: 'Por Estado',
+                actividadPeriodo: 'Atividade do Período',
+                nuevos: 'Novos',
+                buenos: 'Bons',
+                regulares: 'Regulares',
+                malaPaga: 'Mau Pagador',
+                buscarCliente: 'Buscar Cliente',
+                nombreTelefono: 'Nome ou telefone...',
                 activos: 'Ativos',
                 finalizados: 'Finalizados',
                 atrasados: 'Atrasados',
@@ -3512,13 +3546,13 @@
             }
             
             const titles = {
-                dashboard: 'Dashboard', clientes: 'Clientes', estadisticas: 'Mis Estadísticas', cobros: 'Cobros del Día',
-                gastos: 'Gastos Personales', historial: 'Mi Historial', mapa: 'Mapa de Clientes', misBackups: 'Mis Backups',
-                miConfig: 'Mi Configuración', microseguros: 'Microseguros',
-                adminUsuarios: 'Usuarios Registrados',
-                adminCalendario: 'Calendario de Clientes', adminHistorial: 'Historial de Trabajador', 
-                adminVerTodo: 'Control Total - Trabajador', adminBackups: 'Backups del Sistema',
-                adminConfig: 'Configuración del Sistema', adminSeguridad: 'Centro de Seguridad'
+                dashboard: t('dashboard'), clientes: t('clientes'), estadisticas: t('misEstadisticas'), cobros: t('cobros'),
+                gastos: t('gastosPersonales'), historial: t('historial'), mapa: t('mapaClientes'), misBackups: t('backups'),
+                miConfig: t('miConfiguracion'), microseguros: t('microseguros'),
+                adminUsuarios: t('usuariosRegistrados'),
+                adminCalendario: t('calendario'), adminHistorial: t('historial'), 
+                adminVerTodo: 'Control Total', adminBackups: t('backups'),
+                adminConfig: t('configuracion'), adminSeguridad: t('seguridad')
             };
             document.getElementById('pageTitle').textContent = titles[id] || 'Dashboard';
             if (id === 'cobros') {
