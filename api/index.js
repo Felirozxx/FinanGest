@@ -7,7 +7,18 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+
+// CORS configurado para permitir Netlify y otros orígenes
+app.use(cors({
+    origin: ['https://venerable-moonbeam-96c059.netlify.app', 'https://finan-gest.vercel.app', 'http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
+// También manejar preflight requests
+app.options('*', cors());
+
 app.use(express.json());
 
 // Credenciales desde variables de entorno (configurar en Vercel)
