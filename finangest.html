@@ -5750,60 +5750,53 @@
     </script>
     
     <!-- Footer decorativo -->
-    <footer id="appFooter" style="display: none; background: linear-gradient(180deg, var(--bg-primary) 0%, #0d0d14 100%); padding: 60px 30px 30px; margin-left: 260px; border-top: 1px solid var(--border-color);">
+    <footer id="appFooter" style="background: linear-gradient(180deg, var(--bg-primary) 0%, #0d0d14 100%); padding: 60px 30px 30px; margin-left: 260px; border-top: 1px solid var(--border-color);">
         <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+            <!-- Logo grande decorativo -->
+            <div style="margin-bottom: 40px; opacity: 0.15;">
+                <i class="fas fa-chart-line" style="font-size: 120px; color: var(--accent-cyan);"></i>
+            </div>
             <div style="margin-bottom: 30px;">
                 <span style="font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    <i class="fas fa-chart-line me-2"></i>FinanGest
+                    FinanGest
                 </span>
                 <p style="color: var(--text-secondary); margin-top: 10px; font-size: 1rem;">Gestión Financiera Profesional</p>
             </div>
-            <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; margin-bottom: 40px;">
                 <div style="text-align: center;">
                     <i class="fas fa-shield-alt fa-2x mb-2" style="color: var(--accent-cyan);"></i>
-                    <p style="color: var(--text-secondary); font-size: 0.85rem;">Datos Seguros</p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Datos Seguros</p>
                 </div>
                 <div style="text-align: center;">
                     <i class="fas fa-cloud fa-2x mb-2" style="color: var(--accent-green);"></i>
-                    <p style="color: var(--text-secondary); font-size: 0.85rem;">En la Nube</p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">En la Nube</p>
                 </div>
                 <div style="text-align: center;">
                     <i class="fas fa-mobile-alt fa-2x mb-2" style="color: var(--accent-purple);"></i>
-                    <p style="color: var(--text-secondary); font-size: 0.85rem;">Multiplataforma</p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Multiplataforma</p>
                 </div>
                 <div style="text-align: center;">
                     <i class="fas fa-headset fa-2x mb-2" style="color: var(--accent-yellow);"></i>
-                    <p style="color: var(--text-secondary); font-size: 0.85rem;">Soporte 24/7</p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Soporte 24/7</p>
                 </div>
             </div>
-            <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
-                <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0;">
+            <div style="border-top: 1px solid var(--border-color); padding-top: 25px;">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
                     © 2026 FinanGest Software. Todos los derechos reservados.
                 </p>
-                <div style="margin-top: 10px;">
-                    <a href="politicas.html" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.8rem; margin: 0 10px;">Política de Privacidad</a>
+                <div style="margin-top: 15px;">
+                    <a href="politicas.html" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.85rem; margin: 0 15px;">Política de Privacidad</a>
                     <span style="color: var(--text-secondary);">|</span>
-                    <a href="politicas.html#terminos" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.8rem; margin: 0 10px;">Términos de Uso</a>
+                    <a href="politicas.html" onclick="localStorage.setItem('showTerminos', 'true')" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.85rem; margin: 0 15px;">Términos de Uso</a>
                 </div>
             </div>
         </div>
     </footer>
     
-    <script>
-        // Mostrar footer cuando el usuario está logueado
-        const footerObserver = new MutationObserver(() => {
-            const footer = document.getElementById('appFooter');
-            const loginSection = document.getElementById('loginSection');
-            if (footer && loginSection) {
-                footer.style.display = loginSection.style.display === 'none' ? 'block' : 'none';
-            }
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            const loginSection = document.getElementById('loginSection');
-            if (loginSection) {
-                footerObserver.observe(loginSection, { attributes: true, attributeFilter: ['style'] });
-            }
-        });
-    </script>
+    <style>
+        @media (max-width: 768px) {
+            #appFooter { margin-left: 0 !important; }
+        }
+    </style>
 </body>
 </html>
