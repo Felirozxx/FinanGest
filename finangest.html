@@ -4551,15 +4551,21 @@
                 
                 // Filtrar por fecha
                 const fechaBase = new Date(fechaSeleccionada + 'T12:00:00');
+                console.log('Fecha base:', fechaBase, 'Vista:', vista);
+                console.log('Total clientes antes de filtro:', clientesFiltrados.length);
+                
                 if (vista !== 'todos') {
                     clientesFiltrados = clientesFiltrados.filter(c => {
                         const fechaStr = c.fechaCreacion || c.fechaInicio || c.fechaRegistro || c.createdAt;
-                        if (!fechaStr) return false;
+                        console.log('Cliente:', c.nombre, 'Fecha:', fechaStr);
+                        if (!fechaStr) return vista === 'todos'; // Si no tiene fecha, solo mostrar en "todos"
                         const fechaCliente = new Date(fechaStr);
                         if (isNaN(fechaCliente.getTime())) return false;
                         
                         if (vista === 'dia') {
-                            return fechaCliente.toDateString() === fechaBase.toDateString();
+                            const match = fechaCliente.toDateString() === fechaBase.toDateString();
+                            console.log('Comparando día:', fechaCliente.toDateString(), '===', fechaBase.toDateString(), '=', match);
+                            return match;
                         } else if (vista === 'semana') {
                             const inicioSemana = new Date(fechaBase);
                             inicioSemana.setDate(fechaBase.getDate() - fechaBase.getDay());
@@ -4573,6 +4579,8 @@
                         return true;
                     });
                 }
+                
+                console.log('Total clientes después de filtro:', clientesFiltrados.length);
                 
                 // Ordenar por fecha (más reciente primero)
                 clientesFiltrados.sort((a, b) => {
