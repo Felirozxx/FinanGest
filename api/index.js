@@ -381,6 +381,17 @@ app.delete('/api/users/:id', async (req, res) => {
     }
 });
 
+// Delete user by email
+app.delete('/api/users/email/:email', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const result = await database.collection('users').deleteOne({ email: req.params.email });
+        res.json({ success: result.deletedCount > 0, deleted: result.deletedCount });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Get clients
 app.get('/api/clients', async (req, res) => {
     try {
