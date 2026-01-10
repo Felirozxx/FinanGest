@@ -2935,17 +2935,21 @@
                         </div>
                         <div id="clients-${u.id}" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
                             ${userClients.length === 0 ? '<p class="text-secondary mb-0">Sin clientes</p>' : 
-                            userClients.map(c => `
+                            userClients.map(c => {
+                                const fechaCreacion = c.fechaCreacion || c.fechaInicio || c.createdAt;
+                                const fechaStr = fechaCreacion ? new Date(fechaCreacion).toLocaleDateString('es-ES') : 'Sin fecha';
+                                return `
                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
                                     <div>
                                         <strong>${c.nombre}</strong>
                                         <br><small class="text-secondary">R$ ${(c.montoTotal || 0).toFixed(2)} prestado</small>
+                                        <br><small style="color: var(--accent-cyan);"><i class="fas fa-calendar-alt me-1"></i>${fechaStr}</small>
                                     </div>
                                     <button class="btn btn-sm btn-primary-custom" onclick="event.stopPropagation(); verClienteAdmin('${c.id}', '${u.id}')">
                                         <i class="fas fa-eye me-1"></i>VER
                                     </button>
                                 </div>
-                            `).join('')}
+                            `}).join('')}
                         </div>
                     </div>`;
                 }).join('');
