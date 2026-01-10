@@ -1,8 +1,10 @@
-﻿const express = require('express');
+const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -16,7 +18,7 @@ const ADMIN_SECRET = process.env.ADMIN_SECRET || 'finangest-admin-2026';
 
 let db;
 
-// Funciones de encriptaciÃ³n de contraseÃ±as
+// Funciones de encriptación de contraseñas
 function hashPassword(password) {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
@@ -25,7 +27,7 @@ function hashPassword(password) {
 
 function verifyPassword(password, stored) {
     if (!stored || !stored.includes(':')) {
-        // ContraseÃ±a antigua sin encriptar - comparar directo
+        // Contraseña antigua sin encriptar - comparar directo
         return password === stored;
     }
     const [salt, hash] = stored.split(':');
@@ -41,7 +43,7 @@ async function connectDB() {
     return db;
 }
 
-// Limpiar cÃ³digos expirados (mÃ¡s de 1 hora)
+// Limpiar códigos expirados (más de 1 hora)
 async function cleanExpiredCodes() {
     try {
         const database = await connectDB();
@@ -49,7 +51,7 @@ async function cleanExpiredCodes() {
         await database.collection('verification_codes').deleteMany({ expires: { $lt: oneHourAgo } });
         await database.collection('reset_codes').deleteMany({ expires: { $lt: oneHourAgo } });
     } catch (e) {
-        console.log('Error limpiando cÃ³digos:', e.message);
+        console.log('Error limpiando códigos:', e.message);
     }
 }
 
@@ -80,16 +82,16 @@ app.post('/api/login', async (req, res) => {
         
         if (!user) return res.json({ success: false, error: 'Usuario no encontrado' });
         
-        // Verificar contraseÃ±a (soporta encriptada y sin encriptar)
+        // Verificar contraseña (soporta encriptada y sin encriptar)
         if (!verifyPassword(password, user.password)) {
-            return res.json({ success: false, error: 'ContraseÃ±a incorrecta' });
+            return res.json({ success: false, error: 'Contraseña incorrecta' });
         }
         
         if (!user.paid && user.role !== 'admin') {
             return res.json({ success: false, needsPayment: true, userId: user._id, nombre: user.nombre, email: user.email });
         }
         
-        // Si la contraseÃ±a estaba sin encriptar, actualizarla
+        // Si la contraseña estaba sin encriptar, actualizarla
         if (!user.password.includes(':')) {
             await users.updateOne({ _id: user._id }, { $set: { password: hashPassword(password) } });
         }
@@ -115,11 +117,11 @@ app.post('/api/send-code', async (req, res) => {
         const users = database.collection('users');
         const codes = database.collection('verification_codes');
         
-        // Limpiar cÃ³digos viejos
+        // Limpiar códigos viejos
         cleanExpiredCodes();
         
         const existingEmail = await users.findOne({ email });
-        if (existingEmail) return res.json({ success: false, error: 'Este email ya estÃ¡ registrado' });
+        if (existingEmail) return res.json({ success: false, error: 'Este email ya está registrado' });
         
         if (username) {
             const existingUsername = await users.findOne({ username });
@@ -128,7 +130,7 @@ app.post('/api/send-code', async (req, res) => {
         
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Guardar cÃ³digo en MongoDB
+        // Guardar código en MongoDB
         await codes.updateOne(
             { email },
             { $set: { code, nombre, username, expires: new Date(Date.now() + 600000) } },
@@ -139,12 +141,12 @@ app.post('/api/send-code', async (req, res) => {
             await transporter.sendMail({
                 from: EMAIL_USER,
                 to: email,
-                subject: 'CÃ³digo de VerificaciÃ³n - FinanGest',
-                html: `<h2>Bienvenido a FinanGest</h2><p>Tu cÃ³digo: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
+                subject: 'Código de Verificación - FinanGest',
+                html: `<h2>Bienvenido a FinanGest</h2><p>Tu código: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
             });
         }
         
-        res.json({ success: true, message: 'CÃ³digo enviado', devCode: !EMAIL_PASS ? code : undefined });
+        res.json({ success: true, message: 'Código enviado', devCode: !EMAIL_PASS ? code : undefined });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -161,13 +163,13 @@ app.post('/api/verify-code', async (req, res) => {
         const stored = await codes.findOne({ email });
         
         if (!stored || new Date(stored.expires) < new Date()) {
-            return res.json({ success: false, error: 'CÃ³digo expirado' });
+            return res.json({ success: false, error: 'Código expirado' });
         }
         if (stored.code !== code) {
-            return res.json({ success: false, error: 'CÃ³digo incorrecto' });
+            return res.json({ success: false, error: 'Código incorrecto' });
         }
         
-        // Guardar contraseÃ±a encriptada
+        // Guardar contraseña encriptada
         const result = await users.insertOne({
             nombre: stored.nombre,
             username: username || stored.username,
@@ -199,7 +201,7 @@ app.post('/api/forgot-password', async (req, res) => {
         
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Guardar cÃ³digo en MongoDB
+        // Guardar código en MongoDB
         await codes.updateOne(
             { email },
             { $set: { code, expires: new Date(Date.now() + 600000) } },
@@ -210,12 +212,12 @@ app.post('/api/forgot-password', async (req, res) => {
             await transporter.sendMail({
                 from: EMAIL_USER,
                 to: email,
-                subject: 'Recuperar ContraseÃ±a - FinanGest',
-                html: `<h2>Recuperar ContraseÃ±a</h2><p>Tu cÃ³digo: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
+                subject: 'Recuperar Contraseña - FinanGest',
+                html: `<h2>Recuperar Contraseña</h2><p>Tu código: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
             });
         }
         
-        res.json({ success: true, message: 'CÃ³digo enviado', devCode: !EMAIL_PASS ? code : undefined });
+        res.json({ success: true, message: 'Código enviado', devCode: !EMAIL_PASS ? code : undefined });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -232,17 +234,17 @@ app.post('/api/reset-password', async (req, res) => {
         const stored = await codes.findOne({ email });
         
         if (!stored || new Date(stored.expires) < new Date()) {
-            return res.json({ success: false, error: 'CÃ³digo expirado' });
+            return res.json({ success: false, error: 'Código expirado' });
         }
         if (stored.code !== code) {
-            return res.json({ success: false, error: 'CÃ³digo incorrecto' });
+            return res.json({ success: false, error: 'Código incorrecto' });
         }
         
-        // Guardar contraseÃ±a encriptada
+        // Guardar contraseña encriptada
         await users.updateOne({ email }, { $set: { password: hashPassword(newPassword) } });
         await codes.deleteOne({ email });
         
-        res.json({ success: true, message: 'ContraseÃ±a actualizada' });
+        res.json({ success: true, message: 'Contraseña actualizada' });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -275,8 +277,12 @@ app.get('/api/users', async (req, res) => {
     try {
         const database = await connectDB();
         const users = await database.collection('users').find({}).toArray();
-        // No enviar contraseÃ±as
-        const safeUsers = users.map(u => ({ ...u, id: u._id.toString(), password: undefined }));
+        // No enviar contraseñas y mapear _id a id
+        const safeUsers = users.map(u => ({ 
+            ...u, 
+            id: u._id.toString(),
+            password: undefined 
+        }));
         res.json(safeUsers);
     } catch (e) {
         res.json({ error: e.message });
@@ -306,11 +312,28 @@ app.put('/api/users/:id', async (req, res) => {
         if (updateData.password) {
             updateData.password = hashPassword(updateData.password);
         }
-        await database.collection('users').updateOne(
-            { _id: new ObjectId(req.params.id) },
-            { $set: updateData }
-        );
-        res.json({ success: true });
+        
+        // Intentar con ObjectId primero, si falla buscar por id string
+        let filter;
+        try {
+            filter = { _id: new ObjectId(req.params.id) };
+        } catch (e) {
+            // Si no es ObjectId válido, buscar por campo id
+            filter = { id: req.params.id };
+        }
+        
+        const result = await database.collection('users').updateOne(filter, { $set: updateData });
+        
+        if (result.matchedCount === 0) {
+            // Intentar buscar por email o nombre si no encontró
+            const altResult = await database.collection('users').updateOne(
+                { $or: [{ email: req.params.id }, { nombre: req.params.id }] },
+                { $set: updateData }
+            );
+            res.json({ success: altResult.matchedCount > 0 });
+        } else {
+            res.json({ success: true });
+        }
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -320,8 +343,26 @@ app.put('/api/users/:id', async (req, res) => {
 app.delete('/api/users/:id', async (req, res) => {
     try {
         const database = await connectDB();
-        await database.collection('users').deleteOne({ _id: new ObjectId(req.params.id) });
-        res.json({ success: true });
+        
+        // Intentar con ObjectId primero, si falla buscar por id string
+        let filter;
+        try {
+            filter = { _id: new ObjectId(req.params.id) };
+        } catch (e) {
+            filter = { id: req.params.id };
+        }
+        
+        const result = await database.collection('users').deleteOne(filter);
+        
+        if (result.deletedCount === 0) {
+            // Intentar buscar por email o nombre si no encontró
+            const altResult = await database.collection('users').deleteOne(
+                { $or: [{ email: req.params.id }, { nombre: req.params.id }] }
+            );
+            res.json({ success: altResult.deletedCount > 0 });
+        } else {
+            res.json({ success: true });
+        }
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -332,7 +373,22 @@ app.get('/api/clients', async (req, res) => {
     try {
         const database = await connectDB();
         const clients = await database.collection('clients').find({}).toArray();
-        res.json(clients);
+        // Mapear _id a id
+        const safeClients = clients.map(c => ({ ...c, id: c._id.toString() }));
+        res.json(safeClients);
+    } catch (e) {
+        res.json({ error: e.message });
+    }
+});
+
+// Get clientes (alias en español)
+app.get('/api/clientes', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const clients = await database.collection('clients').find({}).toArray();
+        // Mapear _id a id
+        const safeClients = clients.map(c => ({ ...c, id: c._id.toString() }));
+        res.json(safeClients);
     } catch (e) {
         res.json({ error: e.message });
     }
@@ -340,6 +396,17 @@ app.get('/api/clients', async (req, res) => {
 
 // Create client
 app.post('/api/clients', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const result = await database.collection('clients').insertOne(req.body);
+        res.json({ success: true, id: result.insertedId });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Create cliente (alias en español)
+app.post('/api/clientes', async (req, res) => {
     try {
         const database = await connectDB();
         const result = await database.collection('clients').insertOne(req.body);
@@ -363,8 +430,33 @@ app.put('/api/clients/:id', async (req, res) => {
     }
 });
 
+// Update cliente (alias en español)
+app.put('/api/clientes/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        await database.collection('clients').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: req.body }
+        );
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Delete client
 app.delete('/api/clients/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        await database.collection('clients').deleteOne({ _id: new ObjectId(req.params.id) });
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Delete cliente (alias en español)
+app.delete('/api/clientes/:id', async (req, res) => {
     try {
         const database = await connectDB();
         await database.collection('clients').deleteOne({ _id: new ObjectId(req.params.id) });
@@ -464,7 +556,7 @@ app.post('/api/heartbeat', async (req, res) => {
     }
 });
 
-// Heartbeat - actualizar Ãºltimo visto
+// Heartbeat - actualizar último visto
 app.post('/api/heartbeat', async (req, res) => {
     try {
         const { userId } = req.body;
@@ -509,52 +601,25 @@ app.get('/api/users-status', async (req, res) => {
     }
 });
 
-
-// ============ CLIENTES (alias en español) ============
-app.get('/api/clientes', async (req, res) => {
-    try {
-        const database = await connectDB();
-        const clients = await database.collection('clients').find({}).toArray();
-        res.json(clients.map(c => ({ ...c, id: c._id.toString() })));
-    } catch (e) {
-        res.json([]);
+// Servir archivos HTML
+app.get('/', (req, res) => {
+    const htmlPath = path.join(__dirname, '..', 'index.html');
+    if (fs.existsSync(htmlPath)) {
+        res.setHeader('Content-Type', 'text/html');
+        res.send(fs.readFileSync(htmlPath, 'utf8'));
+    } else {
+        res.status(404).send('index.html not found');
     }
 });
 
-app.post('/api/clientes', async (req, res) => {
-    try {
-        const database = await connectDB();
-        const result = await database.collection('clients').insertOne(req.body);
-        res.json({ success: true, id: result.insertedId.toString() });
-    } catch (e) {
-        res.json({ success: false, error: e.message });
-    }
-});
-
-app.put('/api/clientes/:id', async (req, res) => {
-    try {
-        const database = await connectDB();
-        const updateData = { ...req.body };
-        delete updateData._id; delete updateData.id;
-        await database.collection('clients').updateOne({ _id: new ObjectId(req.params.id) }, { $set: updateData });
-        res.json({ success: true });
-    } catch (e) {
-        res.json({ success: false, error: e.message });
-    }
-});
-
-app.delete('/api/clientes/:id', async (req, res) => {
-    try {
-        const database = await connectDB();
-        await database.collection('clients').deleteOne({ _id: new ObjectId(req.params.id) });
-        res.json({ success: true });
-    } catch (e) {
-        res.json({ success: false, error: e.message });
+app.get('/politicas.html', (req, res) => {
+    const htmlPath = path.join(__dirname, '..', 'politicas.html');
+    if (fs.existsSync(htmlPath)) {
+        res.setHeader('Content-Type', 'text/html');
+        res.send(fs.readFileSync(htmlPath, 'utf8'));
+    } else {
+        res.status(404).send('politicas.html not found');
     }
 });
 
 module.exports = app;
-
-
-
-
