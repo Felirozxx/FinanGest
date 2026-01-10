@@ -359,8 +359,12 @@ exports.handler = async (event, context) => {
             }
             const clients = await db.collection('clients').find(query).toArray();
             const safeClients = clients.map(c => {
-                if (c.cliente) return { ...c.cliente, id: c._id.toString(), _id: c._id.toString() };
-                return { ...c, id: c._id.toString() };
+                // Obtener creadoPor de cualquier ubicación posible
+                const creadoPor = c.creadoPor || c.userId || (c.cliente && c.cliente.creadoPor) || (c.cliente && c.cliente.userId);
+                if (c.cliente) {
+                    return { ...c.cliente, id: c._id.toString(), _id: c._id.toString(), creadoPor: creadoPor, userId: creadoPor };
+                }
+                return { ...c, id: c._id.toString(), creadoPor: creadoPor, userId: creadoPor };
             });
             return respond(200, safeClients);
         }

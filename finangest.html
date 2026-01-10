@@ -7593,7 +7593,7 @@
                                 </div>
                                 <input type="hidden" id="adminEditLat" value="${cliente.lat || ''}">
                                 <input type="hidden" id="adminEditLng" value="${cliente.lng || ''}">
-                                <input type="hidden" id="adminEditCreadoPor" value="${cliente.creadoPor || cliente.userId || ''}">
+                                <input type="hidden" id="adminEditCreadoPor" value="${cliente.creadoPor || cliente.userId || verTodoUserId || ''}">
                                 <small id="adminCoordsInfo" class="text-secondary" style="display: ${cliente.lat && cliente.lng ? 'block' : 'none'};">
                                     <i class="fas fa-check-circle text-success"></i> Coordenadas guardadas
                                 </small>
