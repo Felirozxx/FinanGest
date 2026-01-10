@@ -4022,15 +4022,19 @@
             // Recopilar pagos recientes (de ambos arrays: pagos y historialPagos)
             clientes.forEach(c => {
                 const todosPagos = [...(c.pagos || []), ...(c.historialPagos || [])];
-                let acumulado = 0;
-                const totalAPagar = c.totalAPagar || 0;
+                const totalAPagar = parseFloat(c.totalAPagar) || 0;
                 
-                todosPagos.forEach(p => {
+                // Ordenar pagos por fecha para calcular acumulado correctamente
+                const pagosOrdenados = todosPagos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                
+                let acumulado = 0;
+                pagosOrdenados.forEach(p => {
                     const montoPago = parseFloat(p.valor || p.monto || 0);
+                    const acumuladoAntes = acumulado;
                     acumulado += montoPago;
                     
-                    // Verificar si este pago saldó la deuda
-                    const esPagoFinal = acumulado >= totalAPagar && (acumulado - montoPago) < totalAPagar;
+                    // Verificar si este pago saldó la deuda (acumulado >= total Y antes no estaba saldada)
+                    const esPagoFinal = totalAPagar > 0 && acumulado >= totalAPagar && acumuladoAntes < totalAPagar;
                     
                     actividades.push({
                         tipo: esPagoFinal ? 'deuda_saldada' : 'pago',
@@ -4041,6 +4045,7 @@
                         color: esPagoFinal ? 'var(--accent-purple)' : 'var(--accent-green)'
                     });
                 });
+                
                 // Agregar creación de cliente
                 if (c.fechaInicio || c.createdAt) {
                     actividades.push({
