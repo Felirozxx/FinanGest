@@ -2330,9 +2330,15 @@
             return false;
         }
 
-        // Verificar llave periódicamente (cada 30 segundos)
+        // Verificar llave periódicamente (cada 30 segundos) y actualizar UI
         setInterval(async () => {
             if (currentUser && currentUser.role !== 'admin' && !currentUser.isAdmin) {
+                const oldStatus = userHasEditKey;
+                await updateEditKeyStatus();
+                // Si cambió el estado, re-renderizar clientes
+                if (oldStatus !== userHasEditKey) {
+                    renderClientes();
+                }
                 await checkEditKey();
             }
         }, 30000);
@@ -2807,7 +2813,10 @@
                 showSection('adminUsuarios');
                 renderAdminUsuarios();
             } else {
-                loadData();
+                // Actualizar estado de llave de edición
+                updateEditKeyStatus().then(() => {
+                    loadData();
+                });
             }
             // Iniciar heartbeat cada 2 minutos
             sendHeartbeat();
@@ -4031,6 +4040,24 @@
             renderClientes();
         }
 
+        // Variable global para el estado de la llave de edición
+        let userHasEditKey = true;
+        
+        async function updateEditKeyStatus() {
+            if (!currentUser || currentUser.role === 'admin' || currentUser.isAdmin) {
+                userHasEditKey = true;
+                return;
+            }
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                const myUser = users.find(u => u.id === currentUser.id || u._id === currentUser.id);
+                userHasEditKey = myUser?.editKeyEnabled === true;
+            } catch (e) {
+                userHasEditKey = false;
+            }
+        }
+        
         function renderClientes() {
             const tbody = document.getElementById('clientesTable');
             
@@ -4038,6 +4065,9 @@
             const filtroTipo = document.getElementById('clientesFiltroTipo')?.value || '';
             const filtroEstado = document.getElementById('clientesFiltroEstado')?.value || '';
             const buscar = (document.getElementById('clientesBuscar')?.value || '').toLowerCase();
+            
+            // Verificar si es admin o tiene llave
+            const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.isAdmin || userHasEditKey);
             
             // Contar por tipo (de todos los clientes)
             const nuevos = clientes.filter(c => (c.tipoCliente || 'nuevo') === 'nuevo').length;
@@ -4123,9 +4153,11 @@
                         <button class="btn btn-sm me-1" style="background: var(--bg-hover); color: var(--text-secondary);" onclick="verDetalles('${c.id}')" title="Ver detalles">
                             <i class="fas fa-eye"></i>
                         </button>
+                        ${canEdit ? `
                         <button class="btn btn-sm me-1" style="background: var(--accent-cyan); color: #000;" onclick="editarClienteTrabajador('${c.id}')" title="Editar cliente">
                             <i class="fas fa-edit"></i>
                         </button>
+                        ` : ''}
                         <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="eliminarCliente('${c.id}')" title="Eliminar cliente">
                             <i class="fas fa-trash"></i>
                         </button>
