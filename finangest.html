@@ -4368,65 +4368,53 @@
         }
         
         async function bloquearTodosUsuarios() {
-            mostrarModalConfirmacion(
-                'Bloquear Todos los Usuarios',
-                '⚠️ ATENCIÓN: Esto bloqueará a TODOS los usuarios (excepto admin). Los usuarios no podrán acceder hasta que los desbloquees.',
-                async () => {
-                    try {
-                        const res = await fetch(API_URL + '/api/users');
-                        const users = await res.json();
-                        
-                        let bloqueados = 0;
-                        for (const user of users) {
-                            if (user.role !== 'admin' && !user.isAdmin) {
-                                await fetch(API_URL + '/api/users/' + (user._id || user.id), {
-                                    method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ blocked: true })
-                                });
-                                bloqueados++;
-                            }
-                        }
-                        
-                        registrarLogSeguridad('Bloqueó ' + bloqueados + ' usuarios');
-                        alert('✅ ' + bloqueados + ' usuarios han sido bloqueados');
-                        cargarEstadisticasSeguridad();
-                    } catch (e) {
-                        alert('Error al bloquear usuarios');
+            if (!confirm('⚠️ ATENCIÓN: Esto bloqueará a TODOS los usuarios (excepto admin). ¿Continuar?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                
+                let bloqueados = 0;
+                for (const user of users) {
+                    if (user.role !== 'admin' && !user.isAdmin) {
+                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ blocked: true })
+                        });
+                        bloqueados++;
                     }
                 }
-            );
+                
+                alert('✅ ' + bloqueados + ' usuarios han sido bloqueados');
+            } catch (e) {
+                alert('Error al bloquear usuarios');
+            }
         }
         
         async function desbloquearTodosUsuarios() {
-            mostrarModalConfirmacion(
-                'Desbloquear Todos los Usuarios',
-                '¿Desbloquear a todos los usuarios bloqueados?',
-                async () => {
-                    try {
-                        const res = await fetch(API_URL + '/api/users');
-                        const users = await res.json();
-                        
-                        let desbloqueados = 0;
-                        for (const user of users) {
-                            if (user.blocked) {
-                                await fetch(API_URL + '/api/users/' + (user._id || user.id), {
-                                    method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ blocked: false })
-                                });
-                                desbloqueados++;
-                            }
-                        }
-                        
-                        registrarLogSeguridad('Desbloqueó ' + desbloqueados + ' usuarios');
-                        alert('✅ ' + desbloqueados + ' usuarios han sido desbloqueados');
-                        cargarEstadisticasSeguridad();
-                    } catch (e) {
-                        alert('Error al desbloquear usuarios');
+            if (!confirm('¿Desbloquear a todos los usuarios bloqueados?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                
+                let desbloqueados = 0;
+                for (const user of users) {
+                    if (user.blocked) {
+                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ blocked: false })
+                        });
+                        desbloqueados++;
                     }
                 }
-            );
+                
+                alert('✅ ' + desbloqueados + ' usuarios han sido desbloqueados');
+            } catch (e) {
+                alert('Error al desbloquear usuarios');
+            }
         }
 
         // Tema claro/oscuro
