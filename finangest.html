@@ -5646,7 +5646,8 @@
                 
                 // El más reciente es el principal
                 const principal = grupo[0];
-                const renovaciones = grupo.length - 1;
+                // Usar el valor de renovaciones del cliente principal, no contar registros
+                const renovaciones = principal.renovaciones || 0;
                 
                 // Sumar totales de todos los préstamos
                 const totalPrestado = grupo.reduce((s, c) => s + (parseFloat(c.montoTotal) || 0), 0);

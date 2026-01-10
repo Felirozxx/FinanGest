@@ -382,7 +382,12 @@ exports.handler = async (event, context) => {
 
         // CREATE CLIENTE
         if ((path === '/clientes' || path === '/clients') && method === 'POST') {
-            const result = await db.collection('clients').insertOne(body);
+            // Si viene con estructura { userId, cliente }, extraer el cliente
+            let clienteData = body;
+            if (body.cliente) {
+                clienteData = { ...body.cliente, creadoPor: body.userId || body.cliente.creadoPor };
+            }
+            const result = await db.collection('clients').insertOne(clienteData);
             return respond(200, { success: true, id: result.insertedId });
         }
 
