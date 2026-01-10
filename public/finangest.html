@@ -383,6 +383,39 @@
                     </div>
                 </div>
                 
+                <!-- Renewal Payment Form (for expired subscriptions) -->
+                <div id="renewalPaymentForm" style="display: none;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: #ff6b6b;">Suscripción Vencida</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 25px;">Renueva tu suscripción para continuar</p>
+                    <div style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plan Mensual</p>
+                        <h2 style="color: var(--accent-green); font-size: 2.5rem; margin: 0;">R$ 79,50</h2>
+                    </div>
+                    <div id="renewalPixContainer" style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
+                        <div id="renewalPixLoading">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-3" style="color: var(--accent-cyan);"></i>
+                            <p class="text-secondary">Gerando código PIX...</p>
+                        </div>
+                        <div id="renewalPixQrCode" style="display: none;">
+                            <img id="renewalPixQrImage" src="" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;">
+                            <div style="margin-top: 15px;">
+                                <input type="text" id="renewalPixCopyPaste" readonly style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.7rem; width: 100%;">
+                                <button onclick="copyRenewalPixCode()" style="margin-top: 10px; background: var(--accent-cyan); border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; color: #000;">
+                                    <i class="fas fa-copy me-1"></i>Copiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-success-custom w-100" onclick="verificarPagoRenovacion()" id="btnVerificarPagoRenovacion" style="padding: 14px;">
+                        Já paguei - Verificar
+                    </button>
+                    <div class="text-center mt-3">
+                        <a href="#" onclick="volverAlLogin()" style="color: var(--text-secondary); text-decoration: none;">
+                            <i class="fas fa-arrow-left me-1"></i>Volver al Login
+                        </a>
+                    </div>
+                </div>
+                
                 <!-- Forgot Password Form -->
                 <div id="forgotPasswordForm" style="display: none;">
                     <div id="forgotStep1">
@@ -2558,13 +2591,102 @@
         
         function cerrarModalSuscripcion() {
             document.getElementById('modalSuscripcion').style.display = 'none';
-            // Mostrar pantalla de pago
+            // Mostrar pantalla de pago de renovación en login
             if (pendingUser) {
-                showAuthTab('register');
-                document.getElementById('registerStep1').style.display = 'none';
-                document.getElementById('registerStep2').style.display = 'none';
-                document.getElementById('registerStep3').style.display = 'block';
-                generarPagoPix(pendingUser.id, pendingUser.nombre, pendingUser.email);
+                mostrarRenovacionPago(pendingUser.id, pendingUser.nombre, pendingUser.email);
+            }
+        }
+        
+        function mostrarRenovacionPago(userId, nombre, email) {
+            // Ocultar login form y mostrar renewal form
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('renewalPaymentForm').style.display = 'block';
+            
+            // Generar PIX para renovación
+            generarPagoPixRenovacion(userId, nombre, email);
+        }
+        
+        function volverAlLogin() {
+            document.getElementById('renewalPaymentForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            if (verificacionInterval) clearInterval(verificacionInterval);
+        }
+        
+        async function generarPagoPixRenovacion(userId, nombre, email) {
+            document.getElementById('renewalPixLoading').style.display = 'block';
+            document.getElementById('renewalPixQrCode').style.display = 'none';
+            
+            try {
+                const res = await fetch(API_URL + '/api/create-pix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, nome: nombre, email })
+                });
+                const data = await res.json();
+                if (data.qrCode) {
+                    document.getElementById('renewalPixLoading').style.display = 'none';
+                    document.getElementById('renewalPixQrCode').style.display = 'block';
+                    document.getElementById('renewalPixQrImage').src = data.qrCode;
+                    document.getElementById('renewalPixCopyPaste').value = data.pixCopiaECola || '';
+                    
+                    // Guardar datos para verificación
+                    pendingUser = { id: userId, nombre, email, txid: data.txid };
+                    
+                    // Iniciar verificación automática
+                    if (verificacionInterval) clearInterval(verificacionInterval);
+                    verificacionInterval = setInterval(() => verificarPagoRenovacion(true), 5000);
+                } else {
+                    alert('Erro ao gerar PIX: ' + (data.error || 'Tente novamente'));
+                }
+            } catch (e) {
+                alert('Erro de conexão ao gerar PIX');
+            }
+        }
+        
+        function copyRenewalPixCode() {
+            const pixCode = document.getElementById('renewalPixCopyPaste').value;
+            navigator.clipboard.writeText(pixCode).then(() => {
+                alert('Código PIX copiado!');
+            });
+        }
+        
+        async function verificarPagoRenovacion(auto = false) {
+            if (!pendingUser || !pendingUser.txid) {
+                if (!auto) alert('Erro: Dados de pagamento não encontrados');
+                return;
+            }
+            
+            const btn = document.getElementById('btnVerificarPagoRenovacion');
+            if (!auto) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
+            }
+            
+            try {
+                const res = await fetch(API_URL + '/api/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ txid: pendingUser.txid, userId: pendingUser.id })
+                });
+                const data = await res.json();
+                
+                if (data.paid) {
+                    if (verificacionInterval) clearInterval(verificacionInterval);
+                    alert('Pagamento confirmado! Sua assinatura foi renovada.');
+                    volverAlLogin();
+                    // Intentar login automático
+                    document.getElementById('loginEmail').value = pendingUser.email;
+                    handleLogin();
+                } else if (!auto) {
+                    alert('Pagamento ainda não confirmado. Aguarde alguns instantes e tente novamente.');
+                }
+            } catch (e) {
+                if (!auto) alert('Erro ao verificar pagamento');
+            }
+            
+            if (!auto) {
+                btn.disabled = false;
+                btn.innerHTML = 'Já paguei - Verificar';
             }
         }
 
