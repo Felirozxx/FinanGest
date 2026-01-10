@@ -2234,7 +2234,7 @@
                 if (currentUser.role === 'admin' || currentUser.isAdmin) {
                     const usersRes = await fetch(API_URL + '/api/users');
                     allUsers = await usersRes.json();
-                    showSection('adminUsuarios');
+                    showSection('adminUsuarios'); renderAdminUsuarios();
                 } else {
                     updateStats();
                     renderClientes();
