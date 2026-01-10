@@ -2109,15 +2109,15 @@
                     </div>
                     <hr style="border-color: var(--border-color);">
                     <div class="row">
-                        <div class="col-4 mb-3">
+                        <div class="col-md-3 col-6 mb-3">
                             <label class="form-label">Valor Prestado (R$)</label>
                             <input type="number" class="form-control form-control-dark" id="clienteMonto" oninput="calcularTotal()">
                         </div>
-                        <div class="col-4 mb-3">
+                        <div class="col-md-3 col-6 mb-3">
                             <label class="form-label">Parcelas</label>
                             <input type="number" class="form-control form-control-dark" id="clienteParcelas" oninput="calcularTotal()">
                         </div>
-                        <div class="col-4 mb-3">
+                        <div class="col-md-3 col-6 mb-3">
                             <label class="form-label">Comisión %</label>
                             <select class="form-control form-control-dark" id="clienteComision" onchange="calcularTotal()">
                                 <option value="10">10%</option>
@@ -2125,18 +2125,26 @@
                                 <option value="30">30%</option>
                             </select>
                         </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <label class="form-label"><i class="fas fa-shield-alt me-1"></i>Microseguro (R$)</label>
+                            <input type="number" class="form-control form-control-dark" id="clienteMicroseguro" placeholder="0" oninput="calcularTotal()" step="0.01">
+                        </div>
                     </div>
                     <div class="card-dark" style="background: var(--bg-hover);">
                         <div class="row text-center">
-                            <div class="col-4">
+                            <div class="col-3">
                                 <small class="text-secondary">Comisión (<span id="comisionLabel">20</span>%)</small>
                                 <div id="calcComision" style="color: var(--accent-yellow);">R$ 0</div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
+                                <small class="text-secondary">Microseguro</small>
+                                <div id="calcMicroseguro" style="color: var(--accent-purple);">R$ 0</div>
+                            </div>
+                            <div class="col-3">
                                 <small class="text-secondary">Total a Pagar</small>
                                 <div id="calcTotal" style="color: var(--accent-green);">R$ 0</div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <small class="text-secondary">Por Parcela</small>
                                 <div id="calcParcela" style="color: var(--accent-cyan);">R$ 0</div>
                             </div>
@@ -5949,11 +5957,13 @@
             const monto = parseFloat(document.getElementById('clienteMonto').value) || 0;
             const parcelas = parseInt(document.getElementById('clienteParcelas').value) || 1;
             const porcentaje = parseInt(document.getElementById('clienteComision').value) || 20;
+            const microseguro = parseFloat(document.getElementById('clienteMicroseguro').value) || 0;
             const comision = monto * (porcentaje / 100);
-            const total = monto + comision;
+            const total = monto + comision + microseguro;
             const porParcela = total / parcelas;
             document.getElementById('comisionLabel').textContent = porcentaje;
             document.getElementById('calcComision').textContent = 'R$ ' + comision.toFixed(2);
+            document.getElementById('calcMicroseguro').textContent = 'R$ ' + microseguro.toFixed(2);
             document.getElementById('calcTotal').textContent = 'R$ ' + total.toFixed(2);
             document.getElementById('calcParcela').textContent = 'R$ ' + porParcela.toFixed(2);
         }
@@ -5975,9 +5985,10 @@
             const monto = parseFloat(document.getElementById('clienteMonto').value);
             const parcelas = parseInt(document.getElementById('clienteParcelas').value);
             const porcentaje = parseInt(document.getElementById('clienteComision').value) || 20;
+            const microseguro = parseFloat(document.getElementById('clienteMicroseguro').value) || 0;
             if (!nombre || !monto || !parcelas) return alert('Completa los campos requeridos');
             const comision = monto * (porcentaje / 100);
-            const total = monto + comision;
+            const total = monto + comision + microseguro;
             
             // ========== MODO EDICIÓN (trabajador con llave activa) ==========
             if (window.clienteEditandoId) {
@@ -6059,6 +6070,7 @@
                 numeroParcelas: parcelas,
                 comisionPorcentaje: porcentaje,
                 comisionTotal: comision,
+                microseguro: microseguro,
                 totalAPagar: total,
                 valorParcela: total / parcelas,
                 estado: 'ativo',
