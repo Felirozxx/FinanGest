@@ -3992,7 +3992,7 @@
                 return s + pagosMes.reduce((ps, p) => ps + (p.valor || p.monto || 0), 0);
             }, 0);
             
-            // Ganancia estimada = Total a pagar - Total prestado (la comisión/interés)
+            // Ganancia estimada = Total a Pagar - Total prestado (la Comisión/interés)
             const gananciaEstimada = clientesMes.reduce((s, c) => {
                 const totalAPagar = c.totalAPagar || 0;
                 const montoTotal = c.montoTotal || 0;
@@ -7557,17 +7557,17 @@
                                     <input type="number" class="form-control form-control-dark" id="adminEditMonto" value="${cliente.montoTotal || 0}" step="0.01">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">�️ Paarcelas a Pagar</label>
+                                    <label class="form-label">🗓️ Parcelas a Pagar</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalParcelas" value="${cliente.numeroParcelas || 0}">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">� Tomtal a Pagar (R$)</label>
+                                    <label class="form-label">📋 Total a Pagar (R$)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalPagar" value="${cliente.totalAPagar || 0}" step="0.01">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">�️ Comisión (%)</label>
+                                    <label class="form-label">📈 Comisión (%)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditComision" value="${cliente.comisionPorcentaje || 20}" step="1">
                                 </div>
                                 <div class="col-md-4 mb-3">
