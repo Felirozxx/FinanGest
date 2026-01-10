@@ -313,38 +313,35 @@ app.put('/api/users/:id', async (req, res) => {
             updateData.password = hashPassword(updateData.password);
         }
         
-        console.log('PUT /api/users/:id - ID recibido:', req.params.id);
+        const searchId = req.params.id;
         
-        // Intentar con ObjectId primero, si falla buscar por id string
-        let result;
-        try {
-            const objectId = new ObjectId(req.params.id);
-            console.log('Buscando por ObjectId:', objectId);
-            result = await database.collection('users').updateOne(
-                { _id: objectId },
-                { $set: updateData }
-            );
-            console.log('Resultado ObjectId:', result.matchedCount);
-        } catch (e) {
-            console.log('ObjectId falló, buscando por string id');
-            result = await database.collection('users').updateOne(
-                { id: req.params.id },
-                { $set: updateData }
-            );
-            console.log('Resultado string id:', result.matchedCount);
-        }
+        // Buscar por múltiples campos posibles
+        const result = await database.collection('users').updateOne(
+            { 
+                $or: [
+                    { id: searchId },
+                    { id: parseInt(searchId) },
+                    { id: searchId.toString() }
+                ]
+            },
+            { $set: updateData }
+        );
         
         if (result.matchedCount === 0) {
-            // Buscar el usuario para ver qué campos tiene
-            const allUsers = await database.collection('users').find({}).toArray();
-            console.log('Usuarios en DB:', allUsers.map(u => ({ _id: u._id?.toString(), id: u.id, nombre: u.nombre })));
-            
-            res.json({ success: false, error: 'Usuario no encontrado con ID: ' + req.params.id });
+            // Intentar con ObjectId si es válido
+            try {
+                const objResult = await database.collection('users').updateOne(
+                    { _id: new ObjectId(searchId) },
+                    { $set: updateData }
+                );
+                res.json({ success: objResult.matchedCount > 0 });
+            } catch (e) {
+                res.json({ success: false, error: 'Usuario no encontrado' });
+            }
         } else {
             res.json({ success: true });
         }
     } catch (e) {
-        console.log('Error en PUT /api/users/:id:', e.message);
         res.json({ success: false, error: e.message });
     }
 });
@@ -353,23 +350,29 @@ app.put('/api/users/:id', async (req, res) => {
 app.delete('/api/users/:id', async (req, res) => {
     try {
         const database = await connectDB();
+        const searchId = req.params.id;
         
-        // Intentar con ObjectId primero, si falla buscar por id string
-        let filter;
-        try {
-            filter = { _id: new ObjectId(req.params.id) };
-        } catch (e) {
-            filter = { id: req.params.id };
-        }
-        
-        const result = await database.collection('users').deleteOne(filter);
+        // Buscar por múltiples campos posibles
+        const result = await database.collection('users').deleteOne(
+            { 
+                $or: [
+                    { id: searchId },
+                    { id: parseInt(searchId) },
+                    { id: searchId.toString() }
+                ]
+            }
+        );
         
         if (result.deletedCount === 0) {
-            // Intentar buscar por email o nombre si no encontró
-            const altResult = await database.collection('users').deleteOne(
-                { $or: [{ email: req.params.id }, { nombre: req.params.id }] }
-            );
-            res.json({ success: altResult.deletedCount > 0 });
+            // Intentar con ObjectId si es válido
+            try {
+                const objResult = await database.collection('users').deleteOne(
+                    { _id: new ObjectId(searchId) }
+                );
+                res.json({ success: objResult.deletedCount > 0 });
+            } catch (e) {
+                res.json({ success: false, error: 'Usuario no encontrado' });
+            }
         } else {
             res.json({ success: true });
         }
