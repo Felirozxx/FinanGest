@@ -214,7 +214,8 @@
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
+            #brandingSide { display: none !important; }
+            #authScreen { flex-direction: column !important; }
         }
         /* Animaciones para login */
         @keyframes float {
@@ -294,190 +295,143 @@
     </style>
 </head>
 <body>
-    <!-- Auth Screen -->
-    <div id="authScreen" class="auth-container">
-        <!-- Botón de instalar app -->
-        <div id="installBanner" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; background: linear-gradient(135deg, #00d4ff, #00a86b); padding: 12px 25px; border-radius: 50px; box-shadow: 0 4px 20px rgba(0,212,255,0.4); cursor: pointer;" onclick="installApp()">
-            <i class="fas fa-download me-2"></i>
-            <span style="font-weight: 600; color: #000;">Instalar FinanGest</span>
-        </div>
-        
-        <div class="auth-card" style="max-width: 480px;">
-            <div class="auth-header" style="padding: 50px 40px;">
-                <div class="auth-icon-float" style="margin-bottom: 20px;">
-                    <i class="fas fa-chart-line fa-3x" style="color: var(--accent-cyan);"></i>
-                </div>
-                <div class="logo" style="font-size: 2.5rem;">FinanGest</div>
-                <span style="color: var(--text-secondary); font-size: 1.1rem;">Software de Gestión Financiera</span>
-                <p style="color: var(--text-secondary); margin-top: 15px; font-size: 0.9rem;">
-                    Gestiona tus préstamos de forma inteligente y profesional
-                </p>
-                <div style="margin-top: 20px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto;">
-                    <div class="feature-item"><i class="fas fa-check-circle"></i> Control total de clientes</div>
-                    <div class="feature-item"><i class="fas fa-check-circle"></i> Seguimiento de pagos</div>
-                    <div class="feature-item"><i class="fas fa-check-circle"></i> Reportes en tiempo real</div>
+    <!-- Auth Screen - Diseño Split Profesional -->
+    <div id="authScreen" class="auth-container" style="display: flex; min-height: 100vh; margin: 0; padding: 0;">
+        <!-- Lado Izquierdo - Formulario -->
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; background: var(--bg-primary);">
+            <div style="width: 100%; max-width: 400px;">
+                <!-- Logo pequeño arriba -->
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <i class="fas fa-chart-line" style="color: var(--accent-cyan); font-size: 2rem;"></i>
+                    <span style="color: var(--accent-cyan); font-size: 1.5rem; font-weight: 700; margin-left: 10px;">FinanGest</span>
                 </div>
                 
-                <!-- Botón instalar dentro del card -->
-                <button id="installBtn" style="margin-top: 25px; background: linear-gradient(135deg, #00d4ff, #00a86b); border: none; padding: 12px 30px; border-radius: 50px; color: #000; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(0,212,255,0.3);" onclick="installApp()">
-                    <i class="fas fa-download me-2"></i>Instalar App
-                </button>
-            </div>
-            <div class="auth-body">
-                <div class="auth-tabs">
-                    <div class="auth-tab active" onclick="showAuthTab('login')">Iniciar Sesión</div>
-                    <div class="auth-tab" onclick="showAuthTab('register')">Registrarse</div>
-                </div>
+                <h1 style="font-size: 2rem; margin-bottom: 10px; color: var(--text-primary);">¡Bienvenido!</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 30px;">Ingresa tus credenciales para acceder al sistema</p>
+                
                 <!-- Login Form -->
                 <div id="loginForm">
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Email</label>
-                        <input type="email" class="form-control form-control-dark" id="loginEmail" placeholder="tu@email.com" autocomplete="off">
+                        <label class="form-label text-secondary">Email o Usuario</label>
+                        <input type="email" class="form-control form-control-dark" id="loginEmail" placeholder="tu@email.com" autocomplete="off" style="padding: 14px 16px;">
                     </div>
                     <div class="mb-4">
                         <label class="form-label text-secondary">Contraseña</label>
-                        <input type="password" class="form-control form-control-dark" id="loginPassword" placeholder="••••••••" autocomplete="new-password">
+                        <input type="password" class="form-control form-control-dark" id="loginPassword" placeholder="••••••••" autocomplete="new-password" style="padding: 14px 16px;">
                     </div>
-                    <button class="btn btn-primary-custom w-100" onclick="handleLogin()">
-                        <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+                    <button class="btn btn-primary-custom w-100" onclick="handleLogin()" style="padding: 14px;">
+                        Iniciar Sesión
                     </button>
-                    <div class="text-center mt-3">
+                    <div class="text-center mt-4">
                         <a href="#" onclick="showForgotPassword()" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">
-                            <i class="fas fa-key me-1"></i>¿Olvidaste tu contraseña?
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">¿No tienes cuenta? </span>
+                        <a href="#" onclick="showAuthTab('register')" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">
+                            Regístrate
                         </a>
                     </div>
                 </div>
+                
                 <!-- Forgot Password Form -->
                 <div id="forgotPasswordForm" style="display: none;">
                     <div id="forgotStep1">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-lock fa-3x mb-3" style="color: var(--accent-cyan);"></i>
-                            <h5>Recuperar Contraseña</h5>
-                            <p class="text-secondary">Ingresa tu email para recibir un código</p>
-                        </div>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Recuperar Contraseña</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Ingresa tu email para recibir un código</p>
                         <div class="mb-4">
                             <label class="form-label text-secondary">Email</label>
-                            <input type="email" class="form-control form-control-dark" id="forgotEmail" placeholder="tu@email.com">
+                            <input type="email" class="form-control form-control-dark" id="forgotEmail" placeholder="tu@email.com" style="padding: 14px 16px;">
                         </div>
-                        <button class="btn btn-primary-custom w-100" onclick="sendResetCode()" id="btnSendResetCode">
-                            <i class="fas fa-paper-plane me-2"></i>Enviar Código
+                        <button class="btn btn-primary-custom w-100" onclick="sendResetCode()" id="btnSendResetCode" style="padding: 14px;">
+                            Enviar Código
                         </button>
-                        <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="backToLogin()">
-                            <i class="fas fa-arrow-left me-1"></i>Volver al Login
-                        </button>
+                        <div class="text-center mt-3">
+                            <a href="#" onclick="backToLogin()" style="color: var(--text-secondary); text-decoration: none;">
+                                <i class="fas fa-arrow-left me-1"></i>Volver al Login
+                            </a>
+                        </div>
                     </div>
                     <div id="forgotStep2" style="display: none;">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-envelope-open-text fa-3x mb-3" style="color: var(--accent-cyan);"></i>
-                            <h5>Verifica tu Código</h5>
-                            <p class="text-secondary">Enviamos un código a <span id="forgotEmailSent" style="color: var(--accent-cyan);"></span></p>
-                        </div>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Verifica tu Código</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Enviamos un código a <span id="forgotEmailSent" style="color: var(--accent-cyan);"></span></p>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Código de Verificación</label>
-                            <input type="text" class="form-control form-control-dark text-center" id="resetCode" 
-                                   placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px;">
+                            <label class="form-label text-secondary">Código</label>
+                            <input type="text" class="form-control form-control-dark text-center" id="resetCode" placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px; padding: 14px;">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Nueva Contraseña</label>
-                            <input type="password" class="form-control form-control-dark" id="newPassword" placeholder="Mínimo 6 caracteres">
+                            <input type="password" class="form-control form-control-dark" id="newPassword" placeholder="Mínimo 6 caracteres" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-secondary">Confirmar Contraseña</label>
-                            <input type="password" class="form-control form-control-dark" id="confirmPassword" placeholder="Repite la contraseña">
+                            <input type="password" class="form-control form-control-dark" id="confirmPassword" placeholder="Repetir contraseña" style="padding: 14px 16px;">
                         </div>
-                        <button class="btn btn-success-custom w-100" onclick="resetPassword()" id="btnResetPassword">
-                            <i class="fas fa-check me-2"></i>Cambiar Contraseña
-                        </button>
-                        <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="resendResetCode()">
-                            ¿No recibiste el código? Reenviar
+                        <button class="btn btn-success-custom w-100" onclick="resetPassword()" id="btnResetPassword" style="padding: 14px;">
+                            Cambiar Contraseña
                         </button>
                     </div>
                 </div>
-                <!-- Soporte Section -->
-                <div id="supportSection" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                    <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; margin-bottom: 15px;">
-                        <i class="fas fa-headset me-1"></i>¿Necesitas ayuda? Contáctanos
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <a href="https://mail.google.com/mail/?view=cm&to=fzuluaga548@gmail.com&su=Soporte%20FinanGest" target="_blank" style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); text-decoration: none; padding: 10px; background: var(--bg-hover); border-radius: 8px; transition: all 0.3s;">
-                            <i class="fas fa-envelope" style="color: var(--accent-cyan); width: 20px;"></i>
-                            <span style="font-size: 0.9rem;">fzuluaga548@gmail.com</span>
-                        </a>
-                        <a href="tel:+79998555813" style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); text-decoration: none; padding: 10px; background: var(--bg-hover); border-radius: 8px; transition: all 0.3s;">
-                            <i class="fas fa-phone" style="color: var(--accent-green); width: 20px;"></i>
-                            <span style="font-size: 0.9rem;">+7 999 855 5813</span>
-                        </a>
-                        <div style="text-align: center; margin-top: 10px;">
-                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 10px;">
-                                <i class="fab fa-whatsapp me-1" style="color: #25D366;"></i>WhatsApp
-                            </p>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://wa.me/79998555813&bgcolor=1a1a2e&color=00d4ff" 
-                                 alt="WhatsApp QR" style="border-radius: 10px; border: 2px solid var(--border-color);">
-                        </div>
-                    </div>
-                </div>
+                
                 <!-- Register Form -->
                 <div id="registerForm" style="display: none;">
                     <div id="registerStep1">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Crear Cuenta</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Completa tus datos para registrarte</p>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Nombre Completo</label>
-                            <input type="text" class="form-control form-control-dark" id="regNombre" placeholder="Tu nombre">
+                            <input type="text" class="form-control form-control-dark" id="regNombre" placeholder="Tu nombre" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Nombre de Usuario</label>
-                            <input type="text" class="form-control form-control-dark" id="regUsername" placeholder="usuario123" autocomplete="off">
-                            <small class="text-secondary">Único, sin espacios</small>
+                            <label class="form-label text-secondary">Usuario</label>
+                            <input type="text" class="form-control form-control-dark" id="regUsername" placeholder="usuario123" autocomplete="off" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Email</label>
-                            <input type="email" class="form-control form-control-dark" id="regEmail" placeholder="tu@gmail.com">
+                            <input type="email" class="form-control form-control-dark" id="regEmail" placeholder="tu@gmail.com" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Contraseña</label>
-                            <input type="password" class="form-control form-control-dark" id="regPassword" placeholder="Mínimo 6 caracteres">
+                            <input type="password" class="form-control form-control-dark" id="regPassword" placeholder="Mínimo 6 caracteres" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-4">
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="acceptTerms" style="background: var(--bg-hover); border-color: var(--border-color); cursor: pointer;" onchange="this.style.background = this.checked ? 'var(--accent-cyan)' : 'var(--bg-hover)'">
+                                <input type="checkbox" class="form-check-input" id="acceptTerms" style="cursor: pointer;">
                                 <label class="form-check-label text-secondary" for="acceptTerms" style="font-size: 0.85rem; cursor: pointer;">
-                                    Acepto los <a href="politicas.html#terminos" target="_blank" style="color: var(--accent-cyan);">Términos de Uso</a> 
-                                    y la <a href="politicas.html" target="_blank" style="color: var(--accent-cyan);">Política de Privacidad</a>
+                                    Acepto los <a href="politicas.html#terminos" target="_blank" style="color: var(--accent-cyan);">Términos</a> y <a href="politicas.html" target="_blank" style="color: var(--accent-cyan);">Privacidad</a>
                                 </label>
                             </div>
                         </div>
-                        <button class="btn btn-primary-custom w-100" onclick="sendVerificationCode()" id="btnSendCode">
-                            <i class="fas fa-paper-plane me-2"></i>Enviar Código de Verificación
+                        <button class="btn btn-primary-custom w-100" onclick="sendVerificationCode()" id="btnSendCode" style="padding: 14px;">
+                            Enviar Código
                         </button>
+                        <div class="text-center mt-3">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;">¿Ya tienes cuenta? </span>
+                            <a href="#" onclick="showAuthTab('login')" style="color: var(--accent-cyan); text-decoration: none;">Ingresar</a>
+                        </div>
                     </div>
                     <div id="registerStep2" style="display: none;">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-envelope-open-text fa-3x mb-3" style="color: var(--accent-cyan);"></i>
-                            <h5>Verifica tu Email</h5>
-                            <p class="text-secondary">Enviamos un código a <span id="emailSent" style="color: var(--accent-cyan);"></span></p>
-                        </div>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Verifica tu Email</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Código enviado a <span id="emailSent" style="color: var(--accent-cyan);"></span></p>
                         <div class="mb-4">
                             <label class="form-label text-secondary">Código de Verificación</label>
-                            <input type="text" class="form-control form-control-dark text-center" id="verificationCode" 
-                                   placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px;">
+                            <input type="text" class="form-control form-control-dark text-center" id="verificationCode" placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px; padding: 14px;">
                         </div>
-                        <button class="btn btn-success-custom w-100" onclick="verifyCode()">
-                            <i class="fas fa-check me-2"></i>Verificar y Crear Cuenta
+                        <button class="btn btn-success-custom w-100" onclick="verifyCode()" style="padding: 14px;">
+                            Verificar y Crear Cuenta
                         </button>
-                        <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="resendCode()">
-                            ¿No recibiste el código? Reenviar
-                        </button>
+                        <div class="text-center mt-3">
+                            <a href="#" onclick="resendCode()" style="color: var(--text-secondary); text-decoration: none;">¿No recibiste el código? Reenviar</a>
+                        </div>
                     </div>
                     <!-- Paso 3: Pago PIX -->
                     <div id="registerStep3" style="display: none;">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-check-circle fa-3x mb-3" style="color: var(--accent-green);"></i>
-                            <h5 style="color: var(--accent-green);">¡Cuenta Creada!</h5>
-                            <p class="text-secondary">Último paso: Activa tu suscripción</p>
-                        </div>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: var(--accent-green);">¡Cuenta Creada!</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Último paso: Activa tu suscripción</p>
                         <div style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plan Mensual</p>
                             <h2 style="color: var(--accent-green); font-size: 2.5rem; margin: 0;">R$ 79,50</h2>
-                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 5px;">Acceso completo a FinanGest</p>
                         </div>
                         <div id="pixQrContainer" style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                             <div id="pixLoading">
@@ -485,44 +439,68 @@
                                 <p class="text-secondary">Generando código PIX...</p>
                             </div>
                             <div id="pixQrCode" style="display: none;">
-                                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">
-                                    <i class="fas fa-qrcode me-2"></i>Escanea con tu app de banco
-                                </p>
-                                <img id="pixQrImage" src="" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 200px;">
-                                <div style="margin-top: 15px; padding: 15px; background: var(--bg-card); border-radius: 8px;">
-                                    <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">PIX Copia e Cola</p>
-                                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                        <input type="text" id="pixCopyPaste" readonly style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.7rem; width: 180px; text-overflow: ellipsis;">
-                                        <button onclick="copyPixCode()" style="background: var(--accent-cyan); border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
+                                <img id="pixQrImage" src="" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;">
+                                <div style="margin-top: 15px;">
+                                    <input type="text" id="pixCopyPaste" readonly style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.7rem; width: 100%;">
+                                    <button onclick="copyPixCode()" style="margin-top: 10px; background: var(--accent-cyan); border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; color: #000;">
+                                        <i class="fas fa-copy me-1"></i>Copiar
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-success-custom w-100" onclick="verificarPago()" id="btnVerificarPago">
-                            <i class="fas fa-sync-alt me-2"></i>Ya pagué - Verificar
+                        <button class="btn btn-success-custom w-100" onclick="verificarPago()" id="btnVerificarPago" style="padding: 14px;">
+                            Ya pagué - Verificar
                         </button>
-                        <p style="color: var(--text-secondary); font-size: 0.8rem; text-align: center; margin-top: 15px;">
-                            <i class="fas fa-clock me-1"></i>El pago se verifica automáticamente
-                        </p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="color: var(--text-secondary); font-size: 0.8rem;">
+                        © 2026 FinanGest · <a href="politicas.html" style="color: var(--text-secondary);">Privacidad</a> · <a href="politicas.html#terminos" style="color: var(--text-secondary);">Términos</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lado Derecho - Branding -->
+        <div id="brandingSide" style="flex: 1; background: linear-gradient(135deg, #0a1628 0%, #1a1a2e 50%, #0d2137 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; position: relative; overflow: hidden;">
+            <!-- Efecto de fondo -->
+            <div style="position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%); pointer-events: none;"></div>
+            <div style="position: absolute; bottom: -30%; left: -30%; width: 80%; height: 80%; background: radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 70%); pointer-events: none;"></div>
+            
+            <!-- Logo Grande -->
+            <div style="text-align: center; z-index: 1;">
+                <div style="margin-bottom: 30px;">
+                    <i class="fas fa-chart-line" style="font-size: 8rem; color: var(--accent-cyan); filter: drop-shadow(0 0 30px rgba(0,212,255,0.5));"></i>
+                </div>
+                <h1 style="font-size: 4rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 10px; text-shadow: 0 0 30px rgba(0,212,255,0.3);">FinanGest</h1>
+                <p style="font-size: 1.3rem; color: var(--text-secondary); letter-spacing: 3px; text-transform: uppercase;">Sistema Financiero</p>
+                
+                <!-- Botón Instalar -->
+                <button id="installBtn" onclick="installApp()" style="margin-top: 50px; background: linear-gradient(135deg, var(--accent-cyan), #0099cc); border: none; padding: 15px 40px; border-radius: 50px; color: #000; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(0,212,255,0.4); transition: all 0.3s;">
+                    <i class="fas fa-download me-2"></i>Instalar App
+                </button>
+                
+                <!-- Features -->
+                <div style="margin-top: 60px; text-align: left;">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-check-circle" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                        <span style="color: var(--text-secondary);">Control total de clientes</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-check-circle" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                        <span style="color: var(--text-secondary);">Seguimiento de pagos</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fas fa-check-circle" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                        <span style="color: var(--text-secondary);">Reportes en tiempo real</span>
                     </div>
                 </div>
             </div>
-            <div style="text-align: center; padding: 20px; border-top: 1px solid var(--border-color);">
-                <a href="politicas.html" target="_blank" style="color: var(--text-secondary); font-size: 0.8rem; text-decoration: none;">
-                    <i class="fas fa-shield-alt me-1"></i>Política de Privacidad
-                </a>
-                <span style="color: var(--text-secondary); margin: 0 10px;">|</span>
-                <a href="politicas.html#terminos" target="_blank" style="color: var(--text-secondary); font-size: 0.8rem; text-decoration: none;">
-                    <i class="fas fa-file-contract me-1"></i>Términos de Uso
-                </a>
-                <p style="color: var(--text-secondary); font-size: 0.7rem; margin-top: 10px;">
-                    © 2026 FinanGest Software. Todos los derechos reservados.
-                </p>
-            </div>
         </div>
     </div>
+    
     <!-- Main App -->
     <div id="mainApp" style="display: none;">
         <!-- Sidebar -->
