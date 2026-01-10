@@ -591,11 +591,7 @@ exports.handler = async (event, context) => {
             const precio = parseFloat(config?.precioSuscripcion) || 79.50;
             
             if (!MP_ACCESS_TOKEN) {
-                return respond(200, { 
-                    success: true, manual: true,
-                    pixKey: 'e6203cd0-c840-4753-ab74-993b722f49b1',
-                    pixName: 'FinanGestPay', amount: precio
-                });
+                return respond(400, { success: false, error: 'Sistema de pago no configurado. Contacte al administrador.' });
             }
             
             const paymentData = {

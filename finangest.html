@@ -3417,36 +3417,27 @@
                     if (verificacionInterval) clearInterval(verificacionInterval);
                     verificacionInterval = setInterval(() => verificarPagoRenovacion(true), 5000);
                 } else {
-                    // PIX Manual - mostrar llave PIX directa con QR
-                    const pixKey = 'e6203cd0-c840-4753-ab74-993b722f49b1';
+                    // Error - mostrar mensaje
                     document.getElementById('renewalPixQrCode').innerHTML = `
                         <div style="text-align: center;">
-                            <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
-                                <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
+                            <p style="color: var(--accent-red); font-size: 1rem; margin-bottom: 15px;">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Error al generar pago
                             </p>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixKey)}" alt="QR Code PIX" style="border-radius: 12px; border: 3px solid var(--accent-cyan); width: 180px; height: 180px; background: white;">
-                            <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
-                                <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
-                                <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
-                            </div>
-                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">
-                                <i class="fas fa-user me-1"></i>FinanGestPay
-                            </p>
-                            <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
-                                R$ 79,50
-                            </p>
-                            <button onclick="copyPixKey('${pixKey}')" class="btn btn-primary-custom" style="padding: 10px 20px;">
-                                <i class="fas fa-copy me-2"></i>Copiar Chave PIX
-                            </button>
-                            <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
-                                <i class="fas fa-info-circle me-1"></i>Após pagar, envie o comprovante por WhatsApp
-                            </p>
+                            <p style="color: var(--text-secondary);">Sistema de pago no disponible. Intente más tarde.</p>
                         </div>
                     `;
                 }
             } catch (e) {
-                alert('Erro de conexão ao gerar PIX');
                 document.getElementById('renewalPixLoading').style.display = 'none';
+                document.getElementById('renewalPixQrCode').style.display = 'block';
+                document.getElementById('renewalPixQrCode').innerHTML = `
+                    <div style="text-align: center;">
+                        <p style="color: var(--accent-red); font-size: 1rem; margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error de conexión
+                        </p>
+                        <p style="color: var(--text-secondary);">No se pudo conectar al servidor. Intente más tarde.</p>
+                    </div>
+                `;
             }
         }
         
@@ -3621,79 +3612,29 @@
                     `;
                     iniciarVerificacionAutomatica();
                 } else {
-                    // PIX Manual - mostrar llave PIX directa con QR
-                    pendingPaymentId = null;
-                    const userEmail = email || '';
-                    const pixKey = 'e6203cd0-c840-4753-ab74-993b722f49b1';
+                    // Error - mostrar mensaje
                     pixContainer.innerHTML = `
                         <div style="text-align: center;">
-                            <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
-                                <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
+                            <p style="color: var(--accent-red); font-size: 1rem; margin-bottom: 15px;">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Error al generar pago
                             </p>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixKey)}" alt="QR Code PIX" style="border-radius: 12px; border: 3px solid var(--accent-cyan); width: 180px; height: 180px; background: white;">
-                            <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
-                                <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
-                                <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
-                            </div>
-                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">
-                                <i class="fas fa-user me-1"></i>FinanGestPay
-                            </p>
-                            <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
-                                R$ 79,50
-                            </p>
-                            <button onclick="copyPixKey('${pixKey}')" class="btn btn-primary-custom">
-                                <i class="fas fa-copy me-2"></i>Copiar Chave PIX
-                            </button>
-                            <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
-                                <i class="fas fa-info-circle me-1"></i>Após pagar, envie o comprovante por WhatsApp
-                            </p>
-                            <a href="https://wa.me/79998555813?text=Olá! Acabei de pagar R$ 79,50 para FinanGest. Meu email: ${userEmail}" 
-                               target="_blank" class="btn btn-success-custom mt-2" style="background: #25D366;">
-                                <i class="fab fa-whatsapp me-2"></i>Enviar Comprovante
-                            </a>
+                            <p style="color: var(--text-secondary);">Sistema de pago no disponible. Intente más tarde.</p>
                         </div>
                     `;
                 }
             } catch (e) {
-                // Error de conexión - mostrar PIX manual con QR
+                // Error de conexión
                 pixLoading.style.display = 'none';
                 pixContainer.style.display = 'block';
-                pendingPaymentId = null;
-                const pixKey = 'e6203cd0-c840-4753-ab74-993b722f49b1';
                 pixContainer.innerHTML = `
                     <div style="text-align: center;">
-                        <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
-                            <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
+                        <p style="color: var(--accent-red); font-size: 1rem; margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error de conexión
                         </p>
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixKey)}" alt="QR Code PIX" style="border-radius: 12px; border: 3px solid var(--accent-cyan); width: 180px; height: 180px; background: white;">
-                        <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
-                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
-                            <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
-                        </div>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">
-                            <i class="fas fa-user me-1"></i>FinanGestPay
-                        </p>
-                        <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
-                            R$ 79,50
-                        </p>
-                        <button onclick="copyPixKey('${pixKey}')" class="btn btn-primary-custom">
-                            <i class="fas fa-copy me-2"></i>Copiar Chave PIX
-                        </button>
-                        <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
-                            <i class="fas fa-info-circle me-1"></i>Após pagar, envie o comprovante por WhatsApp
-                        </p>
-                        <a href="https://wa.me/79998555813?text=Olá! Acabei de pagar R$ 79,50 para FinanGest. Meu email: ${email}" 
-                           target="_blank" class="btn btn-success-custom mt-2" style="background: #25D366;">
-                            <i class="fab fa-whatsapp me-2"></i>Enviar Comprovante
-                        </a>
+                        <p style="color: var(--text-secondary);">No se pudo conectar al servidor. Intente más tarde.</p>
                     </div>
                 `;
             }
-        }
-
-        function copyPixKey(key) {
-            navigator.clipboard.writeText(key);
-            alert('Chave PIX copiada!');
         }
 
         function copyPixCode() {
