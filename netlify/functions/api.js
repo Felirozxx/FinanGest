@@ -661,6 +661,20 @@ exports.handler = async (event, context) => {
             return respond(200, { success: result.modifiedCount > 0 });
         }
 
+        // RESET USERS (borrar todos excepto admin)
+        if (path === '/admin/reset-users' && method === 'POST') {
+            const { secret } = body;
+            if (secret !== ADMIN_SECRET) return respond(200, { success: false, error: 'No autorizado' });
+            
+            // Borrar usuarios no-admin
+            const result = await db.collection('users').deleteMany({ role: { $ne: 'admin' } });
+            // Borrar códigos de verificación
+            await db.collection('verification_codes').deleteMany({});
+            await db.collection('reset_codes').deleteMany({});
+            
+            return respond(200, { success: true, deleted: result.deletedCount });
+        }
+
         // ============ ADMIN GASTOS ============
         
         // UPDATE GASTO (Admin)
