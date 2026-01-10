@@ -3377,18 +3377,40 @@
                     // PIX Automático con QR Code de Mercado Pago
                     pendingUser.paymentId = data.paymentId;
                     document.getElementById('renewalPixQrCode').innerHTML = `
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">
-                            <i class="fas fa-qrcode me-2"></i>Escanea con tu app de banco
-                        </p>
-                        <img src="data:image/png;base64,${data.qrCodeBase64}" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;">
-                        <div style="margin-top: 15px; padding: 15px; background: var(--bg-card); border-radius: 8px;">
-                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">PIX Copia e Cola</p>
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                                <input type="text" id="renewalPixCopyPaste" value="${data.qrCode}" readonly style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.6rem; width: 200px; text-overflow: ellipsis;">
-                                <button onclick="copyRenewalPixCode()" style="background: var(--accent-cyan); border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
-                                    <i class="fas fa-copy"></i>
+                        <div style="text-align: center;">
+                            <p style="color: var(--accent-green); font-size: 1rem; margin-bottom: 15px;">
+                                <i class="fas fa-bolt me-2"></i>Pago Automático
+                            </p>
+                            
+                            <!-- Código Copia e Cola (principal para celular) -->
+                            <div style="background: var(--bg-card); border: 2px solid var(--accent-green); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                                <p style="color: var(--accent-green); font-size: 0.9rem; margin-bottom: 10px;">
+                                    <i class="fas fa-mobile-alt me-2"></i>¿Estás en el celular? Copia este código:
+                                </p>
+                                <div style="background: var(--bg-hover); border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                                    <input type="text" id="renewalPixCopyPaste" value="${data.qrCode}" readonly style="background: transparent; border: none; color: var(--accent-cyan); width: 100%; font-size: 0.65rem; text-align: center;">
+                                </div>
+                                <button onclick="copyRenewalPixCode()" class="btn" style="background: var(--accent-green); color: #000; width: 100%;">
+                                    <i class="fas fa-copy me-2"></i>Copiar Código PIX
                                 </button>
+                                <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 10px;">
+                                    Pega en tu app de banco → Área PIX → Copia e Cola
+                                </p>
                             </div>
+                            
+                            <!-- QR Code (para quien tiene 2 dispositivos) -->
+                            <details style="text-align: center;">
+                                <summary style="color: var(--text-secondary); cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-qrcode me-1"></i>¿Tienes otro dispositivo? Ver QR Code
+                                </summary>
+                                <div style="margin-top: 15px;">
+                                    <img src="data:image/png;base64,${data.qrCodeBase64}" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;">
+                                </div>
+                            </details>
+                            
+                            <p style="color: var(--accent-green); font-size: 0.8rem; margin-top: 20px;">
+                                <i class="fas fa-check-circle me-1"></i>Al pagar, tu cuenta se renueva automáticamente
+                            </p>
                         </div>
                     `;
                     // Iniciar verificación automática
@@ -3561,22 +3583,41 @@
                     // PIX Automático con QR Code de Mercado Pago
                     pendingPaymentId = data.paymentId;
                     pixContainer.innerHTML = `
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">
-                            <i class="fas fa-qrcode me-2"></i>Escanea con tu app de banco
-                        </p>
-                        <img src="data:image/png;base64,${data.qrCodeBase64}" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 200px;">
-                        <div style="margin-top: 15px; padding: 15px; background: var(--bg-card); border-radius: 8px;">
-                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">PIX Copia e Cola</p>
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                <input type="text" id="pixCopyPaste" value="${data.qrCode}" readonly style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.6rem; width: 200px; text-overflow: ellipsis;">
-                                <button onclick="copyPixCode()" style="background: var(--accent-cyan); border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
-                                    <i class="fas fa-copy"></i>
+                        <div style="text-align: center;">
+                            <p style="color: var(--accent-green); font-size: 1rem; margin-bottom: 15px;">
+                                <i class="fas fa-bolt me-2"></i>Pago Automático
+                            </p>
+                            
+                            <!-- Código Copia e Cola (principal para celular) -->
+                            <div style="background: var(--bg-card); border: 2px solid var(--accent-green); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                                <p style="color: var(--accent-green); font-size: 0.9rem; margin-bottom: 10px;">
+                                    <i class="fas fa-mobile-alt me-2"></i>¿Estás en el celular? Copia este código:
+                                </p>
+                                <div style="background: var(--bg-hover); border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                                    <input type="text" id="pixCopyPaste" value="${data.qrCode}" readonly style="background: transparent; border: none; color: var(--accent-cyan); width: 100%; font-size: 0.65rem; text-align: center;">
+                                </div>
+                                <button onclick="copyPixCode()" class="btn" style="background: var(--accent-green); color: #000; width: 100%;">
+                                    <i class="fas fa-copy me-2"></i>Copiar Código PIX
                                 </button>
+                                <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 10px;">
+                                    Pega en tu app de banco → Área PIX → Copia e Cola
+                                </p>
                             </div>
+                            
+                            <!-- QR Code (para quien tiene 2 dispositivos) -->
+                            <details style="text-align: center;">
+                                <summary style="color: var(--text-secondary); cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-qrcode me-1"></i>¿Tienes otro dispositivo? Ver QR Code
+                                </summary>
+                                <div style="margin-top: 15px;">
+                                    <img src="data:image/png;base64,${data.qrCodeBase64}" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;">
+                                </div>
+                            </details>
+                            
+                            <p style="color: var(--accent-green); font-size: 0.8rem; margin-top: 20px;">
+                                <i class="fas fa-check-circle me-1"></i>Al pagar, tu cuenta se activa automáticamente
+                            </p>
                         </div>
-                        <p style="color: var(--accent-green); font-size: 0.85rem; margin-top: 15px;">
-                            <i class="fas fa-check-circle me-1"></i>Descripción: FINANGEST-${email}
-                        </p>
                     `;
                     iniciarVerificacionAutomatica();
                 } else {
