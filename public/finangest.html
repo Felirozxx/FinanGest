@@ -295,43 +295,52 @@
     </style>
 </head>
 <body>
-    <!-- Auth Screen - Diseño Split Profesional -->
-    <div id="authScreen" class="auth-container" style="display: flex; min-height: 100vh; margin: 0; padding: 0;">
+    <!-- Auth Screen - Diseño Profesional Mejorado -->
+    <div id="authScreen" style="display: flex; min-height: 100vh; margin: 0; padding: 0;">
         <!-- Lado Izquierdo - Formulario -->
-        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; background: var(--bg-primary);">
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 50px 40px; background: linear-gradient(180deg, #080b10 0%, #0d1117 100%);">
             <div style="width: 100%; max-width: 400px;">
-                <!-- Logo pequeño arriba -->
-                <div style="text-align: center; margin-bottom: 40px;">
-                    <i class="fas fa-chart-line" style="color: var(--accent-cyan); font-size: 2rem;"></i>
-                    <span style="color: var(--accent-cyan); font-size: 1.5rem; font-weight: 700; margin-left: 10px;">FinanGest</span>
+                <!-- Logo -->
+                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 50px;">
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #00d4ff, #0099cc); border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,212,255,0.3);">
+                        <i class="fas fa-chart-line" style="color: #fff; font-size: 1.4rem;"></i>
+                    </div>
+                    <span style="font-size: 1.7rem; font-weight: 700; color: #fff;">FinanGest</span>
                 </div>
                 
-                <h1 style="font-size: 2rem; margin-bottom: 10px; color: var(--text-primary);">¡Bienvenido!</h1>
-                <p style="color: var(--text-secondary); margin-bottom: 30px;">Ingresa tus credenciales para acceder al sistema</p>
+                <h1 style="font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; color: #fff;">¡Bienvenido!</h1>
+                <p style="color: #6b7280; margin-bottom: 40px; font-size: 1.05rem;">Ingresa tus credenciales para acceder al sistema</p>
                 
                 <!-- Login Form -->
                 <div id="loginForm">
-                    <div class="mb-3">
-                        <label class="form-label text-secondary">Email o Usuario</label>
-                        <input type="email" class="form-control form-control-dark" id="loginEmail" placeholder="tu@email.com" autocomplete="off" style="padding: 14px 16px;">
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; color: #9ca3af; font-size: 0.9rem; margin-bottom: 10px; font-weight: 500;">Email o Usuario</label>
+                        <input type="email" id="loginEmail" placeholder="tu@email.com" autocomplete="off"
+                            style="width: 100%; padding: 16px 20px; background: #161b22; border: 2px solid #30363d; border-radius: 12px; color: #fff; font-size: 1rem; transition: all 0.3s; outline: none; box-sizing: border-box;"
+                            onfocus="this.style.borderColor='#00d4ff'; this.style.boxShadow='0 0 0 4px rgba(0,212,255,0.15)'"
+                            onblur="this.style.borderColor='#30363d'; this.style.boxShadow='none'">
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label text-secondary">Contraseña</label>
-                        <input type="password" class="form-control form-control-dark" id="loginPassword" placeholder="••••••••" autocomplete="new-password" style="padding: 14px 16px;">
+                    <div style="margin-bottom: 32px;">
+                        <label style="display: block; color: #9ca3af; font-size: 0.9rem; margin-bottom: 10px; font-weight: 500;">Contraseña</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="new-password"
+                            style="width: 100%; padding: 16px 20px; background: #161b22; border: 2px solid #30363d; border-radius: 12px; color: #fff; font-size: 1rem; transition: all 0.3s; outline: none; box-sizing: border-box;"
+                            onfocus="this.style.borderColor='#00d4ff'; this.style.boxShadow='0 0 0 4px rgba(0,212,255,0.15)'"
+                            onblur="this.style.borderColor='#30363d'; this.style.boxShadow='none'">
                     </div>
-                    <button class="btn btn-primary-custom w-100" onclick="handleLogin()" style="padding: 14px;">
+                    <button onclick="handleLogin()" 
+                        style="width: 100%; padding: 16px; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border: none; border-radius: 12px; color: #000; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,212,255,0.35);"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(0,212,255,0.45)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,212,255,0.35)'">
                         Iniciar Sesión
                     </button>
-                    <div class="text-center mt-4">
-                        <a href="#" onclick="showForgotPassword()" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">
+                    <div style="text-align: center; margin-top: 28px;">
+                        <a href="#" onclick="showForgotPassword(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.95rem;">
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>
-                    <div class="text-center mt-2">
-                        <span style="color: var(--text-secondary); font-size: 0.9rem;">¿No tienes cuenta? </span>
-                        <a href="#" onclick="showAuthTab('register')" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">
-                            Regístrate
-                        </a>
+                    <div style="text-align: center; margin-top: 16px;">
+                        <span style="color: #6b7280; font-size: 0.95rem;">¿No tienes cuenta? </span>
+                        <a href="#" onclick="showAuthTab('register'); return false;" style="color: #00d4ff; text-decoration: none; font-weight: 600;">Regístrate</a>
                     </div>
                 </div>
                 
@@ -463,43 +472,71 @@
             </div>
         </div>
         
-        <!-- Lado Derecho - Branding -->
-        <div id="brandingSide" style="flex: 1; background: linear-gradient(135deg, #0a1628 0%, #1a1a2e 50%, #0d2137 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; position: relative; overflow: hidden;">
-            <!-- Efecto de fondo -->
-            <div style="position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%); pointer-events: none;"></div>
-            <div style="position: absolute; bottom: -30%; left: -30%; width: 80%; height: 80%; background: radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 70%); pointer-events: none;"></div>
+        <!-- Lado Derecho - Branding Profesional -->
+        <div id="brandingSide" style="flex: 1.1; background: linear-gradient(145deg, #0c1929 0%, #0a1628 40%, #061220 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px; position: relative; overflow: hidden;">
+            <!-- Efectos de fondo -->
+            <div style="position: absolute; top: 5%; right: 5%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 60%); pointer-events: none;"></div>
+            <div style="position: absolute; bottom: 5%; left: 5%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 60%); pointer-events: none;"></div>
             
-            <!-- Logo Grande -->
-            <div style="text-align: center; z-index: 1;">
-                <div style="margin-bottom: 30px;">
-                    <i class="fas fa-chart-line" style="font-size: 8rem; color: var(--accent-cyan); filter: drop-shadow(0 0 30px rgba(0,212,255,0.5));"></i>
+            <!-- Contenido -->
+            <div style="text-align: center; z-index: 1; max-width: 480px;">
+                <!-- Icono con animación -->
+                <div style="margin-bottom: 45px;">
+                    <div style="width: 150px; height: 150px; background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,212,255,0.03)); border-radius: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 2px solid rgba(0,212,255,0.2); box-shadow: 0 25px 80px rgba(0,212,255,0.2); animation: floatIcon 4s ease-in-out infinite;">
+                        <i class="fas fa-chart-line" style="font-size: 4.5rem; color: #00d4ff; filter: drop-shadow(0 0 25px rgba(0,212,255,0.6));"></i>
+                    </div>
                 </div>
-                <h1 style="font-size: 4rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 10px; text-shadow: 0 0 30px rgba(0,212,255,0.3);">FinanGest</h1>
-                <p style="font-size: 1.3rem; color: var(--text-secondary); letter-spacing: 3px; text-transform: uppercase;">Sistema Financiero</p>
+                
+                <!-- Título -->
+                <h1 style="font-size: 4rem; font-weight: 800; color: #fff; margin-bottom: 15px; letter-spacing: -1px;">FinanGest</h1>
+                <p style="font-size: 1.15rem; color: #00d4ff; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 55px; font-weight: 500;">Sistema Financiero</p>
                 
                 <!-- Botón Instalar -->
-                <button id="installBtn" onclick="installApp()" style="margin-top: 50px; background: linear-gradient(135deg, var(--accent-cyan), #0099cc); border: none; padding: 15px 40px; border-radius: 50px; color: #000; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(0,212,255,0.4); transition: all 0.3s;">
-                    <i class="fas fa-download me-2"></i>Instalar App
+                <button id="installBtn" onclick="installApp()" 
+                    style="padding: 18px 55px; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border: none; border-radius: 50px; color: #000; font-size: 1.15rem; font-weight: 700; cursor: pointer; box-shadow: 0 10px 40px rgba(0,212,255,0.4); transition: all 0.3s; margin-bottom: 60px;"
+                    onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 15px 50px rgba(0,212,255,0.5)'"
+                    onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 40px rgba(0,212,255,0.4)'">
+                    <i class="fas fa-download" style="margin-right: 12px;"></i>Instalar Aplicación
                 </button>
                 
-                <!-- Features -->
-                <div style="margin-top: 60px; text-align: left;">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                        <i class="fas fa-check-circle" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
-                        <span style="color: var(--text-secondary);">Control total de clientes</span>
+                <!-- Features Card -->
+                <div style="background: rgba(13,25,41,0.6); border-radius: 24px; padding: 35px 40px; border: 1px solid rgba(0,212,255,0.1); backdrop-filter: blur(10px);">
+                    <div style="display: flex; align-items: center; gap: 18px; margin-bottom: 25px;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,212,255,0.05)); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-users" style="color: #00d4ff; font-size: 1.2rem;"></i>
+                        </div>
+                        <div style="text-align: left;">
+                            <p style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Control de Clientes</p>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Gestiona todos tus clientes fácilmente</p>
+                        </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                        <i class="fas fa-check-circle" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
-                        <span style="color: var(--text-secondary);">Seguimiento de pagos</span>
+                    <div style="display: flex; align-items: center; gap: 18px; margin-bottom: 25px;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, rgba(46,204,113,0.2), rgba(46,204,113,0.05)); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-money-bill-wave" style="color: #2ecc71; font-size: 1.2rem;"></i>
+                        </div>
+                        <div style="text-align: left;">
+                            <p style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Seguimiento de Pagos</p>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Cobros automáticos y alertas</p>
+                        </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <i class="fas fa-check-circle" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
-                        <span style="color: var(--text-secondary);">Reportes en tiempo real</span>
+                    <div style="display: flex; align-items: center; gap: 18px;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.05)); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-chart-bar" style="color: #a855f7; font-size: 1.2rem;"></i>
+                        </div>
+                        <div style="text-align: left;">
+                            <p style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Reportes en Tiempo Real</p>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Estadísticas y gráficos detallados</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <style>
+        @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        #authScreen input::placeholder { color: #4b5563 !important; }
+    </style>
     
     <!-- Main App -->
     <div id="mainApp" style="display: none;">
