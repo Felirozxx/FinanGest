@@ -7476,15 +7476,15 @@
                         <div class="modal-body">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">Nombre</label>
+                                    <label class="form-label">👤 Nombre del Cliente</label>
                                     <input type="text" class="form-control form-control-dark" id="adminEditNombre" value="${cliente.nombre || ''}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Teléfono</label>
+                                    <label class="form-label">📱 Teléfono</label>
                                     <input type="text" class="form-control form-control-dark" id="adminEditTelefono" value="${cliente.telefono || ''}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Tipo de Cliente</label>
+                                    <label class="form-label">⭐ Tipo de Cliente</label>
                                     <select class="form-control form-control-dark" id="adminEditTipo">
                                         <option value="nuevo" ${cliente.tipoCliente === 'nuevo' ? 'selected' : ''}>🆕 Nuevo</option>
                                         <option value="bueno" ${cliente.tipoCliente === 'bueno' ? 'selected' : ''}>✅ Buen Cliente</option>
@@ -7493,44 +7493,79 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Estado</label>
+                                    <label class="form-label">📊 Estado</label>
                                     <select class="form-control form-control-dark" id="adminEditEstado">
-                                        <option value="ativo" ${cliente.estado === 'ativo' ? 'selected' : ''}>Activo</option>
-                                        <option value="finalizado" ${cliente.estado === 'finalizado' ? 'selected' : ''}>Finalizado</option>
-                                        <option value="atrasado" ${cliente.estado === 'atrasado' ? 'selected' : ''}>Atrasado</option>
+                                        <option value="ativo" ${cliente.estado === 'ativo' ? 'selected' : ''}>🟢 Activo</option>
+                                        <option value="finalizado" ${cliente.estado === 'finalizado' ? 'selected' : ''}>✅ Finalizado</option>
+                                        <option value="atrasado" ${cliente.estado === 'atrasado' ? 'selected' : ''}>🔴 Atrasado</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Monto Prestado (R$)</label>
+                                    <label class="form-label">💰 Monto Prestado (R$)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditMonto" value="${cliente.montoTotal || 0}" step="0.01">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Monto Cobrado (R$)</label>
+                                    <label class="form-label">💵 Monto Cobrado (R$)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditCobrado" value="${cliente.montoPagado || 0}" step="0.01">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Total a Pagar (R$)</label>
+                                    <label class="form-label">📋 Total a Pagar (R$)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalPagar" value="${cliente.totalAPagar || 0}" step="0.01">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Comisión (%)</label>
+                                    <label class="form-label">📈 Comisión (%)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditComision" value="${cliente.comisionPorcentaje || 20}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Parcelas Pagas</label>
+                                    <label class="form-label">✔️ Parcelas Pagas</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditParcelasPagas" value="${cliente.parcelasPagas || 0}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Total Parcelas</label>
+                                    <label class="form-label">📅 Total Parcelas</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalParcelas" value="${cliente.numeroParcelas || 0}">
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">🛡️ Microseguro (R$)</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditMicroseguro" value="${cliente.microseguro || 0}" step="0.01">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">🏪 Tipo de Negocio</label>
+                                    <select class="form-control form-control-dark" id="adminEditTipoNegocio">
+                                        <option value="" ${!cliente.tipoNegocio ? 'selected' : ''}>-- Seleccionar --</option>
+                                        <option value="tienda" ${cliente.tipoNegocio === 'tienda' ? 'selected' : ''}>🏪 Tienda</option>
+                                        <option value="restaurante" ${cliente.tipoNegocio === 'restaurante' ? 'selected' : ''}>🍽️ Restaurante</option>
+                                        <option value="servicios" ${cliente.tipoNegocio === 'servicios' ? 'selected' : ''}>🔧 Servicios</option>
+                                        <option value="ambulante" ${cliente.tipoNegocio === 'ambulante' ? 'selected' : ''}>🛒 Ambulante</option>
+                                        <option value="otro" ${cliente.tipoNegocio === 'otro' ? 'selected' : ''}>📦 Otro</option>
+                                    </select>
+                                </div>
                                 <div class="col-12">
-                                    <label class="form-label">Ubicación</label>
+                                    <label class="form-label">📍 Ubicación / Dirección</label>
                                     <input type="text" class="form-control form-control-dark" id="adminEditUbicacion" value="${cliente.ubicacion || ''}">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Notas</label>
-                                    <textarea class="form-control form-control-dark" id="adminEditNotas" rows="2">${cliente.notas || ''}</textarea>
+                                    <label class="form-label">📝 Notas sobre el cliente</label>
+                                    <textarea class="form-control form-control-dark" id="adminEditNotas" rows="2" placeholder="Información adicional...">${cliente.notas || ''}</textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Resumen de cálculos -->
+                            <div class="row g-2 mt-3" style="background: var(--bg-hover); border-radius: 12px; padding: 15px;">
+                                <div class="col-3 text-center">
+                                    <small class="text-secondary">Comisión</small>
+                                    <div style="color: var(--accent-green); font-weight: bold;">R$ ${((cliente.totalAPagar || 0) - (cliente.montoTotal || 0)).toFixed(2)}</div>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <small class="text-secondary">Microseguro</small>
+                                    <div style="color: var(--accent-purple); font-weight: bold;">R$ ${(cliente.microseguro || 0).toFixed(2)}</div>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <small class="text-secondary">Pendiente</small>
+                                    <div style="color: var(--accent-red); font-weight: bold;">R$ ${((cliente.totalAPagar || 0) - (cliente.montoPagado || 0)).toFixed(2)}</div>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <small class="text-secondary">Por Parcela</small>
+                                    <div style="color: var(--accent-cyan); font-weight: bold;">R$ ${(cliente.valorParcela || 0).toFixed(2)}</div>
                                 </div>
                             </div>
                         </div>
@@ -7561,6 +7596,8 @@
                 comisionPorcentaje: parseFloat(document.getElementById('adminEditComision').value) || 20,
                 parcelasPagas: parseInt(document.getElementById('adminEditParcelasPagas').value) || 0,
                 numeroParcelas: parseInt(document.getElementById('adminEditTotalParcelas').value) || 0,
+                microseguro: parseFloat(document.getElementById('adminEditMicroseguro').value) || 0,
+                tipoNegocio: document.getElementById('adminEditTipoNegocio').value,
                 ubicacion: document.getElementById('adminEditUbicacion').value,
                 notas: document.getElementById('adminEditNotas').value
             };
