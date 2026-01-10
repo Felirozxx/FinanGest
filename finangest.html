@@ -91,8 +91,9 @@
         }
         .stat-card {
             background: var(--bg-card); border-radius: 16px;
-            padding: 24px; border: 1px solid var(--border-color);
+            padding: 20px; border: 1px solid var(--border-color);
             position: relative; overflow: hidden;
+            min-width: 180px;
         }
         .stat-card::before {
             content: ''; position: absolute; top: 0; left: 0;
@@ -102,8 +103,8 @@
         .stat-card.yellow::before { background: var(--accent-yellow); }
         .stat-card.red::before { background: var(--accent-red); }
         .stat-card.purple::before { background: var(--accent-purple); }
-        .stat-value { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
-        .stat-label { color: var(--text-secondary); font-size: 0.9rem; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; margin-bottom: 5px; white-space: nowrap; }
+        .stat-label { color: var(--text-secondary); font-size: 0.85rem; }
         .btn-primary-custom {
             background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
             border: none; padding: 12px 28px; border-radius: 8px;
@@ -590,7 +591,62 @@
                     <div class="col-lg-4">
                         <div class="card-dark h-100">
                             <h5 class="mb-4"><i class="fas fa-tasks me-2" style="color: var(--accent-green);"></i>Cobros de Hoy</h5>
-                            <div id="cobrosHoyPreview"><!-- Se llena dinámicamente --></div>
+                            <div id="cobrosHoyPreview" style="max-height: 250px; overflow-y: auto;"><!-- Se llena dinámicamente --></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Segunda fila del dashboard -->
+                <div class="row g-4 mt-2">
+                    <div class="col-lg-4">
+                        <div class="card-dark h-100">
+                            <h5 class="mb-4"><i class="fas fa-exclamation-triangle me-2" style="color: var(--accent-yellow);"></i>Clientes Atrasados</h5>
+                            <div id="clientesAtrasadosPreview" style="max-height: 200px; overflow-y: auto;">
+                                <p class="text-secondary text-center">Cargando...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card-dark h-100">
+                            <h5 class="mb-4"><i class="fas fa-trophy me-2" style="color: var(--accent-green);"></i>Mejores Clientes</h5>
+                            <div id="mejoresClientesPreview" style="max-height: 200px; overflow-y: auto;">
+                                <p class="text-secondary text-center">Cargando...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card-dark h-100">
+                            <h5 class="mb-4"><i class="fas fa-calendar-check me-2" style="color: var(--accent-cyan);"></i>Resumen del Mes</h5>
+                            <div id="resumenMesPreview">
+                                <div class="d-flex justify-content-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-color);">
+                                    <span class="text-secondary">Nuevos clientes</span>
+                                    <span id="mesNuevosClientes" style="color: var(--accent-cyan); font-weight: bold;">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-color);">
+                                    <span class="text-secondary">Préstamos realizados</span>
+                                    <span id="mesPrestamos" style="color: var(--accent-green); font-weight: bold;">R$ 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-color);">
+                                    <span class="text-secondary">Cobros recibidos</span>
+                                    <span id="mesCobros" style="color: var(--accent-yellow); font-weight: bold;">R$ 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-secondary">Ganancia estimada</span>
+                                    <span id="mesGanancia" style="color: var(--accent-purple); font-weight: bold;">R$ 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tercera fila - Actividad reciente -->
+                <div class="row g-4 mt-2">
+                    <div class="col-12">
+                        <div class="card-dark">
+                            <h5 class="mb-4"><i class="fas fa-history me-2" style="color: var(--accent-purple);"></i>Actividad Reciente</h5>
+                            <div id="actividadReciente" style="max-height: 200px; overflow-y: auto;">
+                                <p class="text-secondary text-center">Cargando actividad...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2372,6 +2428,151 @@
             document.getElementById('statCobrado').textContent = 'R$ ' + totalCobrado.toFixed(2);
             document.getElementById('statPendiente').textContent = 'R$ ' + totalPendiente.toFixed(2);
             renderCobrosPreview();
+            renderClientesAtrasados();
+            renderMejoresClientes();
+            renderResumenMes();
+            renderActividadReciente();
+        }
+        
+        function renderClientesAtrasados() {
+            const container = document.getElementById('clientesAtrasadosPreview');
+            if (!container) return;
+            
+            const hoy = new Date();
+            const atrasados = clientes.filter(c => {
+                if (c.estado !== 'ativo') return false;
+                const fechaCobro = new Date(c.proximoPago || c.fechaInicio);
+                return fechaCobro < hoy && (c.totalAPagar - c.montoPagado) > 0;
+            }).slice(0, 5);
+            
+            if (atrasados.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: var(--accent-green);"><i class="fas fa-check-circle me-2"></i>Sin clientes atrasados</p>';
+                return;
+            }
+            
+            container.innerHTML = atrasados.map(c => `
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <div style="font-weight: 500;">${c.nombre}</div>
+                        <small class="text-secondary">${c.telefono || ''}</small>
+                    </div>
+                    <span style="color: var(--accent-red); font-weight: bold;">R$ ${((c.totalAPagar || 0) - (c.montoPagado || 0)).toFixed(2)}</span>
+                </div>
+            `).join('');
+        }
+        
+        function renderMejoresClientes() {
+            const container = document.getElementById('mejoresClientesPreview');
+            if (!container) return;
+            
+            const buenos = clientes.filter(c => c.tipoCliente === 'bueno' || c.montoPagado > 0)
+                .sort((a, b) => (b.montoPagado || 0) - (a.montoPagado || 0))
+                .slice(0, 5);
+            
+            if (buenos.length === 0) {
+                container.innerHTML = '<p class="text-center text-secondary">Sin datos aún</p>';
+                return;
+            }
+            
+            container.innerHTML = buenos.map((c, i) => `
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
+                    <div class="d-flex align-items-center">
+                        <span style="color: ${i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'var(--text-secondary)'}; margin-right: 10px;">
+                            ${i < 3 ? '<i class="fas fa-medal"></i>' : (i + 1) + '.'}
+                        </span>
+                        <span>${c.nombre}</span>
+                    </div>
+                    <span style="color: var(--accent-green); font-weight: bold;">R$ ${(c.montoPagado || 0).toFixed(2)}</span>
+                </div>
+            `).join('');
+        }
+        
+        function renderResumenMes() {
+            const hoy = new Date();
+            const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+            
+            const clientesMes = clientes.filter(c => {
+                const fecha = new Date(c.fechaInicio || c.createdAt);
+                return fecha >= inicioMes;
+            });
+            
+            const prestamosMes = clientesMes.reduce((s, c) => s + (c.montoTotal || 0), 0);
+            const cobrosMes = clientes.reduce((s, c) => {
+                const pagos = (c.historialPagos || []).filter(p => new Date(p.fecha) >= inicioMes);
+                return s + pagos.reduce((ps, p) => ps + (p.monto || 0), 0);
+            }, 0);
+            
+            const ganancia = cobrosMes - prestamosMes;
+            
+            const el1 = document.getElementById('mesNuevosClientes');
+            const el2 = document.getElementById('mesPrestamos');
+            const el3 = document.getElementById('mesCobros');
+            const el4 = document.getElementById('mesGanancia');
+            
+            if (el1) el1.textContent = clientesMes.length;
+            if (el2) el2.textContent = 'R$ ' + prestamosMes.toFixed(2);
+            if (el3) el3.textContent = 'R$ ' + cobrosMes.toFixed(2);
+            if (el4) {
+                el4.textContent = 'R$ ' + ganancia.toFixed(2);
+                el4.style.color = ganancia >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+            }
+        }
+        
+        function renderActividadReciente() {
+            const container = document.getElementById('actividadReciente');
+            if (!container) return;
+            
+            const actividades = [];
+            
+            // Recopilar pagos recientes
+            clientes.forEach(c => {
+                (c.historialPagos || []).forEach(p => {
+                    actividades.push({
+                        tipo: 'pago',
+                        cliente: c.nombre,
+                        monto: p.monto,
+                        fecha: new Date(p.fecha),
+                        icon: 'fa-money-bill-wave',
+                        color: 'var(--accent-green)'
+                    });
+                });
+                // Agregar creación de cliente
+                if (c.fechaInicio || c.createdAt) {
+                    actividades.push({
+                        tipo: 'nuevo',
+                        cliente: c.nombre,
+                        monto: c.montoTotal,
+                        fecha: new Date(c.fechaInicio || c.createdAt),
+                        icon: 'fa-user-plus',
+                        color: 'var(--accent-cyan)'
+                    });
+                }
+            });
+            
+            // Ordenar por fecha descendente y tomar los últimos 10
+            actividades.sort((a, b) => b.fecha - a.fecha);
+            const recientes = actividades.slice(0, 10);
+            
+            if (recientes.length === 0) {
+                container.innerHTML = '<p class="text-center text-secondary">Sin actividad reciente</p>';
+                return;
+            }
+            
+            container.innerHTML = recientes.map(a => {
+                const fechaStr = a.fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="d-flex align-items-center mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
+                        <div style="width: 35px; height: 35px; border-radius: 50%; background: ${a.color}20; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                            <i class="fas ${a.icon}" style="color: ${a.color};"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.9rem;">${a.tipo === 'pago' ? 'Pago recibido' : 'Nuevo préstamo'} - <strong>${a.cliente}</strong></div>
+                            <small class="text-secondary">${fechaStr}</small>
+                        </div>
+                        <span style="color: ${a.color}; font-weight: bold;">R$ ${(a.monto || 0).toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
         }
         
         function resetChartDates() {
