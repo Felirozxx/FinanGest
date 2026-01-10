@@ -2227,13 +2227,28 @@
         }
 
         async function loadData() {
+            // Mostrar spinner de carga
+            const dashboardSection = document.getElementById('dashboard');
+            if (dashboardSection) {
+                const statsCards = dashboardSection.querySelector('.row');
+                if (statsCards) {
+                    statsCards.insertAdjacentHTML('beforebegin', '<div id="loadingSpinner" class="text-center py-4"><i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary);"></i><p class="mt-2 text-secondary">Cargando datos...</p></div>');
+                }
+            }
+            
             try {
                 const res = await fetch(API_URL + '/api/clientes?userId=' + currentUser.id);
                 clientes = await res.json();
+                if (clientes.error) clientes = [];
                 
                 // Cargar gastos
                 const gastosRes = await fetch(API_URL + '/api/gastos?userId=' + currentUser.id);
                 gastos = await gastosRes.json();
+                if (gastos.error) gastos = [];
+                
+                // Ocultar spinner
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) spinner.remove();
                 
                 if (currentUser.role === 'admin' || currentUser.isAdmin) {
                     const usersRes = await fetch(API_URL + '/api/users');
@@ -2246,6 +2261,9 @@
                 }
             } catch (e) {
                 console.error('Error loading data:', e);
+                // Ocultar spinner en caso de error
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) spinner.remove();
             }
         }
 
