@@ -5904,18 +5904,23 @@
         }
 
         async function crearBackupManual() {
-            if (!confirm('¿Crear un backup ahora?')) return;
+            if (!confirm('¿Crear un backup del sistema ahora?')) return;
             try {
-                const res = await fetch(API_URL + '/api/admin/backup', { method: 'POST' });
+                const res = await fetch(API_URL + '/api/admin/backup', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
                 const data = await res.json();
                 if (data.success) {
                     alert('✅ ' + data.archivo);
                     cargarBackups();
                 } else {
-                    alert('Error creando backup');
+                    alert('Error creando backup: ' + (data.error || 'Error desconocido'));
                 }
             } catch (e) {
-                alert('Error de conexión');
+                console.error('Error backup:', e);
+                alert('Error de conexión: ' + e.message);
             }
         }
 

@@ -689,34 +689,39 @@ exports.handler = async (event, context) => {
         
         // POST crear backup del sistema (admin)
         if (path === '/admin/backup' && method === 'POST') {
-            // Obtener todos los datos del sistema
-            const usuariosData = await db.collection('users').find({}).toArray();
-            const clientesData = await db.collection('clientes').find({}).toArray();
-            const gastosData = await db.collection('gastos').find({}).toArray();
-            
-            const backup = {
-                tipo: 'sistema',
-                fecha: new Date().toISOString(),
-                usuarios: usuariosData,
-                clientes: clientesData,
-                gastos: gastosData,
-                auto: body.auto || false
-            };
-            
-            const result = await db.collection('system-backups').insertOne(backup);
-            
-            // Mantener solo los últimos 7 días de backups
-            const hace7Dias = new Date();
-            hace7Dias.setDate(hace7Dias.getDate() - 7);
-            await db.collection('system-backups').deleteMany({
-                fecha: { $lt: hace7Dias.toISOString() }
-            });
-            
-            return respond(200, { 
-                success: true, 
-                archivo: `Backup creado: ${usuariosData.length} usuarios, ${clientesData.length} clientes, ${gastosData.length} gastos`,
-                backupId: result.insertedId.toString() 
-            });
+            try {
+                // Obtener todos los datos del sistema
+                const usuariosData = await db.collection('users').find({}).toArray();
+                const clientesData = await db.collection('clientes').find({}).toArray();
+                const gastosData = await db.collection('gastos').find({}).toArray();
+                
+                const backup = {
+                    tipo: 'sistema',
+                    fecha: new Date().toISOString(),
+                    usuarios: usuariosData,
+                    clientes: clientesData,
+                    gastos: gastosData,
+                    auto: body.auto || false
+                };
+                
+                const result = await db.collection('system-backups').insertOne(backup);
+                
+                // Mantener solo los últimos 7 días de backups
+                const hace7Dias = new Date();
+                hace7Dias.setDate(hace7Dias.getDate() - 7);
+                await db.collection('system-backups').deleteMany({
+                    fecha: { $lt: hace7Dias.toISOString() }
+                });
+                
+                return respond(200, { 
+                    success: true, 
+                    archivo: `Backup creado: ${usuariosData.length} usuarios, ${clientesData.length} clientes, ${gastosData.length} gastos`,
+                    backupId: result.insertedId.toString() 
+                });
+            } catch (err) {
+                console.error('Error creando backup sistema:', err);
+                return respond(500, { success: false, error: err.message });
+            }
         }
         
         // POST restaurar backup del sistema
