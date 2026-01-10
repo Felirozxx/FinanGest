@@ -378,7 +378,7 @@ exports.handler = async (event, context) => {
                 return respond(200, { success: false, error: 'ID de cliente no proporcionado' });
             }
             
-            // Remover _id y id del body para evitar errores de MongoDB
+            // Extraer creadoPor del body antes de removerlo
             const { _id, id, creadoPor: bodyCreadoPor, ...updateData } = body;
             
             let result;
@@ -388,25 +388,25 @@ exports.handler = async (event, context) => {
                     return respond(200, { success: false, error: 'Cliente no encontrado' });
                 }
                 
-                // Obtener el creadoPor original del documento
-                let originalCreadoPor = doc.creadoPor || doc.userId || (doc.cliente && doc.cliente.creadoPor);
+                // Prioridad: 1) creadoPor del body (enviado desde frontend), 2) del documento original
+                let finalCreadoPor = bodyCreadoPor || doc.creadoPor || doc.userId || (doc.cliente && doc.cliente.creadoPor) || (doc.cliente && doc.cliente.userId);
                 
                 if (doc.cliente) {
                     // Documento con estructura anidada
                     const mergedData = { 
                         ...doc.cliente, 
                         ...updateData,
-                        creadoPor: originalCreadoPor // Siempre preservar
+                        creadoPor: finalCreadoPor
                     };
                     result = await db.collection('clients').updateOne(
                         { _id: new ObjectId(clientId) }, 
-                        { $set: { cliente: mergedData, creadoPor: originalCreadoPor } }
+                        { $set: { cliente: mergedData, creadoPor: finalCreadoPor, userId: finalCreadoPor } }
                     );
                 } else {
-                    // Documento plano - NUNCA sobrescribir creadoPor
+                    // Documento plano - guardar creadoPor y userId
                     result = await db.collection('clients').updateOne(
                         { _id: new ObjectId(clientId) }, 
-                        { $set: { ...updateData, creadoPor: originalCreadoPor } }
+                        { $set: { ...updateData, creadoPor: finalCreadoPor, userId: finalCreadoPor } }
                     );
                 }
             } catch (e) {
@@ -414,10 +414,10 @@ exports.handler = async (event, context) => {
                 try {
                     const doc = await db.collection('clients').findOne({ id: clientId });
                     if (doc) {
-                        let originalCreadoPor = doc.creadoPor || doc.userId;
+                        let finalCreadoPor = bodyCreadoPor || doc.creadoPor || doc.userId;
                         result = await db.collection('clients').updateOne(
                             { id: clientId }, 
-                            { $set: { ...updateData, creadoPor: originalCreadoPor } }
+                            { $set: { ...updateData, creadoPor: finalCreadoPor, userId: finalCreadoPor } }
                         );
                     }
                 } catch (e2) {

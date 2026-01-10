@@ -7593,6 +7593,7 @@
                                 </div>
                                 <input type="hidden" id="adminEditLat" value="${cliente.lat || ''}">
                                 <input type="hidden" id="adminEditLng" value="${cliente.lng || ''}">
+                                <input type="hidden" id="adminEditCreadoPor" value="${cliente.creadoPor || cliente.userId || ''}">
                                 <small id="adminCoordsInfo" class="text-secondary" style="display: ${cliente.lat && cliente.lng ? 'block' : 'none'};">
                                     <i class="fas fa-check-circle text-success"></i> Coordenadas guardadas
                                 </small>
@@ -7724,6 +7725,9 @@
         }
         
         async function guardarAdminEditCliente(clienteId) {
+            // Obtener creadoPor original del campo oculto
+            const creadoPorOriginal = document.getElementById('adminEditCreadoPor').value;
+            
             const updates = {
                 nombre: document.getElementById('adminEditNombre').value,
                 telefono: document.getElementById('adminEditTelefono').value,
@@ -7738,7 +7742,8 @@
                 ubicacion: document.getElementById('adminEditUbicacion').value,
                 notas: document.getElementById('adminEditNotas').value,
                 lat: document.getElementById('adminEditLat').value || null,
-                lng: document.getElementById('adminEditLng').value || null
+                lng: document.getElementById('adminEditLng').value || null,
+                creadoPor: creadoPorOriginal // Enviar el creadoPor original
             };
             
             // Calcular valor por parcela
