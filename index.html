@@ -1072,6 +1072,12 @@
                     <h6 class="mb-3"><i class="fas fa-money-bill-wave me-2" style="color: var(--accent-green);"></i>Últimos Pagos Recibidos</h6>
                     <div id="historialPagos"><!-- Se llena dinámicamente --></div>
                 </div>
+                
+                <!-- Clientes Eliminados -->
+                <div class="card-dark mt-4">
+                    <h6 class="mb-3"><i class="fas fa-trash-alt me-2" style="color: var(--accent-red);"></i>Clientes Eliminados</h6>
+                    <div id="clientesEliminados"><!-- Se llena dinámicamente --></div>
+                </div>
             </div>
             <!-- Mapa Section -->
             <div id="mapa" class="section">
@@ -2258,6 +2264,7 @@
                     updateStats();
                     renderClientes();
                     renderChart();
+                    cargarClientesEliminados();
                 }
             } catch (e) {
                 console.error('Error loading data:', e);
@@ -2581,8 +2588,11 @@
                             <i class="fas fa-dollar-sign"></i>
                         </button>
                         ` : ''}
-                        <button class="btn btn-sm" style="background: var(--bg-hover); color: var(--text-secondary);" onclick="verDetalles('${c.id}')" title="Ver detalles">
+                        <button class="btn btn-sm me-1" style="background: var(--bg-hover); color: var(--text-secondary);" onclick="verDetalles('${c.id}')" title="Ver detalles">
                             <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="eliminarCliente('${c.id}')" title="Eliminar cliente">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </td>
                 </tr>`;
@@ -4317,6 +4327,13 @@
                 clienteRenovandoId = null;
             }
             
+            // Si es un restablecimiento, eliminar de la papelera
+            if (clienteRestableciendo) {
+                await fetch(API_URL + '/api/clientes-eliminados/' + clienteRestableciendo.id, { method: 'DELETE' });
+                clienteRestableciendo = null;
+                cargarClientesEliminados();
+            }
+            
             try {
                 await fetch(API_URL + '/api/clientes', {
                     method: 'POST',
@@ -4397,6 +4414,105 @@
             const c = clientes.find(cl => cl.id === id);
             if (!c) return;
             alert(`${c.nombre}\nTeléfono: ${c.telefono || 'N/A'}\nPrestado: R$ ${c.montoTotal}\nTotal: R$ ${c.totalAPagar}\nPagado: R$ ${c.montoPagado}\nParcelas: ${c.parcelasPagas}/${c.numeroParcelas}`);
+        }
+        
+        // ========== ELIMINAR Y RESTABLECER CLIENTES ==========
+        let clientesEliminados = [];
+        
+        async function eliminarCliente(id) {
+            const c = clientes.find(cl => cl.id === id);
+            if (!c) return;
+            
+            if (!confirm(`¿Eliminar al cliente "${c.nombre}"?\n\nEl cliente será movido a la papelera y podrás restablecerlo desde Mi Historial.`)) return;
+            
+            try {
+                // Guardar en colección de eliminados
+                const clienteEliminado = { ...c, fechaEliminacion: new Date().toISOString(), creadoPor: currentUser.id };
+                await fetch(API_URL + '/api/clientes-eliminados', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(clienteEliminado)
+                });
+                
+                // Eliminar de clientes activos
+                await fetch(API_URL + '/api/clientes/' + id, { method: 'DELETE' });
+                
+                // Actualizar lista local
+                clientes = clientes.filter(cl => cl.id !== id);
+                renderClientes();
+                updateStats();
+                cargarClientesEliminados();
+                alert('✅ Cliente eliminado. Puedes restablecerlo desde Mi Historial.');
+            } catch (e) {
+                alert('Error al eliminar: ' + e.message);
+            }
+        }
+        
+        async function cargarClientesEliminados() {
+            try {
+                const res = await fetch(API_URL + '/api/clientes-eliminados?userId=' + currentUser.id);
+                clientesEliminados = await res.json();
+                if (clientesEliminados.error) clientesEliminados = [];
+                renderClientesEliminados();
+            } catch (e) {
+                clientesEliminados = [];
+                renderClientesEliminados();
+            }
+        }
+        
+        function renderClientesEliminados() {
+            const container = document.getElementById('clientesEliminados');
+            if (!container) return;
+            
+            if (!clientesEliminados || clientesEliminados.length === 0) {
+                container.innerHTML = '<p class="text-secondary text-center py-3">No hay clientes eliminados</p>';
+                return;
+            }
+            
+            container.innerHTML = clientesEliminados.map(c => {
+                const fechaElim = c.fechaEliminacion ? new Date(c.fechaEliminacion).toLocaleDateString('es-BR') : 'Desconocida';
+                return `
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
+                    <div>
+                        <strong style="color: var(--accent-red);"><i class="fas fa-user-times me-2"></i>${c.nombre}</strong>
+                        <br><small class="text-secondary"><i class="fas fa-phone me-1"></i>${c.telefono || 'Sin teléfono'}</small>
+                        <br><small class="text-secondary"><i class="fas fa-calendar me-1"></i>Eliminado: ${fechaElim}</small>
+                    </div>
+                    <button class="btn btn-sm" style="background: var(--accent-green); color: #fff;" onclick="restablecerCliente('${c.id}')" title="Restablecer cliente">
+                        <i class="fas fa-undo me-1"></i>Restablecer
+                    </button>
+                </div>`;
+            }).join('');
+        }
+        
+        let clienteRestableciendo = null;
+        
+        function restablecerCliente(id) {
+            const c = clientesEliminados.find(cl => cl.id === id);
+            if (!c) return;
+            
+            clienteRestableciendo = c;
+            
+            // Abrir modal de nuevo cliente con datos prellenados
+            document.getElementById('clienteNombre').value = c.nombre || '';
+            document.getElementById('clienteTelefono').value = c.telefono || '';
+            document.getElementById('clienteUbicacion').value = c.ubicacion || '';
+            document.getElementById('clienteLat').value = c.lat || '';
+            document.getElementById('clienteLng').value = c.lng || '';
+            document.getElementById('coordsInfo').style.display = (c.lat && c.lng) ? 'block' : 'none';
+            document.getElementById('clienteTipo').value = c.tipoCliente || 'nuevo';
+            document.getElementById('clienteNegocio').value = c.tipoNegocio || '';
+            document.getElementById('clienteNegocioOtro').value = c.negocioOtro || '';
+            document.getElementById('clienteNombreNegocio').value = c.nombreNegocio || '';
+            document.getElementById('clienteNotas').value = c.notas || '';
+            document.getElementById('clienteMonto').value = c.montoTotal || '';
+            document.getElementById('clienteParcelas').value = c.numeroParcelas || '';
+            document.getElementById('clienteComision').value = c.comisionPorcentaje || '20';
+            
+            // Calcular valores
+            calcularPrestamo();
+            
+            new bootstrap.Modal(document.getElementById('clienteModal')).show();
         }
         
         let clienteRenovandoId = null;

@@ -514,6 +514,56 @@ app.delete('/api/gastos/:id', async (req, res) => {
     }
 });
 
+// ============ CLIENTES ELIMINADOS ============
+// Get clientes eliminados
+app.get('/api/clientes-eliminados', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const { userId } = req.query;
+        let query = {};
+        if (userId && userId !== 'admin') {
+            query = { creadoPor: userId };
+        }
+        const eliminados = await database.collection('clientes_eliminados').find(query).sort({ fechaEliminacion: -1 }).toArray();
+        const safeEliminados = eliminados.map(c => ({ ...c, id: c._id.toString() }));
+        res.json(safeEliminados);
+    } catch (e) {
+        res.json([]);
+    }
+});
+
+// Create cliente eliminado
+app.post('/api/clientes-eliminados', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const result = await database.collection('clientes_eliminados').insertOne(req.body);
+        res.json({ success: true, id: result.insertedId });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Delete cliente eliminado (al restablecer)
+app.delete('/api/clientes-eliminados/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let result;
+        try {
+            result = await database.collection('clientes_eliminados').deleteOne(
+                { _id: new ObjectId(searchId) }
+            );
+        } catch (e) {
+            result = await database.collection('clientes_eliminados').deleteOne(
+                { id: searchId }
+            );
+        }
+        res.json({ success: result.deletedCount > 0 });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Create client
 app.post('/api/clients', async (req, res) => {
     try {
