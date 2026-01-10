@@ -548,18 +548,35 @@ app.delete('/api/clientes-eliminados/:id', async (req, res) => {
     try {
         const database = await connectDB();
         const searchId = req.params.id;
-        let result;
+        let result = { deletedCount: 0 };
+        
+        // Primero intentar con ObjectId
         try {
             result = await database.collection('clientes_eliminados').deleteOne(
                 { _id: new ObjectId(searchId) }
             );
         } catch (e) {
+            // Si falla ObjectId, continuar con otras búsquedas
+        }
+        
+        // Si no se eliminó, buscar por campo id
+        if (result.deletedCount === 0) {
             result = await database.collection('clientes_eliminados').deleteOne(
                 { id: searchId }
             );
         }
+        
+        // Si aún no se eliminó, buscar por id como número
+        if (result.deletedCount === 0) {
+            result = await database.collection('clientes_eliminados').deleteOne(
+                { id: parseInt(searchId) }
+            );
+        }
+        
+        console.log('Delete clientes-eliminados result:', searchId, result.deletedCount);
         res.json({ success: result.deletedCount > 0 });
     } catch (e) {
+        console.log('Delete clientes-eliminados error:', e.message);
         res.json({ success: false, error: e.message });
     }
 });
