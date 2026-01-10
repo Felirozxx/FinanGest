@@ -7581,6 +7581,10 @@
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">📝 Notas sobre el cliente</label>
+                                <textarea class="form-control form-control-dark" id="adminEditNotas" rows="2" placeholder="Información adicional...">${cliente.notas || ''}</textarea>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">📍 Ubicación / Dirección</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control form-control-dark" id="adminEditUbicacion" value="${cliente.ubicacion || ''}" placeholder="Dirección del cliente">
@@ -7594,10 +7598,6 @@
                                 <small id="adminCoordsInfo" class="text-secondary" style="display: ${cliente.lat && cliente.lng ? 'block' : 'none'};">
                                     <i class="fas fa-check-circle text-success"></i> Coordenadas guardadas
                                 </small>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">📝 Notas sobre el cliente</label>
-                                <textarea class="form-control form-control-dark" id="adminEditNotas" rows="2" placeholder="Información adicional...">${cliente.notas || ''}</textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
