@@ -82,6 +82,11 @@ app.post('/api/login', async (req, res) => {
         
         if (!user) return res.json({ success: false, error: 'Usuario no encontrado' });
         
+        // Verificar si el usuario está bloqueado
+        if (user.blocked && user.role !== 'admin') {
+            return res.json({ success: false, error: 'Tu cuenta ha sido bloqueada. Contacta al administrador.' });
+        }
+        
         // Verificar contraseña (soporta encriptada y sin encriptar)
         if (!verifyPassword(password, user.password)) {
             return res.json({ success: false, error: 'Contraseña incorrecta' });
