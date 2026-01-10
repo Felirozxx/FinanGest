@@ -2262,6 +2262,7 @@
         function showMainApp() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('appFooter').style.display = 'block';
             const isAdmin = currentUser.role === 'admin' || currentUser.isAdmin;
             document.getElementById('userName').textContent = isAdmin ? 'Administrador' : currentUser.nombre;
             document.getElementById('userAvatar').textContent = isAdmin ? 'A' : currentUser.nombre.charAt(0).toUpperCase();
@@ -5907,7 +5908,7 @@
     </script>
     
     <!-- Footer decorativo -->
-    <footer id="appFooter" style="background: linear-gradient(180deg, var(--bg-primary) 0%, #0d0d14 100%); padding: 60px 30px 30px; margin-left: 260px; border-top: 1px solid var(--border-color);">
+    <footer id="appFooter" style="display: none; background: linear-gradient(180deg, var(--bg-primary) 0%, #0d0d14 100%); padding: 60px 30px 30px; margin-left: 260px; border-top: 1px solid var(--border-color);">
         <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
             <!-- Logo grande decorativo -->
             <div style="margin-bottom: 40px; opacity: 0.15;">
