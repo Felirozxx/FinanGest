@@ -4225,6 +4225,7 @@
                 container.innerHTML = backups.map((b, i) => {
                     const fecha = b.fecha ? new Date(b.fecha).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Fecha desconocida';
                     const info = `${b.usuarios || 0} usuarios, ${b.clientes || 0} clientes, ${b.gastos || 0} gastos`;
+                    const backupId = b.id || b._id;
                     return `
                     <div class="d-flex justify-content-between align-items-center py-2 ${i > 0 ? 'border-top' : ''}" style="border-color: var(--border-color) !important;">
                         <div>
@@ -4232,7 +4233,7 @@
                             <br><small class="text-secondary">${fecha} - ${info}</small>
                         </div>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-sm" style="background: var(--accent-yellow); color: #000;" onclick="restaurarBackupGeneral('${b.id}')" title="Restaurar">
+                            <button class="btn btn-sm" style="background: var(--accent-yellow); color: #000;" onclick="restaurarBackupGeneral('${backupId}')" title="Restaurar">
                                 <i class="fas fa-undo"></i>
                             </button>
                         </div>
