@@ -2360,8 +2360,8 @@
                     const temp = fechaInicio;
                     fechaInicio = fechaFin;
                     fechaFin = temp;
-                    inputInicio.value = fechaInicio.toISOString().split('T')[0];
-                    inputFin.value = fechaFin.toISOString().split('T')[0];
+                    inputInicio.value = getFechaLocal();
+                    inputFin.value = getFechaLocal();
                 }
             } else {
                 // Por defecto: desde 1 de enero del año actual hasta hoy
@@ -2369,9 +2369,13 @@
                 fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
                 fechaInicio = new Date(hoy.getFullYear(), 0, 1, 0, 0, 0); // 1 de enero
                 
-                inputInicio.value = fechaInicio.toISOString().split('T')[0];
-                inputFin.value = fechaFin.toISOString().split('T')[0];
+                inputInicio.value = getFechaLocal();
+                inputFin.value = getFechaLocal();
             }
+            
+            // Variables para acumular totales
+            let cobradoAcumulado = 0;
+            let prestadoAcumulado = 0;
             
             // Generar días entre las fechas
             let current = new Date(fechaInicio);
@@ -2408,8 +2412,12 @@
                     }
                 });
                 
-                datosCobrado.push(cobradoDia);
-                datosPrestado.push(prestadoDia);
+                // Acumular totales
+                cobradoAcumulado += cobradoDia;
+                prestadoAcumulado += prestadoDia;
+                
+                datosCobrado.push(cobradoAcumulado);
+                datosPrestado.push(prestadoAcumulado);
                 
                 current.setDate(current.getDate() + 1);
             }
