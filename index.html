@@ -4488,9 +4488,16 @@
         let clienteRestableciendo = null;
         
         function restablecerCliente(id) {
-            const c = clientesEliminados.find(cl => cl.id === id);
-            if (!c) return;
+            console.log('Restableciendo cliente con ID:', id);
+            console.log('Clientes eliminados:', clientesEliminados);
+            const c = clientesEliminados.find(cl => cl.id === id || cl._id === id);
+            if (!c) {
+                console.log('Cliente no encontrado');
+                alert('Error: Cliente no encontrado');
+                return;
+            }
             
+            console.log('Cliente encontrado:', c);
             clienteRestableciendo = c;
             
             // Abrir modal de nuevo cliente con datos prellenados
