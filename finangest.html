@@ -3651,11 +3651,13 @@
             
             // Total cobrado este mes (de todos los clientes, no solo los nuevos)
             const cobrosMes = clientesParaResumen.reduce((s, c) => {
-                const pagos = (c.historialPagos || []).filter(p => {
+                // Buscar en ambos arrays: pagos (nuevo) y historialPagos (legacy)
+                const todosPagos = [...(c.pagos || []), ...(c.historialPagos || [])];
+                const pagosMes = todosPagos.filter(p => {
                     const fechaPago = new Date(p.fecha);
                     return fechaPago >= inicioMes && !isNaN(fechaPago.getTime());
                 });
-                return s + pagos.reduce((ps, p) => ps + (p.monto || 0), 0);
+                return s + pagosMes.reduce((ps, p) => ps + (p.valor || p.monto || 0), 0);
             }, 0);
             
             // Ganancia = cobros - préstamos del mes
@@ -3681,13 +3683,14 @@
             
             const actividades = [];
             
-            // Recopilar pagos recientes
+            // Recopilar pagos recientes (de ambos arrays: pagos y historialPagos)
             clientes.forEach(c => {
-                (c.historialPagos || []).forEach(p => {
+                const todosPagos = [...(c.pagos || []), ...(c.historialPagos || [])];
+                todosPagos.forEach(p => {
                     actividades.push({
                         tipo: 'pago',
                         cliente: c.nombre,
-                        monto: p.monto,
+                        monto: p.valor || p.monto || 0,
                         fecha: new Date(p.fecha),
                         icon: 'fa-money-bill-wave',
                         color: 'var(--accent-green)'
