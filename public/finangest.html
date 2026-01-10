@@ -296,6 +296,12 @@
 <body>
     <!-- Auth Screen -->
     <div id="authScreen" class="auth-container">
+        <!-- Botón de instalar app -->
+        <div id="installBanner" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; background: linear-gradient(135deg, #00d4ff, #00a86b); padding: 12px 25px; border-radius: 50px; box-shadow: 0 4px 20px rgba(0,212,255,0.4); cursor: pointer;" onclick="installApp()">
+            <i class="fas fa-download me-2"></i>
+            <span style="font-weight: 600; color: #000;">Instalar FinanGest</span>
+        </div>
+        
         <div class="auth-card" style="max-width: 480px;">
             <div class="auth-header" style="padding: 50px 40px;">
                 <div class="auth-icon-float" style="margin-bottom: 20px;">
@@ -311,6 +317,11 @@
                     <div class="feature-item"><i class="fas fa-check-circle"></i> Seguimiento de pagos</div>
                     <div class="feature-item"><i class="fas fa-check-circle"></i> Reportes en tiempo real</div>
                 </div>
+                
+                <!-- Botón instalar dentro del card -->
+                <button id="installBtn" style="display: none; margin-top: 25px; background: linear-gradient(135deg, #00d4ff, #00a86b); border: none; padding: 12px 30px; border-radius: 50px; color: #000; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(0,212,255,0.3);" onclick="installApp()">
+                    <i class="fas fa-mobile-alt me-2"></i>Instalar App
+                </button>
             </div>
             <div class="auth-body">
                 <div class="auth-tabs">
@@ -5543,6 +5554,41 @@
                 modal.removeEventListener('shown.bs.modal', initPreviewMap);
             }, { once: true });
         }
+
+        // PWA Install
+        let deferredPrompt = null;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Mostrar botones de instalar
+            document.getElementById('installBanner').style.display = 'block';
+            document.getElementById('installBtn').style.display = 'inline-block';
+        });
+        
+        function installApp() {
+            if (!deferredPrompt) {
+                // Si no hay prompt, dar instrucciones manuales
+                alert('Para instalar FinanGest:\n\n📱 En celular: Toca los 3 puntos del menú y selecciona "Instalar app" o "Añadir a pantalla de inicio"\n\n💻 En PC: Busca el icono de instalar (⊕) en la barra de direcciones');
+                return;
+            }
+            
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('App instalada');
+                    document.getElementById('installBanner').style.display = 'none';
+                    document.getElementById('installBtn').style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
+        }
+        
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installBanner').style.display = 'none';
+            document.getElementById('installBtn').style.display = 'none';
+            deferredPrompt = null;
+        });
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
