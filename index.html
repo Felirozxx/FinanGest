@@ -2143,6 +2143,11 @@
                     <div class="nav-item" onclick="showSection('mapa')"><i class="fas fa-map-marked-alt"></i>Mapa</div>
                     <div class="nav-item" onclick="showSection('historial')"><i class="fas fa-history"></i>Mi Historial</div>
                 `;
+                // Autoclick en Dashboard para trabajadores
+                setTimeout(() => {
+                    const dashboardBtn = menu.querySelector('.nav-item');
+                    if (dashboardBtn) dashboardBtn.click();
+                }, 100);
             }
         }
 
