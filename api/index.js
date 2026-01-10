@@ -41,6 +41,18 @@ async function connectDB() {
     return db;
 }
 
+// Limpiar códigos expirados (más de 1 hora)
+async function cleanExpiredCodes() {
+    try {
+        const database = await connectDB();
+        const oneHourAgo = new Date(Date.now() - 3600000);
+        await database.collection('verification_codes').deleteMany({ expires: { $lt: oneHourAgo } });
+        await database.collection('reset_codes').deleteMany({ expires: { $lt: oneHourAgo } });
+    } catch (e) {
+        console.log('Error limpiando códigos:', e.message);
+    }
+}
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: EMAIL_USER, pass: EMAIL_PASS }
@@ -102,6 +114,9 @@ app.post('/api/send-code', async (req, res) => {
         const database = await connectDB();
         const users = database.collection('users');
         const codes = database.collection('verification_codes');
+        
+        // Limpiar códigos viejos
+        cleanExpiredCodes();
         
         const existingEmail = await users.findOne({ email });
         if (existingEmail) return res.json({ success: false, error: 'Este email ya está registrado' });
