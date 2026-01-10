@@ -7417,11 +7417,11 @@
 
         async function guardarGasto() {
             const descripcion = document.getElementById('gastoDescripcion').value;
-            const monto = parseFloat(document.getElementById('gastoValor').value);
+            const valor = parseFloat(document.getElementById('gastoValor').value);
             const fecha = document.getElementById('gastoFecha').value;
             const categoria = document.getElementById('gastoCategoria').value;
             
-            if (!descripcion || !monto || !fecha) {
+            if (!descripcion || !valor || !fecha) {
                 return alert('Completa todos los campos');
             }
             
@@ -7429,7 +7429,7 @@
             
             const gasto = {
                 descripcion,
-                monto,
+                valor,
                 fecha,
                 categoria,
                 creadoPor: userId,
