@@ -2889,7 +2889,7 @@
                     const userClients = allClients.filter(c => c.creadoPor === u.id);
                     const userPrestado = userClients.reduce((s, c) => s + (c.montoTotal || 0), 0);
                     const userCobrado = userClients.reduce((s, c) => s + (c.montoPagado || 0), 0);
-                    const bloqueado = u.bloqueado || false;
+                    const bloqueado = u.blocked || u.bloqueado || false;
                     const isOnline = u.lastSeen && new Date(u.lastSeen) > fiveMinutesAgo;
                     const statusColor = isOnline ? '#2ecc71' : '#6c757d';
                     const statusText = isOnline ? 'Online' : 'Offline';
