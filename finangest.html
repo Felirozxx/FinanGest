@@ -7618,8 +7618,9 @@
         }
         
         function obtenerUbicacionAdmin() {
-            if (!navigator.geolocation) {
-                alert('Tu navegador no soporta geolocalización');
+            const direccion = document.getElementById('adminEditUbicacion').value;
+            if (!direccion || direccion.trim() === '') {
+                alert('Escribe una dirección primero');
                 return;
             }
             
@@ -7628,36 +7629,98 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             btn.disabled = true;
             
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
+            // Buscar coordenadas de la dirección usando Nominatim (OpenStreetMap)
+            fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(direccion) + '&format=json&limit=1')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
                     
-                    document.getElementById('adminEditLat').value = lat;
-                    document.getElementById('adminEditLng').value = lng;
-                    document.getElementById('adminCoordsInfo').style.display = 'block';
-                    
-                    // Intentar obtener dirección
-                    try {
-                        const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng);
-                        const data = await res.json();
-                        if (data.display_name) {
-                            document.getElementById('adminEditUbicacion').value = data.display_name;
-                        }
-                    } catch (e) {
-                        document.getElementById('adminEditUbicacion').value = 'Lat: ' + lat.toFixed(6) + ', Lng: ' + lng.toFixed(6);
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lng = parseFloat(data[0].lon);
+                        
+                        // Mostrar mapa para confirmar
+                        mostrarMapaPreviewAdmin(lat, lng, direccion);
+                    } else {
+                        alert('No se encontró la dirección. Intenta ser más específico (ej: "Rua 10, Goiânia, Brasil")');
                     }
-                    
+                })
+                .catch(function() {
                     btn.innerHTML = originalHtml;
                     btn.disabled = false;
-                },
-                (error) => {
-                    alert('Error al obtener ubicación: ' + error.message);
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
+                    alert('Error al buscar la dirección. Intenta de nuevo.');
+                });
+        }
+        
+        let previewMapAdmin = null;
+        function mostrarMapaPreviewAdmin(lat, lng, direccion) {
+            // Crear modal si no existe
+            let modal = document.getElementById('mapaPreviewAdminModal');
+            if (modal) modal.remove();
+            
+            const modalHtml = '<div class="modal fade modal-dark" id="mapaPreviewAdminModal" tabindex="-1">' +
+                '<div class="modal-dialog modal-lg">' +
+                    '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                            '<h5 class="modal-title"><i class="fas fa-map-marker-alt me-2"></i>Ubicación encontrada</h5>' +
+                            '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>' +
+                        '</div>' +
+                        '<div class="modal-body">' +
+                            '<p id="direccionEncontradaAdmin" class="text-secondary mb-3"><i class="fas fa-check-circle text-success me-2"></i>' + direccion + '</p>' +
+                            '<div id="mapaPreviewContainerAdmin" style="height: 350px; border-radius: 10px; overflow: hidden;"></div>' +
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                            '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>' +
+                            '<button type="button" class="btn btn-success-custom" onclick="confirmarUbicacionAdmin(' + lat + ', ' + lng + ')">' +
+                                '<i class="fas fa-check me-2"></i>Confirmar ubicación' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            modal = document.getElementById('mapaPreviewAdminModal');
+            
+            // Mostrar modal
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+            
+            // Inicializar mapa después de que el modal esté visible
+            modal.addEventListener('shown.bs.modal', function initPreviewMapAdmin() {
+                if (previewMapAdmin) {
+                    previewMapAdmin.remove();
+                }
+                
+                previewMapAdmin = L.map('mapaPreviewContainerAdmin').setView([lat, lng], 16);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap'
+                }).addTo(previewMapAdmin);
+                
+                var icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: '<div style="background: #00d4ff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 2px 15px rgba(0,212,255,0.5);"><i class="fas fa-map-marker-alt" style="color: white; font-size: 18px;"></i></div>',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                });
+                
+                L.marker([lat, lng], { icon: icon }).addTo(previewMapAdmin)
+                    .bindPopup('<strong>' + direccion + '</strong>')
+                    .openPopup();
+                
+                modal.removeEventListener('shown.bs.modal', initPreviewMapAdmin);
+            }, { once: true });
+        }
+        
+        function confirmarUbicacionAdmin(lat, lng) {
+            document.getElementById('adminEditLat').value = lat;
+            document.getElementById('adminEditLng').value = lng;
+            document.getElementById('adminCoordsInfo').style.display = 'block';
+            
+            // Cerrar modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('mapaPreviewAdminModal'));
+            if (modal) modal.hide();
         }
         
         function verMapaAdmin(lat, lng) {
