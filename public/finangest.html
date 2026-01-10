@@ -2502,13 +2502,12 @@
                     }
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     
-                    // Backup automático
-                    if (currentUser.isAdmin || currentUser.role === 'admin') {
-                        fetch(API_URL + '/api/admin/backup-auto', { method: 'POST' }).catch(() => {});
-                    } else {
-                        // Backup automático del trabajador
-                        fetch(API_URL + '/api/backup-trabajador-auto/' + currentUser.id, { method: 'POST' }).catch(() => {});
-                    }
+                    // Backup automático al iniciar sesión
+                    fetch(API_URL + '/api/admin/backup-trabajador/' + currentUser.id, { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ auto: true })
+                    }).catch(() => {});
                     
                     showMainApp();
                 } else if (data.needsPayment) {
