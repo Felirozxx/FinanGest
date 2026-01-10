@@ -778,7 +778,7 @@ app.post('/api/crear-pago-pix', async (req, res) => {
             return res.json({ 
                 success: true, 
                 manual: true,
-                pixKey: '86992035517',
+                pixKey: 'e6203cd0-c840-4753-ab74-993b722f49b1',
                 pixName: 'FinanGestPay',
                 amount: 79.50
             });
@@ -846,7 +846,7 @@ app.post('/api/crear-pago-pix', async (req, res) => {
             res.json({ 
                 success: true, 
                 manual: true,
-                pixKey: '86992035517',
+                pixKey: 'e6203cd0-c840-4753-ab74-993b722f49b1',
                 pixName: 'FinanGestPay',
                 amount: 79.50,
                 error: mpData.message || 'Error al generar PIX'
@@ -857,7 +857,7 @@ app.post('/api/crear-pago-pix', async (req, res) => {
         res.json({ 
             success: true, 
             manual: true,
-            pixKey: '86992035517',
+            pixKey: 'e6203cd0-c840-4753-ab74-993b722f49b1',
             pixName: 'FinanGestPay',
             amount: 79.50
         });
