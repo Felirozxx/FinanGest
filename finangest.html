@@ -1407,6 +1407,19 @@
             <div id="miConfig" class="section">
                 <h5 class="mb-4"><i class="fas fa-cog me-2" style="color: var(--accent-cyan);"></i>Mi Configuración</h5>
                 
+                <!-- Idioma -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-language me-2" style="color: var(--accent-cyan);"></i>Idioma / Língua</h6>
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-sm" id="btnLangEs" style="background: var(--accent-cyan); color: #000;" onclick="cambiarIdioma('es')">
+                            🇪🇸 Español
+                        </button>
+                        <button class="btn btn-sm" id="btnLangPt" style="background: var(--bg-hover); color: var(--text-primary);" onclick="cambiarIdioma('pt')">
+                            🇧🇷 Português
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Tema -->
                 <div class="card-dark mb-4">
                     <h6 class="mb-3"><i class="fas fa-palette me-2" style="color: var(--accent-purple);"></i>Apariencia</h6>
@@ -2355,6 +2368,172 @@
         let allUsers = [];
         let mainChart = null;
         let lastEditKeyStatus = null; // Para detectar cambios en la llave
+        
+        // Sistema de idiomas
+        let currentLang = localStorage.getItem('finangest_lang') || 'es';
+        const translations = {
+            es: {
+                // Navegación
+                dashboard: 'Dashboard',
+                clientes: 'Clientes',
+                estadisticas: 'Estadísticas',
+                cobros: 'Cobros del Día',
+                gastos: 'Gastos',
+                mapa: 'Mapa',
+                historial: 'Mi Historial',
+                backups: 'Backups',
+                configuracion: 'Configuración',
+                microseguros: 'Microseguros',
+                // Botones
+                nuevoCliente: '+ Nuevo Cliente',
+                guardar: 'Guardar',
+                cancelar: 'Cancelar',
+                eliminar: 'Eliminar',
+                editar: 'Editar',
+                buscar: 'Buscar',
+                // Campos
+                nombre: 'Nombre',
+                telefono: 'Teléfono',
+                montoPrestado: 'Monto Prestado',
+                totalAPagar: 'Total a Pagar',
+                dineroCobrado: 'Dinero Cobrado',
+                parcelasAPagar: 'Parcelas a Pagar',
+                parcelasPagas: 'Parcelas Pagas',
+                comision: 'Comisión',
+                microseguro: 'Microseguro',
+                ubicacion: 'Ubicación',
+                notas: 'Notas',
+                tipoCliente: 'Tipo de Cliente',
+                tipoNegocio: 'Tipo de Negocio',
+                // Estados
+                nuevo: 'Nuevo',
+                bueno: 'Buen Cliente',
+                regular: 'Regular',
+                malo: 'Mala Paga',
+                activo: 'Activo',
+                pagado: 'Pagado',
+                pendiente: 'Pendiente',
+                // Stats
+                totalClientes: 'Total Clientes',
+                prestado: 'Prestado',
+                cobrado: 'Cobrado',
+                restante: 'Restante',
+                // Mensajes
+                clienteCreado: 'Cliente creado exitosamente',
+                clienteActualizado: 'Cliente actualizado correctamente',
+                clienteEliminado: 'Cliente eliminado',
+                errorConexion: 'Error de conexión',
+                confirmarEliminar: '¿Estás seguro de eliminar?',
+                // Config
+                idioma: 'Idioma',
+                tema: 'Tema',
+                temaOscuro: 'Tema Oscuro',
+                temaClaro: 'Tema Claro'
+            },
+            pt: {
+                // Navegação
+                dashboard: 'Painel',
+                clientes: 'Clientes',
+                estadisticas: 'Estatísticas',
+                cobros: 'Cobranças do Dia',
+                gastos: 'Despesas',
+                mapa: 'Mapa',
+                historial: 'Meu Histórico',
+                backups: 'Backups',
+                configuracion: 'Configuração',
+                microseguros: 'Microsseguros',
+                // Botões
+                nuevoCliente: '+ Novo Cliente',
+                guardar: 'Salvar',
+                cancelar: 'Cancelar',
+                eliminar: 'Excluir',
+                editar: 'Editar',
+                buscar: 'Buscar',
+                // Campos
+                nombre: 'Nome',
+                telefono: 'Telefone',
+                montoPrestado: 'Valor Emprestado',
+                totalAPagar: 'Total a Pagar',
+                dineroCobrado: 'Valor Recebido',
+                parcelasAPagar: 'Parcelas a Pagar',
+                parcelasPagas: 'Parcelas Pagas',
+                comision: 'Comissão',
+                microseguro: 'Microsseguro',
+                ubicacion: 'Localização',
+                notas: 'Notas',
+                tipoCliente: 'Tipo de Cliente',
+                tipoNegocio: 'Tipo de Negócio',
+                // Estados
+                nuevo: 'Novo',
+                bueno: 'Bom Cliente',
+                regular: 'Regular',
+                malo: 'Mau Pagador',
+                activo: 'Ativo',
+                pagado: 'Pago',
+                pendiente: 'Pendente',
+                // Stats
+                totalClientes: 'Total Clientes',
+                prestado: 'Emprestado',
+                cobrado: 'Recebido',
+                restante: 'Restante',
+                // Mensagens
+                clienteCreado: 'Cliente criado com sucesso',
+                clienteActualizado: 'Cliente atualizado corretamente',
+                clienteEliminado: 'Cliente excluído',
+                errorConexion: 'Erro de conexão',
+                confirmarEliminar: 'Tem certeza que deseja excluir?',
+                // Config
+                idioma: 'Idioma',
+                tema: 'Tema',
+                temaOscuro: 'Tema Escuro',
+                temaClaro: 'Tema Claro'
+            }
+        };
+        
+        function t(key) {
+            return translations[currentLang][key] || translations['es'][key] || key;
+        }
+        
+        function cambiarIdioma(lang) {
+            currentLang = lang;
+            localStorage.setItem('finangest_lang', lang);
+            // Actualizar botones de idioma
+            const btnEs = document.getElementById('btnLangEs');
+            const btnPt = document.getElementById('btnLangPt');
+            if (btnEs && btnPt) {
+                if (lang === 'es') {
+                    btnEs.style.background = 'var(--accent-cyan)';
+                    btnEs.style.color = '#000';
+                    btnPt.style.background = 'var(--bg-hover)';
+                    btnPt.style.color = 'var(--text-primary)';
+                } else {
+                    btnPt.style.background = 'var(--accent-cyan)';
+                    btnPt.style.color = '#000';
+                    btnEs.style.background = 'var(--bg-hover)';
+                    btnEs.style.color = 'var(--text-primary)';
+                }
+            }
+            // Actualizar elementos con data-translate
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                el.textContent = t(key);
+            });
+            // Actualizar placeholders
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-placeholder');
+                el.placeholder = t(key);
+            });
+            // Recargar secciones dinámicas
+            if (typeof renderClientes === 'function') renderClientes();
+            if (typeof updateStats === 'function') updateStats();
+        }
+        
+        // Inicializar idioma al cargar
+        function initIdioma() {
+            const lang = localStorage.getItem('finangest_lang') || 'es';
+            currentLang = lang;
+            setTimeout(() => cambiarIdioma(lang), 100);
+        }
 
         // Función para verificar si el usuario tiene llave de edición
         async function checkEditKey() {
@@ -3017,6 +3196,7 @@
             document.getElementById('userName').textContent = isAdmin ? 'Administrador' : currentUser.nombre;
             document.getElementById('userAvatar').textContent = isAdmin ? 'A' : currentUser.nombre.charAt(0).toUpperCase();
             loadTheme();
+            initIdioma(); // Inicializar idioma
             buildNavMenu();
             if (isAdmin) {
                 showSection('adminUsuarios');
