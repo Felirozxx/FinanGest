@@ -2383,6 +2383,7 @@
             document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
             document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
             document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('renewalPaymentForm').style.display = 'none';
             document.getElementById('supportSection').style.display = 'block';
             document.getElementById('registerStep1').style.display = 'block';
             document.getElementById('registerStep2').style.display = 'none';
@@ -2400,6 +2401,7 @@
 
         function backToLogin() {
             document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('renewalPaymentForm').style.display = 'none';
             document.getElementById('loginForm').style.display = 'block';
             document.getElementById('supportSection').style.display = 'block';
             document.querySelectorAll('.auth-tab').forEach((t, i) => {
@@ -2563,6 +2565,7 @@
                 } else if (data.needsPayment) {
                     // Usuario necesita pagar - mostrar modal de suscripción
                     pendingUser = { id: data.userId, nombre: data.nombre, email: data.email };
+                    pendingUserNeedsPayment = true;
                     
                     if (data.expired) {
                         mostrarModalSuscripcion(
@@ -2589,12 +2592,15 @@
             document.getElementById('modalSuscripcion').style.display = 'flex';
         }
         
+        let pendingUserNeedsPayment = false;
+        
         function cerrarModalSuscripcion() {
             document.getElementById('modalSuscripcion').style.display = 'none';
-            // Mostrar pantalla de pago de renovación en login
-            if (pendingUser) {
+            // Solo mostrar pantalla de pago si realmente necesita pagar
+            if (pendingUser && pendingUserNeedsPayment) {
                 mostrarRenovacionPago(pendingUser.id, pendingUser.nombre, pendingUser.email);
             }
+            pendingUserNeedsPayment = false;
         }
         
         function mostrarRenovacionPago(userId, nombre, email) {
