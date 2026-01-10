@@ -2261,6 +2261,22 @@
             const ctx = document.getElementById('mainChart').getContext('2d');
             if (mainChart) mainChart.destroy();
             
+            // Si no hay clientes, mostrar mensaje
+            if (!clientes || clientes.length === 0) {
+                const container = document.getElementById('mainChart').parentElement;
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-chart-line fa-3x mb-3" style="color: var(--accent-cyan); opacity: 0.5;"></i>
+                        <h5 style="color: var(--text-secondary);">Sin datos para mostrar</h5>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Los gráficos aparecerán cuando haya clientes y transacciones registradas.
+                        </p>
+                    </div>
+                    <canvas id="mainChart" style="display:none;"></canvas>
+                `;
+                return;
+            }
+            
             const labels = [];
             const datosCobrado = [];
             const datosPrestado = [];
@@ -2430,7 +2446,13 @@
             const container = document.getElementById('cobrosHoyPreview');
             const activos = clientes.filter(c => c.estado === 'ativo').slice(0, 4);
             if (activos.length === 0) {
-                container.innerHTML = '<p class="text-secondary text-center">No hay cobros pendientes</p>';
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-clipboard-check fa-2x mb-3" style="color: var(--accent-green); opacity: 0.5;"></i>
+                        <p class="text-secondary" style="font-size: 0.9rem;">No hay cobros pendientes para hoy</p>
+                        <small class="text-secondary">Los cobros aparecerán cuando registres clientes activos</small>
+                    </div>
+                `;
                 return;
             }
             container.innerHTML = activos.map(c => `
