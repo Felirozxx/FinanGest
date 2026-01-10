@@ -2522,21 +2522,41 @@
             `).join('');
         }
         
-        function renderResumenMes() {
+        async function renderResumenMes() {
             const hoy = new Date();
             const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
             
-            const clientesMes = clientes.filter(c => {
-                const fecha = new Date(c.fechaInicio || c.createdAt);
-                return fecha >= inicioMes;
+            let clientesParaResumen = clientes;
+            
+            // Si es admin, obtener TODOS los clientes de todos los trabajadores
+            if (currentUser && (currentUser.role === 'admin' || currentUser.isAdmin)) {
+                try {
+                    const res = await fetch(API_URL + '/api/clientes?userId=admin');
+                    clientesParaResumen = await res.json();
+                } catch (e) {
+                    console.log('Error cargando clientes para resumen:', e);
+                }
+            }
+            
+            // Clientes nuevos este mes (por fecha de creación)
+            const clientesMes = clientesParaResumen.filter(c => {
+                const fecha = new Date(c.fechaInicio || c.fechaCreacion || c.createdAt);
+                return fecha >= inicioMes && !isNaN(fecha.getTime());
             });
             
+            // Total prestado este mes
             const prestamosMes = clientesMes.reduce((s, c) => s + (c.montoTotal || 0), 0);
-            const cobrosMes = clientes.reduce((s, c) => {
-                const pagos = (c.historialPagos || []).filter(p => new Date(p.fecha) >= inicioMes);
+            
+            // Total cobrado este mes (de todos los clientes, no solo los nuevos)
+            const cobrosMes = clientesParaResumen.reduce((s, c) => {
+                const pagos = (c.historialPagos || []).filter(p => {
+                    const fechaPago = new Date(p.fecha);
+                    return fechaPago >= inicioMes && !isNaN(fechaPago.getTime());
+                });
                 return s + pagos.reduce((ps, p) => ps + (p.monto || 0), 0);
             }, 0);
             
+            // Ganancia = cobros - préstamos del mes
             const ganancia = cobrosMes - prestamosMes;
             
             const el1 = document.getElementById('mesNuevosClientes');
