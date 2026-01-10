@@ -7530,19 +7530,11 @@
                                         <option value="malo" ${cliente.tipoCliente === 'malo' ? 'selected' : ''}>❌ Mala Paga</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">📊 Estado</label>
-                                    <select class="form-control form-control-dark" id="adminEditEstado">
-                                        <option value="ativo" ${cliente.estado === 'ativo' ? 'selected' : ''}>🟢 Activo</option>
-                                        <option value="finalizado" ${cliente.estado === 'finalizado' ? 'selected' : ''}>✅ Finalizado</option>
-                                        <option value="atrasado" ${cliente.estado === 'atrasado' ? 'selected' : ''}>🔴 Atrasado</option>
-                                    </select>
-                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">💰 Monto Prestado (R$)</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditMonto" value="${cliente.montoTotal || 0}" step="0.01" oninput="calcularTotalAdmin()">
+                                    <input type="number" class="form-control form-control-dark" id="adminEditMonto" value="${cliente.montoTotal || 0}" step="0.01">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">💵 Monto Cobrado (R$)</label>
@@ -7681,7 +7673,6 @@
                 nombre: document.getElementById('adminEditNombre').value,
                 telefono: document.getElementById('adminEditTelefono').value,
                 tipoCliente: document.getElementById('adminEditTipo').value,
-                estado: document.getElementById('adminEditEstado').value,
                 montoTotal: parseFloat(document.getElementById('adminEditMonto').value) || 0,
                 montoPagado: parseFloat(document.getElementById('adminEditCobrado').value) || 0,
                 totalAPagar: parseFloat(document.getElementById('adminEditTotalPagar').value) || 0,
