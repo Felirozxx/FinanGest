@@ -2706,7 +2706,10 @@
             // Actualizar elementos con data-translate
             document.querySelectorAll('[data-translate]').forEach(el => {
                 const key = el.getAttribute('data-translate');
-                el.textContent = t(key);
+                const translated = t(key);
+                if (translated && translated !== key) {
+                    el.textContent = translated;
+                }
             });
             // Actualizar placeholders
             document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
@@ -2716,13 +2719,43 @@
             // Recargar secciones dinámicas
             if (typeof renderClientes === 'function') renderClientes();
             if (typeof updateStats === 'function') updateStats();
+            if (typeof renderCobros === 'function') renderCobros();
+            if (typeof renderGastos === 'function') renderGastos();
+            if (typeof renderMicroseguros === 'function') renderMicroseguros();
+            if (typeof renderHistorial === 'function') renderHistorial();
+            console.log('Idioma cambiado a:', lang);
         }
         
         // Inicializar idioma al cargar
         function initIdioma() {
             const lang = localStorage.getItem('finangest_lang') || 'es';
             currentLang = lang;
-            setTimeout(() => cambiarIdioma(lang), 100);
+            // Actualizar botones de idioma
+            const btnEs = document.getElementById('btnLangEs');
+            const btnPt = document.getElementById('btnLangPt');
+            if (btnEs && btnPt) {
+                if (lang === 'es') {
+                    btnEs.style.background = 'var(--accent-cyan)';
+                    btnEs.style.color = '#000';
+                    btnPt.style.background = 'var(--bg-hover)';
+                    btnPt.style.color = 'var(--text-primary)';
+                } else {
+                    btnPt.style.background = 'var(--accent-cyan)';
+                    btnPt.style.color = '#000';
+                    btnEs.style.background = 'var(--bg-hover)';
+                    btnEs.style.color = 'var(--text-primary)';
+                }
+            }
+            // Aplicar traducciones después de un pequeño delay para asegurar que el DOM esté listo
+            setTimeout(() => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    const translated = t(key);
+                    if (translated && translated !== key) {
+                        el.textContent = translated;
+                    }
+                });
+            }, 500);
         }
 
         // Función para verificar si el usuario tiene llave de edición
@@ -4170,6 +4203,16 @@
                     renderChart();
                     cargarClientesEliminados();
                 }
+                // Aplicar traducciones después de cargar datos
+                setTimeout(() => {
+                    document.querySelectorAll('[data-translate]').forEach(el => {
+                        const key = el.getAttribute('data-translate');
+                        const translated = t(key);
+                        if (translated && translated !== key) {
+                            el.textContent = translated;
+                        }
+                    });
+                }, 100);
             } catch (e) {
                 console.error('Error loading data:', e);
                 // Ocultar spinner en caso de error
