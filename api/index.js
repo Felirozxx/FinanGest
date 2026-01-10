@@ -1528,6 +1528,48 @@ app.post('/api/users/:id/toggle-block', async (req, res) => {
     }
 });
 
+// Toggle edit key (llave de edición) for user
+app.post('/api/users/:id/toggle-edit-key', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let user;
+        
+        // Buscar usuario
+        try {
+            user = await database.collection('users').findOne({ _id: new ObjectId(searchId) });
+        } catch (e) {
+            user = await database.collection('users').findOne({ id: searchId });
+        }
+        
+        if (!user) {
+            return res.json({ success: false, error: 'Usuario no encontrado' });
+        }
+        
+        const newEditKeyStatus = !user.editKeyEnabled;
+        
+        try {
+            await database.collection('users').updateOne(
+                { _id: new ObjectId(searchId) },
+                { $set: { editKeyEnabled: newEditKeyStatus, editKeyChangedAt: new Date() } }
+            );
+        } catch (e) {
+            await database.collection('users').updateOne(
+                { id: searchId },
+                { $set: { editKeyEnabled: newEditKeyStatus, editKeyChangedAt: new Date() } }
+            );
+        }
+        
+        res.json({ 
+            success: true, 
+            message: newEditKeyStatus ? 'Llave de edición ACTIVADA' : 'Llave de edición DESACTIVADA',
+            editKeyEnabled: newEditKeyStatus
+        });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Toggle block/unblock backups for user
 app.post('/api/users/:id/toggle-backup-block', async (req, res) => {
     try {

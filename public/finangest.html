@@ -1818,6 +1818,41 @@
         let gastos = [];
         let allUsers = [];
         let mainChart = null;
+        let lastEditKeyStatus = null; // Para detectar cambios en la llave
+
+        // Función para verificar si el usuario tiene llave de edición
+        async function checkEditKey() {
+            if (!currentUser || currentUser.role === 'admin' || currentUser.isAdmin) return true;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                const myUser = users.find(u => u.id === currentUser.id || u._id === currentUser.id);
+                
+                if (myUser) {
+                    // Detectar cambio de estado de la llave
+                    if (lastEditKeyStatus !== null && lastEditKeyStatus !== myUser.editKeyEnabled) {
+                        if (myUser.editKeyEnabled) {
+                            alert('🔑 ¡El administrador ha ACTIVADO tu llave de edición!\n\nAhora puedes editar préstamos e información de clientes.');
+                        } else {
+                            alert('🔒 El administrador ha DESACTIVADO tu llave de edición.\n\nYa no puedes editar préstamos ni información de clientes.');
+                        }
+                    }
+                    lastEditKeyStatus = myUser.editKeyEnabled;
+                    return myUser.editKeyEnabled === true;
+                }
+            } catch (e) {
+                console.log('Error verificando llave:', e);
+            }
+            return false;
+        }
+
+        // Verificar llave periódicamente (cada 30 segundos)
+        setInterval(async () => {
+            if (currentUser && currentUser.role !== 'admin' && !currentUser.isAdmin) {
+                await checkEditKey();
+            }
+        }, 30000);
 
         // Auth Functions
         function showAuthTab(tab) {
@@ -3185,6 +3220,12 @@
                                     <i class="fas fa-${bloqueado ? 'lock' : 'lock-open'}"></i>
                                     ${bloqueado ? 'Bloqueado' : 'Activo'}
                                 </button>
+                                <button class="btn btn-sm" 
+                                        style="background: ${u.editKeyEnabled ? 'var(--accent-green)' : 'var(--accent-red)'}; color: #fff;"
+                                        onclick="event.stopPropagation(); toggleEditKey('${u.id}')"
+                                        title="${u.editKeyEnabled ? 'Llave ACTIVA - Clic para desactivar' : 'Llave BLOQUEADA - Clic para activar'}">
+                                    <i class="fas fa-key"></i>
+                                </button>
                                 <button class="btn btn-sm btn-secondary" onclick="toggleUserClients('${u.id}')">
                                     <i class="fas fa-chevron-down" id="icon-${u.id}"></i>
                                 </button>
@@ -4493,6 +4534,29 @@
             }
         }
 
+        async function toggleEditKey(userId) {
+            const user = allUsers.find(u => u.id === userId || u._id === userId);
+            const currentStatus = user?.editKeyEnabled ? 'ACTIVADA' : 'DESACTIVADA';
+            const newStatus = user?.editKeyEnabled ? 'DESACTIVAR' : 'ACTIVAR';
+            
+            if (!confirm(`La llave de edición está ${currentStatus}.\n\n¿${newStatus} la llave de edición para este usuario?\n\nCon la llave ACTIVADA podrá editar préstamos e información de clientes.`)) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + userId + '/toggle-edit-key', {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('🔑 ' + data.message);
+                    renderAdminUsuarios();
+                } else {
+                    alert(data.error || 'Error al cambiar llave');
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
         function toggleUserClients(userId) {
             const div = document.getElementById('clients-' + userId);
             const icon = document.getElementById('icon-' + userId);
@@ -4966,6 +5030,15 @@
         let clientesEliminados = [];
         
         async function eliminarCliente(id) {
+            // Verificar llave de edición para trabajadores
+            if (currentUser && currentUser.role !== 'admin' && !currentUser.isAdmin) {
+                const hasKey = await checkEditKey();
+                if (!hasKey) {
+                    alert('🔒 No tienes permiso para eliminar.\n\nTu llave de edición está DESACTIVADA.\nContacta al administrador para activarla.');
+                    return;
+                }
+            }
+            
             const c = clientes.find(cl => cl.id === id);
             if (!c) return;
             
@@ -5486,7 +5559,16 @@
         // ============ FUNCIONES ADMIN EDITAR/ELIMINAR ============
         
         // Editar cliente desde admin
-        function adminEditarCliente(clienteId) {
+        async function adminEditarCliente(clienteId) {
+            // Verificar llave de edición para trabajadores
+            if (currentUser && currentUser.role !== 'admin' && !currentUser.isAdmin) {
+                const hasKey = await checkEditKey();
+                if (!hasKey) {
+                    alert('🔒 No tienes permiso para editar.\n\nTu llave de edición está DESACTIVADA.\nContacta al administrador para activarla.');
+                    return;
+                }
+            }
+            
             const cliente = verTodoClientes.find(c => c.id === clienteId);
             if (!cliente) return alert('Cliente no encontrado');
             
@@ -5616,6 +5698,15 @@
         }
         
         async function adminEliminarCliente(clienteId) {
+            // Verificar llave de edición para trabajadores
+            if (currentUser && currentUser.role !== 'admin' && !currentUser.isAdmin) {
+                const hasKey = await checkEditKey();
+                if (!hasKey) {
+                    alert('🔒 No tienes permiso para eliminar.\n\nTu llave de edición está DESACTIVADA.\nContacta al administrador para activarla.');
+                    return;
+                }
+            }
+            
             const cliente = verTodoClientes.find(c => c.id === clienteId);
             if (!cliente) return alert('Cliente no encontrado');
             
