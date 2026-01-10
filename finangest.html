@@ -3749,13 +3749,15 @@
                 }
             }
             
+            const userId = currentUser.id || currentUser._id;
+            
             try {
-                const res = await fetch(API_URL + '/api/clientes?userId=' + currentUser.id);
+                const res = await fetch(API_URL + '/api/clientes?userId=' + userId);
                 clientes = await res.json();
                 if (clientes.error) clientes = [];
                 
                 // Cargar gastos
-                const gastosRes = await fetch(API_URL + '/api/gastos?userId=' + currentUser.id);
+                const gastosRes = await fetch(API_URL + '/api/gastos?userId=' + userId);
                 gastos = await gastosRes.json();
                 if (gastos.error) gastos = [];
                 
@@ -3854,8 +3856,8 @@
             
             const totalPendiente = clientesFiltrados.reduce((s, c) => s + ((c.totalAPagar || 0) - (c.montoPagado || 0)), 0);
             
-            // Calcular gastos
-            const totalGastos = gastosFiltrados.reduce((s, g) => s + (parseFloat(g.monto) || 0), 0);
+            // Calcular gastos (puede ser monto o valor)
+            const totalGastos = gastosFiltrados.reduce((s, g) => s + (parseFloat(g.monto) || parseFloat(g.valor) || 0), 0);
             
             // Calcular microseguros
             let totalMicroseguros = 0;
@@ -5351,7 +5353,7 @@
                 return fechaGasto >= fechaInicio && fechaGasto <= fechaFin;
             });
             const gastosCount = gastosFiltrados.length;
-            const gastosTotal = gastosFiltrados.reduce((s, g) => s + (parseFloat(g.valor) || 0), 0);
+            const gastosTotal = gastosFiltrados.reduce((s, g) => s + (parseFloat(g.monto) || parseFloat(g.valor) || 0), 0);
             
             const balance = pagosTotal - gastosTotal;
             
@@ -6858,34 +6860,42 @@
 
         async function guardarGasto() {
             const descripcion = document.getElementById('gastoDescripcion').value;
-            const valor = parseFloat(document.getElementById('gastoValor').value);
+            const monto = parseFloat(document.getElementById('gastoValor').value);
             const fecha = document.getElementById('gastoFecha').value;
             const categoria = document.getElementById('gastoCategoria').value;
             
-            if (!descripcion || !valor || !fecha) {
+            if (!descripcion || !monto || !fecha) {
                 return alert('Completa todos los campos');
             }
             
+            const userId = currentUser.id || currentUser._id;
+            
             const gasto = {
-                id: Date.now().toString(),
                 descripcion,
-                valor,
+                monto,
                 fecha,
                 categoria,
-                creadoPor: currentUser.id,
+                creadoPor: userId,
                 timestamp: new Date().toISOString()
             };
             
             try {
-                await fetch(API_URL + '/api/gastos', {
+                const res = await fetch(API_URL + '/api/gastos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUser.id, gasto })
+                    body: JSON.stringify(gasto)
                 });
-                gastos.push(gasto);
-                bootstrap.Modal.getInstance(document.getElementById('gastoModal')).hide();
-                renderGastos();
-                alert('Gasto guardado');
+                const data = await res.json();
+                if (data.success) {
+                    gasto.id = data.id;
+                    gastos.push(gasto);
+                    bootstrap.Modal.getInstance(document.getElementById('gastoModal')).hide();
+                    renderGastos();
+                    updateStats();
+                    alert('Gasto guardado');
+                } else {
+                    alert('Error al guardar gasto');
+                }
             } catch (e) {
                 alert('Error al guardar gasto');
             }
