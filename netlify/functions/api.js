@@ -538,6 +538,22 @@ exports.handler = async (event, context) => {
             });
         }
 
+        // RESET ALL USERS (Admin only) - Borra todos excepto admins
+        if (path === '/admin/reset-users' && method === 'POST') {
+            const result1 = await db.collection('users').deleteMany({ role: { $ne: 'admin' } });
+            const result2 = await db.collection('verification_codes').deleteMany({});
+            const result3 = await db.collection('reset_codes').deleteMany({});
+            const result4 = await db.collection('sessions').deleteMany({});
+            return respond(200, { 
+                success: true, 
+                deleted: {
+                    users: result1.deletedCount,
+                    codes: result2.deletedCount + result3.deletedCount,
+                    sessions: result4.deletedCount
+                }
+            });
+        }
+
         // HEARTBEAT
         if (path === '/heartbeat' && method === 'POST') {
             const { userId } = body;
