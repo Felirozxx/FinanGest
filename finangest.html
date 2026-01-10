@@ -830,19 +830,19 @@
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-filter me-2"></i>Estado</label>
+                            <label class="form-label"><i class="fas fa-filter me-2"></i><span data-translate="estado">Estado</span></label>
                             <select class="form-control form-control-dark" id="clientesFiltroEstado" onchange="renderClientes()">
-                                <option value="">Todos</option>
-                                <option value="ativo">Activos</option>
-                                <option value="finalizado">Finalizados</option>
-                                <option value="atrasado">Atrasados</option>
+                                <option value="" data-translate="todos">Todos</option>
+                                <option value="ativo" data-translate="activos">Activos</option>
+                                <option value="finalizado" data-translate="finalizados">Finalizados</option>
+                                <option value="atrasado" data-translate="atrasados">Atrasados</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-search me-2"></i>Buscar</label>
-                            <input type="text" class="form-control form-control-dark" id="clientesBuscar" placeholder="Nombre o teléfono..." oninput="renderClientes()">
+                            <label class="form-label"><i class="fas fa-search me-2"></i><span data-translate="buscar">Buscar</span></label>
+                            <input type="text" class="form-control form-control-dark" id="clientesBuscar" data-translate-placeholder="nombreTelefono" placeholder="Nombre o teléfono..." oninput="renderClientes()">
                         </div>
                     </div>
                 </div>
@@ -852,19 +852,19 @@
                     <div class="row text-center">
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('nuevo')">
                             <div style="color: var(--accent-cyan); font-size: 1.5rem; font-weight: bold;" id="clientesNuevos">0</div>
-                            <small class="text-secondary">🆕 Nuevos</small>
+                            <small class="text-secondary">🆕 <span data-translate="nuevos">Nuevos</span></small>
                         </div>
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('bueno')">
                             <div style="color: var(--accent-green); font-size: 1.5rem; font-weight: bold;" id="clientesBuenos">0</div>
-                            <small class="text-secondary">✅ Buenos</small>
+                            <small class="text-secondary">✅ <span data-translate="buenos">Buenos</span></small>
                         </div>
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('regular')">
                             <div style="color: var(--accent-yellow); font-size: 1.5rem; font-weight: bold;" id="clientesRegulares">0</div>
-                            <small class="text-secondary">⚠️ Regulares</small>
+                            <small class="text-secondary">⚠️ <span data-translate="regulares">Regulares</span></small>
                         </div>
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('malo')">
                             <div style="color: var(--accent-red); font-size: 1.5rem; font-weight: bold;" id="clientesMalos">0</div>
-                            <small class="text-secondary">❌ Mala Paga</small>
+                            <small class="text-secondary">❌ <span data-translate="malaPaga">Mala Paga</span></small>
                         </div>
                     </div>
                 </div>
@@ -874,15 +874,15 @@
                         <table class="table table-dark-custom table-hover">
                             <thead style="position: sticky; top: 0; background: var(--bg-hover); z-index: 1;">
                                 <tr>
-                                    <th>Cliente</th>
-                                    <th>Tipo</th>
-                                    <th>Teléfono</th>
-                                    <th>Prestado</th>
-                                    <th>Cobrado</th>
-                                    <th>Restante</th>
-                                    <th>Parcelas</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th data-translate="cliente">Cliente</th>
+                                    <th data-translate="tipo">Tipo</th>
+                                    <th data-translate="telefono">Teléfono</th>
+                                    <th data-translate="prestado">Prestado</th>
+                                    <th data-translate="cobrado">Cobrado</th>
+                                    <th data-translate="restante">Restante</th>
+                                    <th data-translate="parcelas">Parcelas</th>
+                                    <th data-translate="estado">Estado</th>
+                                    <th data-translate="acciones">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="clientesTable"><!-- Se llena dinámicamente --></tbody>
@@ -2432,6 +2432,8 @@
                 // Campos
                 nombre: 'Nombre',
                 telefono: 'Teléfono',
+                tipo: 'Tipo',
+                parcelas: 'Parcelas',
                 montoPrestado: 'Monto Prestado',
                 totalAPagar: 'Total a Pagar',
                 dineroCobrado: 'Dinero Cobrado',
@@ -2604,6 +2606,8 @@
                 // Campos
                 nombre: 'Nome',
                 telefono: 'Telefone',
+                tipo: 'Tipo',
+                parcelas: 'Parcelas',
                 montoPrestado: 'Valor Emprestado',
                 totalAPagar: 'Total a Pagar',
                 dineroCobrado: 'Valor Recebido',
