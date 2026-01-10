@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         :root {
             --bg-primary: #0a0a0f;
@@ -3382,20 +3383,25 @@
                     if (verificacionInterval) clearInterval(verificacionInterval);
                     verificacionInterval = setInterval(() => verificarPagoRenovacion(true), 5000);
                 } else {
-                    // PIX Manual - mostrar llave PIX directa
+                    // PIX Manual - mostrar llave PIX directa con QR
+                    const pixKey = 'e6203cd0-c840-4753-ab74-993b722f49b1';
                     document.getElementById('renewalPixQrCode').innerHTML = `
                         <div style="text-align: center;">
                             <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
-                                <i class="fas fa-key me-2"></i>Chave PIX
+                                <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
                             </p>
-                            <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                            <canvas id="renewalQrCanvas" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;"></canvas>
+                            <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
                                 <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
-                                <p style="color: var(--accent-cyan); font-size: 0.85rem; font-weight: bold; margin: 0; word-break: break-all;">e6203cd0-c840-4753-ab74-993b722f49b1</p>
+                                <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
                             </div>
-                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 10px;">
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">
                                 <i class="fas fa-user me-1"></i>FinanGestPay
                             </p>
-                            <button onclick="copyPixKey('e6203cd0-c840-4753-ab74-993b722f49b1')" class="btn btn-primary-custom mt-2" style="padding: 10px 20px;">
+                            <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
+                                R$ 79,50
+                            </p>
+                            <button onclick="copyPixKey('${pixKey}')" class="btn btn-primary-custom" style="padding: 10px 20px;">
                                 <i class="fas fa-copy me-2"></i>Copiar Chave PIX
                             </button>
                             <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
@@ -3403,6 +3409,8 @@
                             </p>
                         </div>
                     `;
+                    // Generar QR Code
+                    QRCode.toCanvas(document.getElementById('renewalQrCanvas'), pixKey, { width: 180, margin: 2 });
                 }
             } catch (e) {
                 alert('Erro de conexão ao gerar PIX');
@@ -3562,25 +3570,27 @@
                     `;
                     iniciarVerificacionAutomatica();
                 } else {
-                    // PIX Manual - mostrar llave PIX directa
+                    // PIX Manual - mostrar llave PIX directa con QR
                     pendingPaymentId = null;
                     const userEmail = email || '';
+                    const pixKey = 'e6203cd0-c840-4753-ab74-993b722f49b1';
                     pixContainer.innerHTML = `
                         <div style="text-align: center;">
                             <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
-                                <i class="fas fa-key me-2"></i>Chave PIX
+                                <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
                             </p>
-                            <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                            <canvas id="pixQrCanvas" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;"></canvas>
+                            <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
                                 <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
-                                <p style="color: var(--accent-cyan); font-size: 0.85rem; font-weight: bold; margin: 0; word-break: break-all;">e6203cd0-c840-4753-ab74-993b722f49b1</p>
+                                <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
                             </div>
-                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 10px;">
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">
                                 <i class="fas fa-user me-1"></i>FinanGestPay
                             </p>
-                            <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold;">
+                            <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
                                 R$ 79,50
                             </p>
-                            <button onclick="copyPixKey('e6203cd0-c840-4753-ab74-993b722f49b1')" class="btn btn-primary-custom mt-3">
+                            <button onclick="copyPixKey('${pixKey}')" class="btn btn-primary-custom">
                                 <i class="fas fa-copy me-2"></i>Copiar Chave PIX
                             </button>
                             <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
@@ -3592,28 +3602,32 @@
                             </a>
                         </div>
                     `;
+                    // Generar QR Code
+                    QRCode.toCanvas(document.getElementById('pixQrCanvas'), pixKey, { width: 180, margin: 2 });
                 }
             } catch (e) {
-                // Error de conexión - mostrar PIX manual
+                // Error de conexión - mostrar PIX manual con QR
                 pixLoading.style.display = 'none';
                 pixContainer.style.display = 'block';
                 pendingPaymentId = null;
+                const pixKey = 'e6203cd0-c840-4753-ab74-993b722f49b1';
                 pixContainer.innerHTML = `
                     <div style="text-align: center;">
                         <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
-                            <i class="fas fa-key me-2"></i>Chave PIX
+                            <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
                         </p>
-                        <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                        <canvas id="pixQrCanvasError" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;"></canvas>
+                        <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
                             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
-                            <p style="color: var(--accent-cyan); font-size: 0.85rem; font-weight: bold; margin: 0; word-break: break-all;">e6203cd0-c840-4753-ab74-993b722f49b1</p>
+                            <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
                         </div>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 10px;">
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">
                             <i class="fas fa-user me-1"></i>FinanGestPay
                         </p>
-                        <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold;">
+                        <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
                             R$ 79,50
                         </p>
-                        <button onclick="copyPixKey('e6203cd0-c840-4753-ab74-993b722f49b1')" class="btn btn-primary-custom mt-3">
+                        <button onclick="copyPixKey('${pixKey}')" class="btn btn-primary-custom">
                             <i class="fas fa-copy me-2"></i>Copiar Chave PIX
                         </button>
                         <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
@@ -3625,6 +3639,8 @@
                         </a>
                     </div>
                 `;
+                // Generar QR Code
+                QRCode.toCanvas(document.getElementById('pixQrCanvasError'), pixKey, { width: 180, margin: 2 });
             }
         }
 
