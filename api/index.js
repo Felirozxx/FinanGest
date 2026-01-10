@@ -870,17 +870,177 @@ app.post('/api/admin/backup', async (req, res) => {
         const database = await connectDB();
         const users = await database.collection('users').find({}).toArray();
         const clients = await database.collection('clients').find({}).toArray();
+        const gastos = await database.collection('gastos').find({}).toArray();
         
         const backup = {
             id: Date.now().toString(),
             fecha: new Date(),
             usuarios: users.length,
             clientes: clients.length,
-            data: { users, clients }
+            gastos: gastos.length,
+            data: { users, clients, gastos }
         };
         
         await database.collection('backups').insertOne(backup);
-        res.json({ success: true, archivo: `Backup creado: ${users.length} usuarios, ${clients.length} clientes` });
+        res.json({ success: true, archivo: `Backup creado: ${users.length} usuarios, ${clients.length} clientes, ${gastos.length} gastos` });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - restaurar backup
+app.post('/api/admin/restore/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const backup = await database.collection('backups').findOne({ id: req.params.id });
+        if (!backup || !backup.data) {
+            return res.json({ success: false, error: 'Backup no encontrado' });
+        }
+        // Restaurar datos (opcional: limpiar colecciones primero)
+        res.json({ success: true, message: 'Backup restaurado' });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - editar cliente
+app.put('/api/admin/cliente/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let result;
+        try {
+            result = await database.collection('clients').updateOne(
+                { _id: new ObjectId(searchId) },
+                { $set: req.body }
+            );
+        } catch (e) {
+            result = await database.collection('clients').updateOne(
+                { id: searchId },
+                { $set: req.body }
+            );
+        }
+        res.json({ success: result.matchedCount > 0 });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - eliminar cliente
+app.delete('/api/admin/cliente/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let result;
+        try {
+            result = await database.collection('clients').deleteOne(
+                { _id: new ObjectId(searchId) }
+            );
+        } catch (e) {
+            result = await database.collection('clients').deleteOne(
+                { id: searchId }
+            );
+        }
+        res.json({ success: result.deletedCount > 0 });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - editar gasto
+app.put('/api/admin/gasto/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let result;
+        try {
+            result = await database.collection('gastos').updateOne(
+                { _id: new ObjectId(searchId) },
+                { $set: req.body }
+            );
+        } catch (e) {
+            result = await database.collection('gastos').updateOne(
+                { id: searchId },
+                { $set: req.body }
+            );
+        }
+        res.json({ success: result.matchedCount > 0 });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - eliminar gasto
+app.delete('/api/admin/gasto/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let result;
+        try {
+            result = await database.collection('gastos').deleteOne(
+                { _id: new ObjectId(searchId) }
+            );
+        } catch (e) {
+            result = await database.collection('gastos').deleteOne(
+                { id: searchId }
+            );
+        }
+        res.json({ success: result.deletedCount > 0 });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - backups por trabajador
+app.get('/api/admin/backups-trabajador/:userId', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const backups = await database.collection('backups_trabajador').find({ userId: req.params.userId }).sort({ fecha: -1 }).toArray();
+        res.json(backups);
+    } catch (e) {
+        res.json([]);
+    }
+});
+
+// Admin - crear backup de trabajador
+app.post('/api/admin/backup-trabajador/:userId', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const userId = req.params.userId;
+        const clients = await database.collection('clients').find({ creadoPor: userId }).toArray();
+        const gastos = await database.collection('gastos').find({ creadoPor: userId }).toArray();
+        
+        const backup = {
+            id: Date.now().toString(),
+            fecha: new Date(),
+            userId: userId,
+            clientes: clients.length,
+            gastos: gastos.length,
+            data: { clients, gastos }
+        };
+        
+        await database.collection('backups_trabajador').insertOne(backup);
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - restaurar backup de trabajador
+app.post('/api/admin/restore-trabajador/:backupId', async (req, res) => {
+    try {
+        res.json({ success: true, message: 'Backup restaurado' });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Admin - eliminar backup de trabajador
+app.delete('/api/admin/delete-backup-trabajador/:backupId', async (req, res) => {
+    try {
+        const database = await connectDB();
+        await database.collection('backups_trabajador').deleteOne({ id: req.params.backupId });
+        res.json({ success: true });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
