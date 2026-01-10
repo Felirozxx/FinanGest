@@ -4322,7 +4322,7 @@
                 const usuariosOnline = usuariosActivos.filter(u => u.lastSeen && new Date(u.lastSeen) > fiveMinutesAgo);
                 const usuariosOffline = usuariosActivos.filter(u => !u.lastSeen || new Date(u.lastSeen) <= fiveMinutesAgo);
                 
-                document.getElementById('adminTotalUsers').textContent = allUsers.length;
+                document.getElementById('adminTotalUsers').textContent = usuariosActivos.length;
                 document.getElementById('adminOnline').textContent = usuariosOnline.length;
                 document.getElementById('adminOffline').textContent = usuariosOffline.length;
                 document.getElementById('adminPendientes').textContent = usuariosPendientes.length;
