@@ -7596,7 +7596,18 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">📍 Ubicación / Dirección</label>
-                                <input type="text" class="form-control form-control-dark" id="adminEditUbicacion" value="${cliente.ubicacion || ''}" placeholder="Dirección del cliente">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-dark" id="adminEditUbicacion" value="${cliente.ubicacion || ''}" placeholder="Dirección del cliente">
+                                    <button class="btn btn-primary-custom" type="button" onclick="obtenerUbicacionAdmin()" title="Usar ubicación actual">
+                                        <i class="fas fa-crosshairs"></i>
+                                    </button>
+                                    ${cliente.lat && cliente.lng ? \`<button class="btn btn-success-custom" type="button" onclick="verMapaAdmin(${cliente.lat}, ${cliente.lng})" title="Ver en mapa"><i class="fas fa-map-marker-alt"></i></button>\` : ''}
+                                </div>
+                                <input type="hidden" id="adminEditLat" value="${cliente.lat || ''}">
+                                <input type="hidden" id="adminEditLng" value="${cliente.lng || ''}">
+                                <small id="adminCoordsInfo" class="text-secondary" style="display: ${cliente.lat && cliente.lng ? 'block' : 'none'};">
+                                    <i class="fas fa-check-circle text-success"></i> Coordenadas guardadas
+                                </small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">� Notas sobre erl cliente</label>
@@ -7618,6 +7629,53 @@
             bsModal.show();
         }
         
+        function obtenerUbicacionAdmin() {
+            if (!navigator.geolocation) {
+                alert('Tu navegador no soporta geolocalización');
+                return;
+            }
+            
+            const btn = event.target.closest('button');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    document.getElementById('adminEditLat').value = lat;
+                    document.getElementById('adminEditLng').value = lng;
+                    document.getElementById('adminCoordsInfo').style.display = 'block';
+                    
+                    // Intentar obtener dirección
+                    try {
+                        const res = await fetch(\`https://nominatim.openstreetmap.org/reverse?format=json&lat=\${lat}&lon=\${lng}\`);
+                        const data = await res.json();
+                        if (data.display_name) {
+                            document.getElementById('adminEditUbicacion').value = data.display_name;
+                        }
+                    } catch (e) {
+                        document.getElementById('adminEditUbicacion').value = \`Lat: \${lat.toFixed(6)}, Lng: \${lng.toFixed(6)}\`;
+                    }
+                    
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                },
+                (error) => {
+                    alert('Error al obtener ubicación: ' + error.message);
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+        
+        function verMapaAdmin(lat, lng) {
+            window.open(\`https://www.google.com/maps?q=\${lat},\${lng}\`, '_blank');
+        }
+        
         async function guardarAdminEditCliente(clienteId) {
             const updates = {
                 nombre: document.getElementById('adminEditNombre').value,
@@ -7633,7 +7691,9 @@
                 microseguro: parseFloat(document.getElementById('adminEditMicroseguro').value) || 0,
                 tipoNegocio: document.getElementById('adminEditTipoNegocio').value,
                 ubicacion: document.getElementById('adminEditUbicacion').value,
-                notas: document.getElementById('adminEditNotas').value
+                notas: document.getElementById('adminEditNotas').value,
+                lat: document.getElementById('adminEditLat').value || null,
+                lng: document.getElementById('adminEditLng').value || null
             };
             
             // Calcular valor por parcela
