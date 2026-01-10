@@ -2529,7 +2529,11 @@
                     showMainApp();
                 } else if (data.needsPayment) {
                     // Usuario necesita pagar - mostrar pantalla de pago
-                    alert('Tu cuenta está pendiente de pago. Te redirigimos al pago.');
+                    if (data.expired) {
+                        alert('⏰ Tu suscripción ha vencido.\n\nHan pasado 30 días desde tu último pago.\nRenueva tu suscripción para continuar usando FinanGest.');
+                    } else {
+                        alert('Tu cuenta está pendiente de pago. Te redirigimos al pago.');
+                    }
                     pendingUser = { id: data.userId, nombre: data.nombre, email: data.email };
                     showAuthTab('register');
                     document.getElementById('registerStep1').style.display = 'none';
