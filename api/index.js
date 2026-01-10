@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -16,7 +16,7 @@ const ADMIN_SECRET = process.env.ADMIN_SECRET || 'finangest-admin-2026';
 
 let db;
 
-// Funciones de encriptación de contraseñas
+// Funciones de encriptaciÃ³n de contraseÃ±as
 function hashPassword(password) {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
@@ -25,7 +25,7 @@ function hashPassword(password) {
 
 function verifyPassword(password, stored) {
     if (!stored || !stored.includes(':')) {
-        // Contraseña antigua sin encriptar - comparar directo
+        // ContraseÃ±a antigua sin encriptar - comparar directo
         return password === stored;
     }
     const [salt, hash] = stored.split(':');
@@ -41,7 +41,7 @@ async function connectDB() {
     return db;
 }
 
-// Limpiar códigos expirados (más de 1 hora)
+// Limpiar cÃ³digos expirados (mÃ¡s de 1 hora)
 async function cleanExpiredCodes() {
     try {
         const database = await connectDB();
@@ -49,7 +49,7 @@ async function cleanExpiredCodes() {
         await database.collection('verification_codes').deleteMany({ expires: { $lt: oneHourAgo } });
         await database.collection('reset_codes').deleteMany({ expires: { $lt: oneHourAgo } });
     } catch (e) {
-        console.log('Error limpiando códigos:', e.message);
+        console.log('Error limpiando cÃ³digos:', e.message);
     }
 }
 
@@ -80,16 +80,16 @@ app.post('/api/login', async (req, res) => {
         
         if (!user) return res.json({ success: false, error: 'Usuario no encontrado' });
         
-        // Verificar contraseña (soporta encriptada y sin encriptar)
+        // Verificar contraseÃ±a (soporta encriptada y sin encriptar)
         if (!verifyPassword(password, user.password)) {
-            return res.json({ success: false, error: 'Contraseña incorrecta' });
+            return res.json({ success: false, error: 'ContraseÃ±a incorrecta' });
         }
         
         if (!user.paid && user.role !== 'admin') {
             return res.json({ success: false, needsPayment: true, userId: user._id, nombre: user.nombre, email: user.email });
         }
         
-        // Si la contraseña estaba sin encriptar, actualizarla
+        // Si la contraseÃ±a estaba sin encriptar, actualizarla
         if (!user.password.includes(':')) {
             await users.updateOne({ _id: user._id }, { $set: { password: hashPassword(password) } });
         }
@@ -115,11 +115,11 @@ app.post('/api/send-code', async (req, res) => {
         const users = database.collection('users');
         const codes = database.collection('verification_codes');
         
-        // Limpiar códigos viejos
+        // Limpiar cÃ³digos viejos
         cleanExpiredCodes();
         
         const existingEmail = await users.findOne({ email });
-        if (existingEmail) return res.json({ success: false, error: 'Este email ya está registrado' });
+        if (existingEmail) return res.json({ success: false, error: 'Este email ya estÃ¡ registrado' });
         
         if (username) {
             const existingUsername = await users.findOne({ username });
@@ -128,7 +128,7 @@ app.post('/api/send-code', async (req, res) => {
         
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Guardar código en MongoDB
+        // Guardar cÃ³digo en MongoDB
         await codes.updateOne(
             { email },
             { $set: { code, nombre, username, expires: new Date(Date.now() + 600000) } },
@@ -139,12 +139,12 @@ app.post('/api/send-code', async (req, res) => {
             await transporter.sendMail({
                 from: EMAIL_USER,
                 to: email,
-                subject: 'Código de Verificación - FinanGest',
-                html: `<h2>Bienvenido a FinanGest</h2><p>Tu código: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
+                subject: 'CÃ³digo de VerificaciÃ³n - FinanGest',
+                html: `<h2>Bienvenido a FinanGest</h2><p>Tu cÃ³digo: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
             });
         }
         
-        res.json({ success: true, message: 'Código enviado', devCode: !EMAIL_PASS ? code : undefined });
+        res.json({ success: true, message: 'CÃ³digo enviado', devCode: !EMAIL_PASS ? code : undefined });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -161,13 +161,13 @@ app.post('/api/verify-code', async (req, res) => {
         const stored = await codes.findOne({ email });
         
         if (!stored || new Date(stored.expires) < new Date()) {
-            return res.json({ success: false, error: 'Código expirado' });
+            return res.json({ success: false, error: 'CÃ³digo expirado' });
         }
         if (stored.code !== code) {
-            return res.json({ success: false, error: 'Código incorrecto' });
+            return res.json({ success: false, error: 'CÃ³digo incorrecto' });
         }
         
-        // Guardar contraseña encriptada
+        // Guardar contraseÃ±a encriptada
         const result = await users.insertOne({
             nombre: stored.nombre,
             username: username || stored.username,
@@ -199,7 +199,7 @@ app.post('/api/forgot-password', async (req, res) => {
         
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Guardar código en MongoDB
+        // Guardar cÃ³digo en MongoDB
         await codes.updateOne(
             { email },
             { $set: { code, expires: new Date(Date.now() + 600000) } },
@@ -210,12 +210,12 @@ app.post('/api/forgot-password', async (req, res) => {
             await transporter.sendMail({
                 from: EMAIL_USER,
                 to: email,
-                subject: 'Recuperar Contraseña - FinanGest',
-                html: `<h2>Recuperar Contraseña</h2><p>Tu código: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
+                subject: 'Recuperar ContraseÃ±a - FinanGest',
+                html: `<h2>Recuperar ContraseÃ±a</h2><p>Tu cÃ³digo: <strong style="font-size:24px">${code}</strong></p><p>Expira en 10 minutos.</p>`
             });
         }
         
-        res.json({ success: true, message: 'Código enviado', devCode: !EMAIL_PASS ? code : undefined });
+        res.json({ success: true, message: 'CÃ³digo enviado', devCode: !EMAIL_PASS ? code : undefined });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -232,17 +232,17 @@ app.post('/api/reset-password', async (req, res) => {
         const stored = await codes.findOne({ email });
         
         if (!stored || new Date(stored.expires) < new Date()) {
-            return res.json({ success: false, error: 'Código expirado' });
+            return res.json({ success: false, error: 'CÃ³digo expirado' });
         }
         if (stored.code !== code) {
-            return res.json({ success: false, error: 'Código incorrecto' });
+            return res.json({ success: false, error: 'CÃ³digo incorrecto' });
         }
         
-        // Guardar contraseña encriptada
+        // Guardar contraseÃ±a encriptada
         await users.updateOne({ email }, { $set: { password: hashPassword(newPassword) } });
         await codes.deleteOne({ email });
         
-        res.json({ success: true, message: 'Contraseña actualizada' });
+        res.json({ success: true, message: 'ContraseÃ±a actualizada' });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -275,8 +275,8 @@ app.get('/api/users', async (req, res) => {
     try {
         const database = await connectDB();
         const users = await database.collection('users').find({}).toArray();
-        // No enviar contraseñas
-        const safeUsers = users.map(u => ({ ...u, password: undefined }));
+        // No enviar contraseÃ±as
+        const safeUsers = users.map(u => ({ ...u, id: u._id.toString(), password: undefined }));
         res.json(safeUsers);
     } catch (e) {
         res.json({ error: e.message });
@@ -464,7 +464,7 @@ app.post('/api/heartbeat', async (req, res) => {
     }
 });
 
-// Heartbeat - actualizar último visto
+// Heartbeat - actualizar Ãºltimo visto
 app.post('/api/heartbeat', async (req, res) => {
     try {
         const { userId } = req.body;
@@ -509,4 +509,52 @@ app.get('/api/users-status', async (req, res) => {
     }
 });
 
+
+// ============ CLIENTES (alias en español) ============
+app.get('/api/clientes', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const clients = await database.collection('clients').find({}).toArray();
+        res.json(clients.map(c => ({ ...c, id: c._id.toString() })));
+    } catch (e) {
+        res.json([]);
+    }
+});
+
+app.post('/api/clientes', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const result = await database.collection('clients').insertOne(req.body);
+        res.json({ success: true, id: result.insertedId.toString() });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+app.put('/api/clientes/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const updateData = { ...req.body };
+        delete updateData._id; delete updateData.id;
+        await database.collection('clients').updateOne({ _id: new ObjectId(req.params.id) }, { $set: updateData });
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+app.delete('/api/clientes/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        await database.collection('clients').deleteOne({ _id: new ObjectId(req.params.id) });
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 module.exports = app;
+
+
+
+
