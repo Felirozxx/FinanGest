@@ -4180,9 +4180,9 @@
             let cobradoAcumulado = 0;
             let prestadoAcumulado = 0;
             
-            // Generar días entre las fechas
-            let current = new Date(fechaInicio);
-            while (current <= fechaFin) {
+            // Generar días entre las fechas (de más reciente a más antiguo)
+            let current = new Date(fechaFin);
+            while (current >= fechaInicio) {
                 const dia = current.getDate();
                 const mes = current.getMonth();
                 const anio = current.getFullYear();
@@ -4222,8 +4222,13 @@
                 datosCobrado.push(cobradoAcumulado);
                 datosPrestado.push(prestadoAcumulado);
                 
-                current.setDate(current.getDate() + 1);
+                current.setDate(current.getDate() - 1);
             }
+            
+            // Invertir arrays para que el gráfico vaya de antiguo a reciente pero con datos acumulados correctos
+            labels.reverse();
+            datosCobrado.reverse();
+            datosPrestado.reverse();
             
             mainChart = new Chart(ctx, {
                 type: 'line',
