@@ -1080,6 +1080,71 @@
                     <div id="gastosLista"><!-- Se llena dinámicamente --></div>
                 </div>
             </div>
+            <!-- Microseguros Section -->
+            <div id="microseguros" class="section">
+                <h5 class="mb-4"><i class="fas fa-shield-alt me-2" style="color: var(--accent-purple);"></i>Microseguros</h5>
+                
+                <!-- Estadísticas -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card cyan">
+                            <div class="stat-value" id="microseguroHoy">R$ 0.00</div>
+                            <div class="stat-label"><i class="fas fa-calendar-day me-2"></i>Hoy</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card green">
+                            <div class="stat-value" id="microseguroSemana">R$ 0.00</div>
+                            <div class="stat-label"><i class="fas fa-calendar-week me-2"></i>Últimos 7 días</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card purple">
+                            <div class="stat-value" id="microseguroMes">R$ 0.00</div>
+                            <div class="stat-label"><i class="fas fa-calendar-alt me-2"></i>Este Mes</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card yellow">
+                            <div class="stat-value" id="microseguroAnio">R$ 0.00</div>
+                            <div class="stat-label"><i class="fas fa-calendar me-2"></i>Este Año</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filtro por fecha -->
+                <div class="card-dark mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-filter me-2"></i>Filtrar por fecha</h6>
+                        <div class="d-flex gap-2 align-items-center">
+                            <input type="date" class="form-control form-control-dark" id="microseguroFechaInicio" style="width: auto;" onchange="renderMicroseguros()">
+                            <span class="text-secondary">a</span>
+                            <input type="date" class="form-control form-control-dark" id="microseguroFechaFin" style="width: auto;" onchange="renderMicroseguros()">
+                            <button class="btn btn-sm btn-primary-custom" onclick="setMicroseguroHoy()">Hoy</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="resetMicroseguroFiltro()"><i class="fas fa-undo"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lista de microseguros -->
+                <div class="card-dark">
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Microseguro</th>
+                                    <th>Monto Préstamo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="microsegurosLista">
+                                <tr><td colspan="4" class="text-center text-secondary">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <!-- Historial Section (Trabajadores) -->
             <div id="historial" class="section">
                 <h5 class="mb-4"><i class="fas fa-history me-2" style="color: var(--accent-purple);"></i>Mi Historial Completo</h5>
@@ -2770,6 +2835,7 @@
                     <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i>Clientes</div>
                     <div class="nav-item" onclick="showSection('cobros')"><i class="fas fa-calendar-check"></i>Cobros del Día</div>
                     <div class="nav-item" onclick="showSection('gastos')"><i class="fas fa-wallet"></i>Gastos</div>
+                    <div class="nav-item" onclick="showSection('microseguros')"><i class="fas fa-shield-alt"></i>Microseguros</div>
                     <div class="nav-item" onclick="showSection('mapa')"><i class="fas fa-map-marked-alt"></i>Mapa</div>
                     <div class="nav-item" onclick="showSection('historial')"><i class="fas fa-history"></i>Mi Historial</div>
                     <div class="nav-item" onclick="showSection('misBackups')"><i class="fas fa-database"></i>Backups</div>
@@ -2812,7 +2878,7 @@
             const titles = {
                 dashboard: 'Dashboard', clientes: 'Clientes', estadisticas: 'Mis Estadísticas', cobros: 'Cobros del Día',
                 gastos: 'Gastos Personales', historial: 'Mi Historial', mapa: 'Mapa de Clientes', misBackups: 'Mis Backups',
-                miConfig: 'Mi Configuración',
+                miConfig: 'Mi Configuración', microseguros: 'Microseguros',
                 adminUsuarios: 'Usuarios Registrados',
                 adminCalendario: 'Calendario de Clientes', adminHistorial: 'Historial de Trabajador', 
                 adminVerTodo: 'Control Total - Trabajador', adminBackups: 'Backups del Sistema',
@@ -2853,6 +2919,9 @@
                 cargarConfigSeguridad();
                 cargarEstadisticasSeguridad();
                 cargarLogSeguridad();
+            }
+            if (id === 'microseguros') {
+                renderMicroseguros();
             }
         }
 
@@ -5959,12 +6028,13 @@
             const porcentaje = parseInt(document.getElementById('clienteComision').value) || 20;
             const microseguro = parseFloat(document.getElementById('clienteMicroseguro').value) || 0;
             const comision = monto * (porcentaje / 100);
-            const total = monto + comision + microseguro;
-            const porParcela = total / parcelas;
+            const totalParcelas = monto + comision;
+            const porParcela = totalParcelas / parcelas;
+            const totalConMicroseguro = totalParcelas + microseguro;
             document.getElementById('comisionLabel').textContent = porcentaje;
             document.getElementById('calcComision').textContent = 'R$ ' + comision.toFixed(2);
             document.getElementById('calcMicroseguro').textContent = 'R$ ' + microseguro.toFixed(2);
-            document.getElementById('calcTotal').textContent = 'R$ ' + total.toFixed(2);
+            document.getElementById('calcTotal').textContent = 'R$ ' + totalConMicroseguro.toFixed(2);
             document.getElementById('calcParcela').textContent = 'R$ ' + porParcela.toFixed(2);
         }
 
@@ -5988,7 +6058,8 @@
             const microseguro = parseFloat(document.getElementById('clienteMicroseguro').value) || 0;
             if (!nombre || !monto || !parcelas) return alert('Completa los campos requeridos');
             const comision = monto * (porcentaje / 100);
-            const total = monto + comision + microseguro;
+            const totalParcelas = monto + comision;
+            const total = totalParcelas + microseguro;
             
             // ========== MODO EDICIÓN (trabajador con llave activa) ==========
             if (window.clienteEditandoId) {
@@ -6072,7 +6143,7 @@
                 comisionTotal: comision,
                 microseguro: microseguro,
                 totalAPagar: total,
-                valorParcela: total / parcelas,
+                valorParcela: totalParcelas / parcelas,
                 estado: 'ativo',
                 fechaCreacion: new Date().toISOString(),
                 montoPagado: 0,
@@ -6227,6 +6298,7 @@
             document.getElementById('clienteMonto').value = c.montoTotal || '';
             document.getElementById('clienteParcelas').value = c.numeroParcelas || '';
             document.getElementById('clienteComision').value = c.comisionPorcentaje || 20;
+            document.getElementById('clienteMicroseguro').value = c.microseguro || 0;
             
             // Mostrar coordenadas si existen
             if (c.lat && c.lng) {
@@ -6510,6 +6582,114 @@
                     </div>
                 `).join('')}
             `;
+        }
+
+        // ========== MICROSEGUROS ==========
+        function renderMicroseguros() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const fechaInicio = document.getElementById('microseguroFechaInicio').value;
+            const fechaFin = document.getElementById('microseguroFechaFin').value;
+            
+            // Filtrar clientes que tienen microseguro
+            const clientesConMicroseguro = clientes.filter(c => c.microseguro && c.microseguro > 0);
+            
+            // Calcular totales por período
+            const ahora = new Date();
+            
+            // Hoy
+            const microseguroHoy = clientesConMicroseguro
+                .filter(c => c.fechaCreacion && c.fechaCreacion.split('T')[0] === hoy)
+                .reduce((s, c) => s + (c.microseguro || 0), 0);
+            
+            // Últimos 7 días
+            const hace7Dias = new Date(ahora);
+            hace7Dias.setDate(hace7Dias.getDate() - 7);
+            const microseguroSemana = clientesConMicroseguro
+                .filter(c => c.fechaCreacion && new Date(c.fechaCreacion) >= hace7Dias)
+                .reduce((s, c) => s + (c.microseguro || 0), 0);
+            
+            // Este mes
+            const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+            const microseguroMes = clientesConMicroseguro
+                .filter(c => c.fechaCreacion && new Date(c.fechaCreacion) >= inicioMes)
+                .reduce((s, c) => s + (c.microseguro || 0), 0);
+            
+            // Este año
+            const inicioAnio = new Date(ahora.getFullYear(), 0, 1);
+            const microseguroAnio = clientesConMicroseguro
+                .filter(c => c.fechaCreacion && new Date(c.fechaCreacion) >= inicioAnio)
+                .reduce((s, c) => s + (c.microseguro || 0), 0);
+            
+            // Actualizar estadísticas
+            document.getElementById('microseguroHoy').textContent = 'R$ ' + microseguroHoy.toFixed(2);
+            document.getElementById('microseguroSemana').textContent = 'R$ ' + microseguroSemana.toFixed(2);
+            document.getElementById('microseguroMes').textContent = 'R$ ' + microseguroMes.toFixed(2);
+            document.getElementById('microseguroAnio').textContent = 'R$ ' + microseguroAnio.toFixed(2);
+            
+            // Filtrar por rango de fechas si está seleccionado
+            let clientesFiltrados = clientesConMicroseguro;
+            if (fechaInicio && fechaFin) {
+                clientesFiltrados = clientesConMicroseguro.filter(c => {
+                    if (!c.fechaCreacion) return false;
+                    const fecha = c.fechaCreacion.split('T')[0];
+                    return fecha >= fechaInicio && fecha <= fechaFin;
+                });
+            } else if (fechaInicio) {
+                clientesFiltrados = clientesConMicroseguro.filter(c => {
+                    if (!c.fechaCreacion) return false;
+                    return c.fechaCreacion.split('T')[0] >= fechaInicio;
+                });
+            } else if (fechaFin) {
+                clientesFiltrados = clientesConMicroseguro.filter(c => {
+                    if (!c.fechaCreacion) return false;
+                    return c.fechaCreacion.split('T')[0] <= fechaFin;
+                });
+            }
+            
+            // Ordenar por fecha más reciente
+            clientesFiltrados.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+            
+            const container = document.getElementById('microsegurosLista');
+            
+            if (clientesFiltrados.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-4">No hay microseguros registrados</td></tr>';
+                return;
+            }
+            
+            container.innerHTML = clientesFiltrados.map(c => {
+                const fecha = c.fechaCreacion ? new Date(c.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A';
+                return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width: 35px; height: 35px; background: var(--accent-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user" style="color: white; font-size: 0.8rem;"></i>
+                                </div>
+                                <div>
+                                    <strong>${c.nombre}</strong>
+                                    <br><small class="text-secondary">${c.telefono || 'Sin teléfono'}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${fecha}</td>
+                        <td style="color: var(--accent-purple); font-weight: 600;">R$ ${(c.microseguro || 0).toFixed(2)}</td>
+                        <td>R$ ${(c.montoTotal || 0).toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function setMicroseguroHoy() {
+            const hoy = getFechaLocal();
+            document.getElementById('microseguroFechaInicio').value = hoy;
+            document.getElementById('microseguroFechaFin').value = hoy;
+            renderMicroseguros();
+        }
+        
+        function resetMicroseguroFiltro() {
+            document.getElementById('microseguroFechaInicio').value = '';
+            document.getElementById('microseguroFechaFin').value = '';
+            renderMicroseguros();
         }
 
         // ========== MAPA ==========
