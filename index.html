@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinanGest - Gestión Financiera Profesional</title>
+    <title>FinanGest - GestiÃƒÂ³n Financiera Profesional</title>
     <!-- PWA Meta Tags -->
-    <meta name="description" content="FinanGest - Gestión financiera personal. Organiza tus cuentas, controla pagos y gastos.">
+    <meta name="description" content="FinanGest - GestiÃƒÂ³n financiera personal. Organiza tus cuentas, controla pagos y gastos.">
     <meta name="theme-color" content="#00d4ff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -301,9 +301,9 @@
                     <i class="fas fa-chart-line fa-3x" style="color: var(--accent-cyan);"></i>
                 </div>
                 <div class="logo" style="font-size: 2.5rem;">FinanGest</div>
-                <span style="color: var(--text-secondary); font-size: 1.1rem;">Software de Gestión Financiera</span>
+                <span style="color: var(--text-secondary); font-size: 1.1rem;">Software de GestiÃƒÂ³n Financiera</span>
                 <p style="color: var(--text-secondary); margin-top: 15px; font-size: 0.9rem;">
-                    Gestiona tus préstamos de forma inteligente y profesional
+                    Gestiona tus prÃƒÂ©stamos de forma inteligente y profesional
                 </p>
                 <div style="margin-top: 20px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto;">
                     <div class="feature-item"><i class="fas fa-check-circle"></i> Control total de clientes</div>
@@ -313,7 +313,7 @@
             </div>
             <div class="auth-body">
                 <div class="auth-tabs">
-                    <div class="auth-tab active" onclick="showAuthTab('login')">Iniciar Sesiñ³n</div>
+                    <div class="auth-tab active" onclick="showAuthTab('login')">Iniciar SesiÃƒÂ±Ã‚Â³n</div>
                     <div class="auth-tab" onclick="showAuthTab('register')">Registrarse</div>
                 </div>
                 <!-- Login Form -->
@@ -323,15 +323,15 @@
                         <input type="email" class="form-control form-control-dark" id="loginEmail" placeholder="tu@email.com" autocomplete="off">
                     </div>
                     <div class="mb-4">
-                        <label class="form-label text-secondary">contraseña</label>
-                        <input type="password" class="form-control form-control-dark" id="loginPassword" placeholder="€¢€¢€¢€¢€¢€¢€¢€¢" autocomplete="new-password">
+                        <label class="form-label text-secondary">contraseÃƒÂ±a</label>
+                        <input type="password" class="form-control form-control-dark" id="loginPassword" placeholder="********" autocomplete="new-password">
                     </div>
                     <button class="btn btn-primary-custom w-100" onclick="handleLogin()">
                         <i class="fas fa-sign-in-alt me-2"></i>Ingresar
                     </button>
                     <div class="text-center mt-3">
                         <a href="#" onclick="showForgotPassword()" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">
-                            <i class="fas fa-key me-1"></i>¿Olvidaste tu contraseña?
+                            <i class="fas fa-key me-1"></i>Ã‚Â¿Olvidaste tu contraseÃƒÂ±a?
                         </a>
                     </div>
                 </div>
@@ -340,15 +340,15 @@
                     <div id="forgotStep1">
                         <div class="text-center mb-4">
                             <i class="fas fa-lock fa-3x mb-3" style="color: var(--accent-cyan);"></i>
-                            <h5>Recuperar contraseña</h5>
-                            <p class="text-secondary">Ingresa tu email para recibir un cñ³digo</p>
+                            <h5>Recuperar contraseÃƒÂ±a</h5>
+                            <p class="text-secondary">Ingresa tu email para recibir un cÃƒÂ±Ã‚Â³digo</p>
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-secondary">Email</label>
                             <input type="email" class="form-control form-control-dark" id="forgotEmail" placeholder="tu@email.com">
                         </div>
                         <button class="btn btn-primary-custom w-100" onclick="sendResetCode()" id="btnSendResetCode">
-                            <i class="fas fa-paper-plane me-2"></i>Enviar Cñ³digo
+                            <i class="fas fa-paper-plane me-2"></i>Enviar CÃƒÂ±Ã‚Â³digo
                         </button>
                         <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="backToLogin()">
                             <i class="fas fa-arrow-left me-1"></i>Volver al Login
@@ -357,34 +357,34 @@
                     <div id="forgotStep2" style="display: none;">
                         <div class="text-center mb-4">
                             <i class="fas fa-envelope-open-text fa-3x mb-3" style="color: var(--accent-cyan);"></i>
-                            <h5>Verifica tu Cñ³digo</h5>
-                            <p class="text-secondary">Enviamos un cñ³digo a <span id="forgotEmailSent" style="color: var(--accent-cyan);"></span></p>
+                            <h5>Verifica tu CÃƒÂ±Ã‚Â³digo</h5>
+                            <p class="text-secondary">Enviamos un cÃƒÂ±Ã‚Â³digo a <span id="forgotEmailSent" style="color: var(--accent-cyan);"></span></p>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Cñ³digo de Verificaciñ³n</label>
+                            <label class="form-label text-secondary">CÃƒÂ±Ã‚Â³digo de VerificaciÃƒÂ±Ã‚Â³n</label>
                             <input type="text" class="form-control form-control-dark text-center" id="resetCode" 
                                    placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px;">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Nueva contraseña</label>
-                            <input type="password" class="form-control form-control-dark" id="newPassword" placeholder="Mñ­nimo 6 caracteres">
+                            <label class="form-label text-secondary">Nueva contraseÃƒÂ±a</label>
+                            <input type="password" class="form-control form-control-dark" id="newPassword" placeholder="Minimo 6 caracteres">
                         </div>
                         <div class="mb-4">
-                            <label class="form-label text-secondary">Confirmar contraseña</label>
+                            <label class="form-label text-secondary">Confirmar contraseÃƒÂ±a</label>
                             <input type="password" class="form-control form-control-dark" id="confirmPassword" placeholder="Repite la contraseña">
                         </div>
                         <button class="btn btn-success-custom w-100" onclick="resetPassword()" id="btnResetPassword">
-                            <i class="fas fa-check me-2"></i>Cambiar contraseña
+                            <i class="fas fa-check me-2"></i>Cambiar contraseÃƒÂ±a
                         </button>
                         <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="resendResetCode()">
-                            ¿No recibiste el cñ³digo? Reenviar
+                            Ã‚Â¿No recibiste el cÃƒÂ±Ã‚Â³digo? Reenviar
                         </button>
                     </div>
                 </div>
                 <!-- Soporte Section -->
                 <div id="supportSection" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
                     <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; margin-bottom: 15px;">
-                        <i class="fas fa-headset me-1"></i>¿Necesitas ayuda? Contñ¡ctanos
+                        <i class="fas fa-headset me-1"></i>Ã‚Â¿Necesitas ayuda? ContÃƒÂ±Ã‚Â¡ctanos
                     </p>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <a href="https://mail.google.com/mail/?view=cm&to=fzuluaga548@gmail.com&su=Soporte%20FinanGest" target="_blank" style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); text-decoration: none; padding: 10px; background: var(--bg-hover); border-radius: 8px; transition: all 0.3s;">
@@ -414,37 +414,37 @@
                         <div class="mb-3">
                             <label class="form-label text-secondary">Nombre de Usuario</label>
                             <input type="text" class="form-control form-control-dark" id="regUsername" placeholder="usuario123" autocomplete="off">
-                            <small class="text-secondary">ñšnico, sin espacios</small>
+                            <small class="text-secondary">ÃƒÂ±Ã…Â¡nico, sin espacios</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Email</label>
                             <input type="email" class="form-control form-control-dark" id="regEmail" placeholder="tu@gmail.com">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">contraseña</label>
-                            <input type="password" class="form-control form-control-dark" id="regPassword" placeholder="Mñ­nimo 6 caracteres">
+                            <label class="form-label text-secondary">contraseÃƒÂ±a</label>
+                            <input type="password" class="form-control form-control-dark" id="regPassword" placeholder="Minimo 6 caracteres">
                         </div>
                         <div class="mb-4">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="acceptTerms" style="background: var(--bg-hover); border-color: var(--border-color); cursor: pointer;" onchange="this.style.background = this.checked ? 'var(--accent-cyan)' : 'var(--bg-hover)'">
                                 <label class="form-check-label text-secondary" for="acceptTerms" style="font-size: 0.85rem; cursor: pointer;">
-                                    Acepto los <a href="politicas.html#terminos" target="_blank" style="color: var(--accent-cyan);">Tñ©rminos de Uso</a> 
-                                    y la <a href="politicas.html" target="_blank" style="color: var(--accent-cyan);">Polñ­tica de Privacidad</a>
+                                    Acepto los <a href="politicas.html#terminos" target="_blank" style="color: var(--accent-cyan);">TÃƒÂ±Ã‚Â©rminos de Uso</a> 
+                                    y la <a href="politicas.html" target="_blank" style="color: var(--accent-cyan);">PolÃƒÂ±Ã‚Â­tica de Privacidad</a>
                                 </label>
                             </div>
                         </div>
                         <button class="btn btn-primary-custom w-100" onclick="sendVerificationCode()" id="btnSendCode">
-                            <i class="fas fa-paper-plane me-2"></i>Enviar Cñ³digo de Verificaciñ³n
+                            <i class="fas fa-paper-plane me-2"></i>Enviar CÃƒÂ±Ã‚Â³digo de VerificaciÃƒÂ±Ã‚Â³n
                         </button>
                     </div>
                     <div id="registerStep2" style="display: none;">
                         <div class="text-center mb-4">
                             <i class="fas fa-envelope-open-text fa-3x mb-3" style="color: var(--accent-cyan);"></i>
                             <h5>Verifica tu Email</h5>
-                            <p class="text-secondary">Enviamos un cñ³digo a <span id="emailSent" style="color: var(--accent-cyan);"></span></p>
+                            <p class="text-secondary">Enviamos un cÃƒÂ±Ã‚Â³digo a <span id="emailSent" style="color: var(--accent-cyan);"></span></p>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label text-secondary">Cñ³digo de Verificaciñ³n</label>
+                            <label class="form-label text-secondary">CÃƒÂ±Ã‚Â³digo de VerificaciÃƒÂ±Ã‚Â³n</label>
                             <input type="text" class="form-control form-control-dark text-center" id="verificationCode" 
                                    placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px;">
                         </div>
@@ -452,15 +452,15 @@
                             <i class="fas fa-check me-2"></i>Verificar y Crear Cuenta
                         </button>
                         <button class="btn btn-link w-100 mt-2" style="color: var(--text-secondary);" onclick="resendCode()">
-                            ¿No recibiste el cñ³digo? Reenviar
+                            Ã‚Â¿No recibiste el cÃƒÂ±Ã‚Â³digo? Reenviar
                         </button>
                     </div>
                     <!-- Paso 3: Pago PIX -->
                     <div id="registerStep3" style="display: none;">
                         <div class="text-center mb-4">
                             <i class="fas fa-check-circle fa-3x mb-3" style="color: var(--accent-green);"></i>
-                            <h5 style="color: var(--accent-green);">¡Cuenta Creada!</h5>
-                            <p class="text-secondary">ñšltimo paso: Activa tu suscripciñ³n</p>
+                            <h5 style="color: var(--accent-green);">Ã‚Â¡Cuenta Creada!</h5>
+                            <p class="text-secondary">ÃƒÂ±Ã…Â¡ltimo paso: Activa tu suscripciÃƒÂ±Ã‚Â³n</p>
                         </div>
                         <div style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plan Mensual</p>
@@ -470,7 +470,7 @@
                         <div id="pixQrContainer" style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                             <div id="pixLoading">
                                 <i class="fas fa-spinner fa-spin fa-2x mb-3" style="color: var(--accent-cyan);"></i>
-                                <p class="text-secondary">Generando cñ³digo PIX...</p>
+                                <p class="text-secondary">Generando cÃƒÂ±Ã‚Â³digo PIX...</p>
                             </div>
                             <div id="pixQrCode" style="display: none;">
                                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">
@@ -489,24 +489,24 @@
                             </div>
                         </div>
                         <button class="btn btn-success-custom w-100" onclick="verificarPago()" id="btnVerificarPago">
-                            <i class="fas fa-sync-alt me-2"></i>Ya paguñ© - Verificar
+                            <i class="fas fa-sync-alt me-2"></i>Ya paguÃƒÂ±Ã‚Â© - Verificar
                         </button>
                         <p style="color: var(--text-secondary); font-size: 0.8rem; text-align: center; margin-top: 15px;">
-                            <i class="fas fa-clock me-1"></i>El pago se verifica automñ¡ticamente
+                            <i class="fas fa-clock me-1"></i>El pago se verifica automÃƒÂ±Ã‚Â¡ticamente
                         </p>
                     </div>
                 </div>
             </div>
             <div style="text-align: center; padding: 20px; border-top: 1px solid var(--border-color);">
                 <a href="politicas.html" target="_blank" style="color: var(--text-secondary); font-size: 0.8rem; text-decoration: none;">
-                    <i class="fas fa-shield-alt me-1"></i>Polñ­tica de Privacidad
+                    <i class="fas fa-shield-alt me-1"></i>PolÃƒÂ±Ã‚Â­tica de Privacidad
                 </a>
                 <span style="color: var(--text-secondary); margin: 0 10px;">|</span>
                 <a href="politicas.html#terminos" target="_blank" style="color: var(--text-secondary); font-size: 0.8rem; text-decoration: none;">
-                    <i class="fas fa-file-contract me-1"></i>Tñ©rminos de Uso
+                    <i class="fas fa-file-contract me-1"></i>TÃƒÂ±Ã‚Â©rminos de Uso
                 </a>
                 <p style="color: var(--text-secondary); font-size: 0.7rem; margin-top: 10px;">
-                    © 2026 FinanGest Software. Todos los derechos reservados.
+                    Ã‚Â© 2026 FinanGest Software. Todos los derechos reservados.
                 </p>
             </div>
         </div>
@@ -519,14 +519,14 @@
                 <div class="logo">FinanGest<br><span>Software</span></div>
             </div>
             <div class="nav-menu" id="navMenu">
-                <!-- Se llena dinñ¡micamente -->
+                <!-- Se llena dinÃƒÂ±Ã‚Â¡micamente -->
             </div>
             <div style="position: absolute; bottom: 20px; left: 20px; right: 20px;">
                 <div class="nav-item" onclick="toggleTheme()" style="border-radius: 8px;">
                     <i class="fas fa-adjust" id="themeIcon"></i><span id="themeText">Tema Claro</span>
                 </div>
                 <div class="nav-item" onclick="logout()" style="border-radius: 8px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesiñ³n
+                    <i class="fas fa-sign-out-alt"></i>Cerrar SesiÃƒÂ±Ã‚Â³n
                 </div>
             </div>
         </nav>
@@ -590,7 +590,7 @@
                     <div class="col-lg-4">
                         <div class="card-dark h-100">
                             <h5 class="mb-4"><i class="fas fa-tasks me-2" style="color: var(--accent-green);"></i>Cobros de Hoy</h5>
-                            <div id="cobrosHoyPreview"><!-- Se llena dinñ¡micamente --></div>
+                            <div id="cobrosHoyPreview"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
                         </div>
                     </div>
                 </div>
@@ -598,7 +598,7 @@
             <!-- Clientes Section -->
             <div id="clientes" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5><i class="fas fa-users me-2" style="color: var(--accent-cyan);"></i>Gestión de Clientes</h5>
+                    <h5><i class="fas fa-users me-2" style="color: var(--accent-cyan);"></i>GestiÃƒÂ³n de Clientes</h5>
                     <button class="btn btn-primary-custom" onclick="openNewClientModal()">
                         <i class="fas fa-plus me-2"></i>Nuevo Cliente
                     </button>
@@ -611,10 +611,10 @@
                             <label class="form-label"><i class="fas fa-star me-2"></i>Tipo de Cliente</label>
                             <select class="form-control form-control-dark" id="clientesFiltroTipo" onchange="renderClientes()">
                                 <option value="">Todos</option>
-                                <option value="nuevo">ðŸ†• Nuevo</option>
-                                <option value="bueno">œ… Buen Cliente</option>
-                                <option value="regular">š ï¸ Regular</option>
-                                <option value="malo">Œ Mala Paga</option>
+                                <option value="nuevo">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevo</option>
+                                <option value="bueno">Ã…â€œÃ¢â‚¬Â¦ Buen Cliente</option>
+                                <option value="regular">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regular</option>
+                                <option value="malo">Ã‚ÂÃ…â€™ Mala Paga</option>
                             </select>
                         </div>
                     </div>
@@ -632,7 +632,7 @@
                     <div class="col-md-6">
                         <div class="card-dark">
                             <label class="form-label"><i class="fas fa-search me-2"></i>Buscar</label>
-                            <input type="text" class="form-control form-control-dark" id="clientesBuscar" placeholder="Nombre o telñ©fono..." oninput="renderClientes()">
+                            <input type="text" class="form-control form-control-dark" id="clientesBuscar" placeholder="Nombre o telÃƒÂ±Ã‚Â©fono..." oninput="renderClientes()">
                         </div>
                     </div>
                 </div>
@@ -642,19 +642,19 @@
                     <div class="row text-center">
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('nuevo')">
                             <div style="color: var(--accent-cyan); font-size: 1.5rem; font-weight: bold;" id="clientesNuevos">0</div>
-                            <small class="text-secondary">ðŸ†• Nuevos</small>
+                            <small class="text-secondary">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevos</small>
                         </div>
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('bueno')">
                             <div style="color: var(--accent-green); font-size: 1.5rem; font-weight: bold;" id="clientesBuenos">0</div>
-                            <small class="text-secondary">œ… Buenos</small>
+                            <small class="text-secondary">Ã…â€œÃ¢â‚¬Â¦ Buenos</small>
                         </div>
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('regular')">
                             <div style="color: var(--accent-yellow); font-size: 1.5rem; font-weight: bold;" id="clientesRegulares">0</div>
-                            <small class="text-secondary">š ï¸ Regulares</small>
+                            <small class="text-secondary">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regulares</small>
                         </div>
                         <div class="col-3" style="cursor: pointer;" onclick="filtrarClientesPorTipo('malo')">
                             <div style="color: var(--accent-red); font-size: 1.5rem; font-weight: bold;" id="clientesMalos">0</div>
-                            <small class="text-secondary">Œ Mala Paga</small>
+                            <small class="text-secondary">Ã‚ÂÃ…â€™ Mala Paga</small>
                         </div>
                     </div>
                 </div>
@@ -666,7 +666,7 @@
                                 <tr>
                                     <th>Cliente</th>
                                     <th>Tipo</th>
-                                    <th>Telñ©fono</th>
+                                    <th>TelÃƒÂ±Ã‚Â©fono</th>
                                     <th>Prestado</th>
                                     <th>Cobrado</th>
                                     <th>Restante</th>
@@ -675,14 +675,14 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="clientesTable"><!-- Se llena dinñ¡micamente --></tbody>
+                            <tbody id="clientesTable"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <!-- Estadñ­sticas Section -->
+            <!-- EstadÃƒÂ±Ã‚Â­sticas Section -->
             <div id="estadisticas" class="section">
-                <h5 class="mb-4"><i class="fas fa-chart-bar me-2" style="color: var(--accent-purple);"></i>Mis Estadñ­sticas</h5>
+                <h5 class="mb-4"><i class="fas fa-chart-bar me-2" style="color: var(--accent-purple);"></i>Mis EstadÃƒÂ±Ã‚Â­sticas</h5>
                 
                 <!-- Filtros de fecha -->
                 <div class="row g-3 mb-4">
@@ -690,10 +690,10 @@
                         <div class="card-dark">
                             <label class="form-label"><i class="fas fa-eye me-2"></i>Ver por</label>
                             <select class="form-control form-control-dark" id="estVista" onchange="renderEstadisticas()">
-                                <option value="dia">Dñ­a especñ­fico</option>
+                                <option value="dia">DÃƒÂ±Ã‚Â­a especÃƒÂ±Ã‚Â­fico</option>
                                 <option value="semana">Esta semana</option>
                                 <option value="mes" selected>Este mes</option>
-                                <option value="anio">Este añ±o</option>
+                                <option value="anio">Este aÃƒÂ±Ã‚Â±o</option>
                                 <option value="todo">Todo el tiempo</option>
                             </select>
                         </div>
@@ -717,7 +717,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Añ±o</label>
+                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>AÃƒÂ±Ã‚Â±o</label>
                             <select class="form-control form-control-dark" id="estAnio" onchange="renderEstadisticas()"></select>
                         </div>
                     </div>
@@ -751,7 +751,7 @@
                     </div>
                 </div>
                 
-                <!-- Mñ¡s estadñ­sticas -->
+                <!-- MÃƒÂ±Ã‚Â¡s estadÃƒÂ±Ã‚Â­sticas -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
                         <div class="card-dark">
@@ -800,19 +800,19 @@
                     <div class="row text-center">
                         <div class="col-3">
                             <div style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold;" id="estNuevos">0</div>
-                            <small class="text-secondary">ðŸ†• Nuevos</small>
+                            <small class="text-secondary">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevos</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-green); font-size: 1.3rem; font-weight: bold;" id="estBuenos">0</div>
-                            <small class="text-secondary">œ… Buenos</small>
+                            <small class="text-secondary">Ã…â€œÃ¢â‚¬Â¦ Buenos</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-yellow); font-size: 1.3rem; font-weight: bold;" id="estRegulares">0</div>
-                            <small class="text-secondary">š ï¸ Regulares</small>
+                            <small class="text-secondary">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regulares</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-red); font-size: 1.3rem; font-weight: bold;" id="estMalos">0</div>
-                            <small class="text-secondary">Œ Mala Paga</small>
+                            <small class="text-secondary">Ã‚ÂÃ…â€™ Mala Paga</small>
                         </div>
                     </div>
                 </div>
@@ -838,16 +838,16 @@
                 
                 <!-- Lista de actividad reciente -->
                 <div class="card-dark">
-                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i>Actividad del Perñ­odo</h6>
+                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i>Actividad del PerÃƒÂ±Ã‚Â­odo</h6>
                     <div id="estActividad" style="max-height: 300px; overflow-y: auto;">
-                        <!-- Se llena dinñ¡micamente -->
+                        <!-- Se llena dinÃƒÂ±Ã‚Â¡micamente -->
                     </div>
                 </div>
             </div>
             <!-- Cobros Section -->
             <div id="cobros" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5><i class="fas fa-calendar-day me-2" style="color: var(--accent-yellow);"></i>Cobros del Dñ­a</h5>
+                    <h5><i class="fas fa-calendar-day me-2" style="color: var(--accent-yellow);"></i>Cobros del DÃƒÂ±Ã‚Â­a</h5>
                     <div class="d-flex gap-2 align-items-center">
                         <button class="btn btn-primary-custom btn-sm" onclick="setFechaHoy()">
                             <i class="fas fa-calendar-check me-1"></i>Hoy
@@ -859,7 +859,7 @@
                     <!-- Resumen de cobros -->
                 </div>
                 <div class="card-dark">
-                    <div id="cobrosLista"><!-- Se llena dinñ¡micamente --></div>
+                    <div id="cobrosLista"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
                 </div>
             </div>
             <!-- Gastos Section -->
@@ -900,7 +900,7 @@
                     </div>
                 </div>
                 <div class="card-dark">
-                    <div id="gastosLista"><!-- Se llena dinñ¡micamente --></div>
+                    <div id="gastosLista"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
                 </div>
             </div>
             <!-- Historial Section (Trabajadores) -->
@@ -911,9 +911,9 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Añ±o</label>
+                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>AÃƒÂ±Ã‚Â±o</label>
                             <select class="form-control form-control-dark" id="historialAnio" onchange="renderHistorial()">
-                                <!-- Se llena dinñ¡micamente -->
+                                <!-- Se llena dinÃƒÂ±Ã‚Â¡micamente -->
                             </select>
                         </div>
                     </div>
@@ -939,7 +939,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-day me-2"></i>Dñ­a especñ­fico</label>
+                            <label class="form-label"><i class="fas fa-calendar-day me-2"></i>DÃƒÂ±Ã‚Â­a especÃƒÂ±Ã‚Â­fico</label>
                             <input type="date" class="form-control form-control-dark" id="historialDia" onchange="renderHistorial()">
                         </div>
                     </div>
@@ -961,10 +961,10 @@
                             <label class="form-label"><i class="fas fa-star me-2"></i>Tipo de Cliente</label>
                             <select class="form-control form-control-dark" id="historialTipo" onchange="renderHistorial()">
                                 <option value="">Todos</option>
-                                <option value="nuevo">ðŸ†• Nuevo</option>
-                                <option value="bueno">œ… Buen Cliente</option>
-                                <option value="regular">š ï¸ Regular</option>
-                                <option value="malo">Œ Mala Paga</option>
+                                <option value="nuevo">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevo</option>
+                                <option value="bueno">Ã…â€œÃ¢â‚¬Â¦ Buen Cliente</option>
+                                <option value="regular">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regular</option>
+                                <option value="malo">Ã‚ÂÃ…â€™ Mala Paga</option>
                             </select>
                         </div>
                     </div>
@@ -976,19 +976,19 @@
                     <div class="row text-center">
                         <div class="col-3">
                             <div style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold;" id="histNuevos">0</div>
-                            <small class="text-secondary">ðŸ†• Nuevos</small>
+                            <small class="text-secondary">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevos</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-green); font-size: 1.3rem; font-weight: bold;" id="histBuenos">0</div>
-                            <small class="text-secondary">œ… Buenos</small>
+                            <small class="text-secondary">Ã…â€œÃ¢â‚¬Â¦ Buenos</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-yellow); font-size: 1.3rem; font-weight: bold;" id="histRegulares">0</div>
-                            <small class="text-secondary">š ï¸ Regulares</small>
+                            <small class="text-secondary">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regulares</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-red); font-size: 1.3rem; font-weight: bold;" id="histMalos">0</div>
-                            <small class="text-secondary">Œ Mala Paga</small>
+                            <small class="text-secondary">Ã‚ÂÃ…â€™ Mala Paga</small>
                         </div>
                     </div>
                 </div>
@@ -1055,7 +1055,7 @@
                                     <th>Fecha</th>
                                     <th>Cliente</th>
                                     <th>Tipo</th>
-                                    <th>Telñ©fono</th>
+                                    <th>TelÃƒÂ±Ã‚Â©fono</th>
                                     <th>Prestado</th>
                                     <th>Cobrado</th>
                                     <th>Pendiente</th>
@@ -1069,8 +1069,8 @@
                 
                 <!-- Historial de pagos recibidos -->
                 <div class="card-dark mt-4">
-                    <h6 class="mb-3"><i class="fas fa-money-bill-wave me-2" style="color: var(--accent-green);"></i>ñšltimos Pagos Recibidos</h6>
-                    <div id="historialPagos"><!-- Se llena dinñ¡micamente --></div>
+                    <h6 class="mb-3"><i class="fas fa-money-bill-wave me-2" style="color: var(--accent-green);"></i>ÃƒÂ±Ã…Â¡ltimos Pagos Recibidos</h6>
+                    <div id="historialPagos"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
                 </div>
             </div>
             <!-- Mapa Section -->
@@ -1078,26 +1078,26 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5><i class="fas fa-map-marked-alt me-2" style="color: var(--accent-purple);"></i>Mapa de Clientes</h5>
                     <button class="btn btn-primary-custom" onclick="obtenerMiUbicacion()">
-                        <i class="fas fa-crosshairs me-2"></i>Mi Ubicaciñ³n
+                        <i class="fas fa-crosshairs me-2"></i>Mi UbicaciÃƒÂ±Ã‚Â³n
                     </button>
                 </div>
                 <div class="row g-4 mb-4">
                     <div class="col-md-4">
                         <div class="stat-card purple">
                             <div class="stat-value" id="clientesConUbicacion">0</div>
-                            <div class="stat-label"><i class="fas fa-map-pin me-2"></i>Con ubicaciñ³n</div>
+                            <div class="stat-label"><i class="fas fa-map-pin me-2"></i>Con ubicaciÃƒÂ±Ã‚Â³n</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="stat-value" id="clientesSinUbicacion">0</div>
-                            <div class="stat-label"><i class="fas fa-question-circle me-2"></i>Sin ubicaciñ³n</div>
+                            <div class="stat-label"><i class="fas fa-question-circle me-2"></i>Sin ubicaciÃƒÂ±Ã‚Â³n</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card green" id="miUbicacionCard" style="display: none;">
                             <div class="stat-value"><i class="fas fa-check-circle"></i></div>
-                            <div class="stat-label">Ubicaciñ³n activa</div>
+                            <div class="stat-label">UbicaciÃƒÂ±Ã‚Â³n activa</div>
                         </div>
                     </div>
                 </div>
@@ -1105,8 +1105,8 @@
                     <div id="mapContainer"></div>
                 </div>
                 <div class="card-dark mt-3">
-                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i>Clientes con ubicaciñ³n</h6>
-                    <div id="listaClientesMapa"><!-- Se llena dinñ¡micamente --></div>
+                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i>Clientes con ubicaciÃƒÂ±Ã‚Â³n</h6>
+                    <div id="listaClientesMapa"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
                 </div>
             </div>
             <!-- Admin: Usuarios Section -->
@@ -1151,19 +1151,19 @@
                     </div>
                 </div>
                 
-                <!-- Secciñ³n de Pendientes -->
+                <!-- SecciÃƒÂ±Ã‚Â³n de Pendientes -->
                 <div id="pendientesSection" class="card-dark mb-4" style="border-left: 4px solid #ff6b35; display: none;">
                     <h6 class="mb-3" style="color: #ff6b35;">
-                        <i class="fas fa-exclamation-circle me-2"></i>Usuarios Pendientes de Activaciñ³n
+                        <i class="fas fa-exclamation-circle me-2"></i>Usuarios Pendientes de ActivaciÃƒÂ±Ã‚Â³n
                         <span class="badge" style="background: #ff6b35; color: #fff; margin-left: 10px;" id="pendientesBadge">0</span>
                     </h6>
                     <p class="text-secondary mb-3" style="font-size: 0.85rem;">
-                        Estos usuarios se registraron y estñ¡n esperando que verifiques su pago para activarlos.
+                        Estos usuarios se registraron y estÃƒÂ±Ã‚Â¡n esperando que verifiques su pago para activarlos.
                     </p>
-                    <div id="pendientesList"><!-- Se llena dinñ¡micamente --></div>
+                    <div id="pendientesList"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
                 </div>
                 
-                <div id="usuariosList"><!-- Se llena dinñ¡micamente --></div>
+                <div id="usuariosList"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
             </div>
             <!-- Admin: Backups Section -->
             <div id="adminBackups" class="section">
@@ -1177,16 +1177,16 @@
                     <div class="d-flex align-items-center gap-3">
                         <i class="fas fa-shield-alt fa-2x" style="color: var(--accent-green);"></i>
                         <div>
-                            <strong>Sistema de Backups Automñ¡ticos</strong>
+                            <strong>Sistema de Backups AutomÃƒÂ±Ã‚Â¡ticos</strong>
                             <p class="text-secondary mb-0" style="font-size: 0.85rem;">
-                                Los datos se guardan automñ¡ticamente cada hora. Se mantienen los ñºltimos 30 backups.
+                                Los datos se guardan automÃƒÂ±Ã‚Â¡ticamente cada hora. Se mantienen los ÃƒÂ±Ã‚Âºltimos 30 backups.
                             </p>
                         </div>
                     </div>
                 </div>
                 <div class="card-dark">
                     <h6 class="mb-3"><i class="fas fa-history me-2"></i>Backups Disponibles</h6>
-                    <div id="backupsList"><!-- Se llena dinñ¡micamente --></div>
+                    <div id="backupsList"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></div>
                 </div>
             </div>
             <!-- Admin: Calendario de Clientes -->
@@ -1211,7 +1211,7 @@
                         <div class="card-dark">
                             <label class="form-label"><i class="fas fa-filter me-2"></i>Ver</label>
                             <select class="form-control form-control-dark" id="calendarioVista" onchange="renderCalendarioClientes()">
-                                <option value="dia">Este dñ­a</option>
+                                <option value="dia">Este dÃƒÂ±Ã‚Â­a</option>
                                 <option value="semana">Esta semana</option>
                                 <option value="mes" selected>Este mes</option>
                                 <option value="todos">Todos</option>
@@ -1267,7 +1267,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label">Añ±o</label>
+                            <label class="form-label">AÃƒÂ±Ã‚Â±o</label>
                             <select class="form-control form-control-dark" id="adminHistAnio" onchange="renderAdminHistorialTrabajador()"></select>
                         </div>
                     </div>
@@ -1285,7 +1285,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label">Dñ­a</label>
+                            <label class="form-label">DÃƒÂ±Ã‚Â­a</label>
                             <input type="date" class="form-control form-control-dark" id="adminHistDia" onchange="renderAdminHistorialTrabajador()">
                         </div>
                     </div>
@@ -1307,10 +1307,10 @@
                             <label class="form-label"><i class="fas fa-star me-2"></i>Tipo de Cliente</label>
                             <select class="form-control form-control-dark" id="adminHistTipo" onchange="renderAdminHistorialTrabajador()">
                                 <option value="">Todos</option>
-                                <option value="nuevo">ðŸ†• Nuevo</option>
-                                <option value="bueno">œ… Buen Cliente</option>
-                                <option value="regular">š ï¸ Regular</option>
-                                <option value="malo">Œ Mala Paga</option>
+                                <option value="nuevo">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevo</option>
+                                <option value="bueno">Ã…â€œÃ¢â‚¬Â¦ Buen Cliente</option>
+                                <option value="regular">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regular</option>
+                                <option value="malo">Ã‚ÂÃ…â€™ Mala Paga</option>
                             </select>
                         </div>
                     </div>
@@ -1322,19 +1322,19 @@
                     <div class="row text-center">
                         <div class="col-3">
                             <div style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold;" id="adminHistNuevos">0</div>
-                            <small class="text-secondary">ðŸ†• Nuevos</small>
+                            <small class="text-secondary">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevos</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-green); font-size: 1.3rem; font-weight: bold;" id="adminHistBuenos">0</div>
-                            <small class="text-secondary">œ… Buenos</small>
+                            <small class="text-secondary">Ã…â€œÃ¢â‚¬Â¦ Buenos</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-yellow); font-size: 1.3rem; font-weight: bold;" id="adminHistRegulares">0</div>
-                            <small class="text-secondary">š ï¸ Regulares</small>
+                            <small class="text-secondary">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regulares</small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-red); font-size: 1.3rem; font-weight: bold;" id="adminHistMalos">0</div>
-                            <small class="text-secondary">Œ Mala Paga</small>
+                            <small class="text-secondary">Ã‚ÂÃ…â€™ Mala Paga</small>
                         </div>
                     </div>
                 </div>
@@ -1364,7 +1364,7 @@
                                     <th>Fecha</th>
                                     <th>Cliente</th>
                                     <th>Tipo</th>
-                                    <th>Telñ©fono</th>
+                                    <th>TelÃƒÂ±Ã‚Â©fono</th>
                                     <th>Prestado</th>
                                     <th>Cobrado</th>
                                     <th>Pendiente</th>
@@ -1410,7 +1410,7 @@
                 <div class="card-dark">
                     <h6 class="mb-3"><i class="fas fa-history me-2" style="color: var(--accent-yellow);"></i>Backups Disponibles</h6>
                     <div id="backupsTrabajadorList" style="max-height: 400px; overflow-y: auto;">
-                        <!-- Se llena dinñ¡micamente -->
+                        <!-- Se llena dinÃƒÂ±Ã‚Â¡micamente -->
                     </div>
                 </div>
             </div>
@@ -1491,7 +1491,7 @@
                 
                 <!-- Contenido de tabs -->
                 <div id="vtContenido">
-                    <!-- Se llena dinñ¡micamente -->
+                    <!-- Se llena dinÃƒÂ±Ã‚Â¡micamente -->
                 </div>
             </div>
             <!-- Admin: Todos los Clientes -->
@@ -1510,7 +1510,7 @@
                                     <th>Estado</th>
                                 </tr>
                             </thead>
-                            <tbody id="adminClientesTable"><!-- Se llena dinñ¡micamente --></tbody>
+                            <tbody id="adminClientesTable"><!-- Se llena dinÃƒÂ±Ã‚Â¡micamente --></tbody>
                         </table>
                     </div>
                 </div>
@@ -1532,16 +1532,16 @@
                             <input type="text" class="form-control form-control-dark" id="clienteNombre">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Telñ©fono</label>
+                            <label class="form-label">TelÃƒÂ±Ã‚Â©fono</label>
                             <input type="tel" class="form-control form-control-dark" id="clienteTelefono">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i>Ubicaciñ³n / Direcciñ³n</label>
+                            <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i>UbicaciÃƒÂ±Ã‚Â³n / DirecciÃƒÂ±Ã‚Â³n</label>
                             <div class="input-group">
-                                <input type="text" class="form-control form-control-dark" id="clienteUbicacion" placeholder="Direcciñ³n del cliente">
-                                <button class="btn btn-primary-custom" type="button" onclick="obtenerUbicacionCliente()" title="Usar ubicaciñ³n actual">
+                                <input type="text" class="form-control form-control-dark" id="clienteUbicacion" placeholder="DirecciÃƒÂ±Ã‚Â³n del cliente">
+                                <button class="btn btn-primary-custom" type="button" onclick="obtenerUbicacionCliente()" title="Usar ubicaciÃƒÂ±Ã‚Â³n actual">
                                     <i class="fas fa-crosshairs"></i>
                                 </button>
                             </div>
@@ -1554,10 +1554,10 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label"><i class="fas fa-star me-1"></i>Tipo de Cliente</label>
                             <select class="form-control form-control-dark" id="clienteTipo">
-                                <option value="nuevo">ðŸ†• Nuevo</option>
-                                <option value="bueno">œ… Buen Cliente</option>
-                                <option value="regular">š ï¸ Regular</option>
-                                <option value="malo">Œ Mala Paga</option>
+                                <option value="nuevo">ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevo</option>
+                                <option value="bueno">Ã…â€œÃ¢â‚¬Â¦ Buen Cliente</option>
+                                <option value="regular">Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regular</option>
+                                <option value="malo">Ã‚ÂÃ…â€™ Mala Paga</option>
                             </select>
                         </div>
                     </div>
@@ -1566,30 +1566,30 @@
                             <label class="form-label"><i class="fas fa-store me-1"></i>Tipo de Negocio</label>
                             <select class="form-control form-control-dark" id="clienteNegocio" onchange="toggleOtroNegocio()">
                                 <option value="">-- Seleccionar --</option>
-                                <option value="tienda">ðŸª Tienda</option>
-                                <option value="restaurante">ðŸ½ï¸ Restaurante</option>
-                                <option value="taxista">ðŸš• Taxista</option>
-                                <option value="vendedor">ðŸ›’ Vendedor Ambulante</option>
-                                <option value="peluqueria">ðŸ’‡ Peluquerñ­a/Barberñ­a</option>
-                                <option value="taller">ðŸ”§ Taller Mecñ¡nico</option>
-                                <option value="farmacia">ðŸ’Š Farmacia</option>
-                                <option value="panaderia">ðŸ¥– Panaderñ­a</option>
-                                <option value="carniceria">ðŸ¥© Carnicerñ­a</option>
-                                <option value="ferreteria">ðŸ”¨ Ferreterñ­a</option>
-                                <option value="ropa">ðŸ‘• Tienda de Ropa</option>
-                                <option value="celulares">ðŸ“± Celulares/Tecnologñ­a</option>
-                                <option value="otro">ðŸ“¦ Otro</option>
+                                <option value="tienda">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Âª Tienda</option>
+                                <option value="restaurante">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â½ÃƒÂ¯Ã‚Â¸Ã‚Â Restaurante</option>
+                                <option value="taxista">ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â‚¬Â¢ Taxista</option>
+                                <option value="vendedor">ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ¢â‚¬â„¢ Vendedor Ambulante</option>
+                                <option value="peluqueria">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã¢â‚¬Â¡ PeluquerÃƒÂ±Ã‚Â­a/BarberÃƒÂ±Ã‚Â­a</option>
+                                <option value="taller">ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â§ Taller MecÃƒÂ±Ã‚Â¡nico</option>
+                                <option value="farmacia">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã…Â  Farmacia</option>
+                                <option value="panaderia">ÃƒÂ°Ã…Â¸Ã‚Â¥Ã¢â‚¬â€œ PanaderÃƒÂ±Ã‚Â­a</option>
+                                <option value="carniceria">ÃƒÂ°Ã…Â¸Ã‚Â¥Ã‚Â© CarnicerÃƒÂ±Ã‚Â­a</option>
+                                <option value="ferreteria">ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¨ FerreterÃƒÂ±Ã‚Â­a</option>
+                                <option value="ropa">ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ¢â‚¬Â¢ Tienda de Ropa</option>
+                                <option value="celulares">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â± Celulares/TecnologÃƒÂ±Ã‚Â­a</option>
+                                <option value="otro">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦ Otro</option>
                             </select>
                             <input type="text" class="form-control form-control-dark mt-2" id="clienteNegocioOtro" placeholder="Escribe el tipo de negocio..." style="display: none;">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label"><i class="fas fa-building me-1"></i>Nombre del Negocio (opcional)</label>
-                            <input type="text" class="form-control form-control-dark" id="clienteNombreNegocio" placeholder="Ej: Tienda Don Josñ©">
+                            <input type="text" class="form-control form-control-dark" id="clienteNombreNegocio" placeholder="Ej: Tienda Don JosÃƒÂ±Ã‚Â©">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label"><i class="fas fa-sticky-note me-1"></i>Notas sobre el cliente (opcional)</label>
-                        <textarea class="form-control form-control-dark" id="clienteNotas" rows="2" placeholder="Informaciñ³n adicional..."></textarea>
+                        <textarea class="form-control form-control-dark" id="clienteNotas" rows="2" placeholder="InformaciÃƒÂ±Ã‚Â³n adicional..."></textarea>
                     </div>
                     <hr style="border-color: var(--border-color);">
                     <div class="row">
@@ -1602,7 +1602,7 @@
                             <input type="number" class="form-control form-control-dark" id="clienteParcelas" oninput="calcularTotal()">
                         </div>
                         <div class="col-4 mb-3">
-                            <label class="form-label">Comisiñ³n %</label>
+                            <label class="form-label">ComisiÃƒÂ±Ã‚Â³n %</label>
                             <select class="form-control form-control-dark" id="clienteComision" onchange="calcularTotal()">
                                 <option value="10">10%</option>
                                 <option value="20" selected>20%</option>
@@ -1613,7 +1613,7 @@
                     <div class="card-dark" style="background: var(--bg-hover);">
                         <div class="row text-center">
                             <div class="col-4">
-                                <small class="text-secondary">Comisiñ³n (<span id="comisionLabel">20</span>%)</small>
+                                <small class="text-secondary">ComisiÃƒÂ±Ã‚Â³n (<span id="comisionLabel">20</span>%)</small>
                                 <div id="calcComision" style="color: var(--accent-yellow);">R$ 0</div>
                             </div>
                             <div class="col-4">
@@ -1673,7 +1673,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Descripciñ³n del Gasto</label>
+                        <label class="form-label">DescripciÃƒÂ±Ã‚Â³n del Gasto</label>
                         <input type="text" class="form-control form-control-dark" id="gastoDescripcion" placeholder="Ej: Pago de luz, Almuerzo...">
                     </div>
                     <div class="row">
@@ -1687,7 +1687,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Categorñ­a</label>
+                        <label class="form-label">CategorÃƒÂ±Ã‚Â­a</label>
                         <input type="text" class="form-control form-control-dark" id="gastoCategoria" placeholder="Ej: Comida, Transporte, Servicios...">
                     </div>
                 </div>
@@ -1758,13 +1758,13 @@
                     document.getElementById('forgotStep2').style.display = 'block';
                     document.getElementById('forgotEmailSent').textContent = email;
                 } else {
-                    alert(data.error || 'Error al enviar cñ³digo');
+                    alert(data.error || 'Error al enviar cÃƒÂ±Ã‚Â³digo');
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Enviar Cñ³digo';
+            btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Enviar CÃƒÂ±Ã‚Â³digo';
         }
 
         async function resendResetCode() {
@@ -1776,9 +1776,9 @@
             const code = document.getElementById('resetCode').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            if (!code || code.length !== 6) return alert('Ingresa el cñ³digo de 6 dñ­gitos');
-            if (!newPassword || newPassword.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
-            if (newPassword !== confirmPassword) return alert('Las contraseñas no coinciden');
+            if (!code || code.length !== 6) return alert('Ingresa el cÃƒÂ±Ã‚Â³digo de 6 dÃƒÂ±Ã‚Â­gitos');
+            if (!newPassword || newPassword.length < 6) return alert('La contraseÃƒÂ±a debe tener al menos 6 caracteres');
+            if (newPassword !== confirmPassword) return alert('Las contraseÃƒÂ±as no coinciden');
             const btn = document.getElementById('btnResetPassword');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Cambiando...';
@@ -1790,20 +1790,20 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('¡contraseña cambiada exitosamente! Ahora puedes iniciar sesiñ³n.');
+                    alert('Ã‚Â¡contraseÃƒÂ±a cambiada exitosamente! Ahora puedes iniciar sesiÃƒÂ±Ã‚Â³n.');
                     backToLogin();
                     document.getElementById('forgotEmail').value = '';
                     document.getElementById('resetCode').value = '';
                     document.getElementById('newPassword').value = '';
                     document.getElementById('confirmPassword').value = '';
                 } else {
-                    alert(data.error || 'Error al cambiar contraseña');
+                    alert(data.error || 'Error al cambiar contraseÃƒÂ±a');
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check me-2"></i>Cambiar contraseña';
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Cambiar contraseÃƒÂ±a';
         }
 
         async function handleLogin() {
@@ -1823,7 +1823,7 @@
                     showMainApp();
                 } else if (data.needsPayment) {
                     // Usuario necesita pagar - mostrar pantalla de pago
-                    alert('Tu cuenta estñ¡ pendiente de pago. Te redirigimos al pago.');
+                    alert('Tu cuenta estÃƒÂ±Ã‚Â¡ pendiente de pago. Te redirigimos al pago.');
                     pendingUser = { id: data.userId, nombre: data.nombre, email: data.email };
                     showAuthTab('register');
                     document.getElementById('registerStep1').style.display = 'none';
@@ -1831,10 +1831,10 @@
                     document.getElementById('registerStep3').style.display = 'block';
                     generarPagoPix(data.userId, data.nombre, data.email);
                 } else {
-                    alert(data.error || 'Error al iniciar sesiñ³n');
+                    alert(data.error || 'Error al iniciar sesiÃƒÂ±Ã‚Â³n');
                 }
             } catch (e) {
-                alert('Error de conexiñ³n con el servidor');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n con el servidor');
             }
         }
 
@@ -1846,8 +1846,8 @@
             const acceptTerms = document.getElementById('acceptTerms').checked;
             if (!nombre || !username || !email || !password) return alert('Completa todos los campos');
             if (username.includes(' ')) return alert('El nombre de usuario no puede tener espacios');
-            if (password.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
-            if (!acceptTerms) return alert('Debes aceptar los Tñ©rminos de Uso y la Polñ­tica de Privacidad');
+            if (password.length < 6) return alert('La contraseÃƒÂ±a debe tener al menos 6 caracteres');
+            if (!acceptTerms) return alert('Debes aceptar los TÃƒÂ±Ã‚Â©rminos de Uso y la PolÃƒÂ±Ã‚Â­tica de Privacidad');
             const btn = document.getElementById('btnSendCode');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
@@ -1863,13 +1863,13 @@
                     document.getElementById('registerStep2').style.display = 'block';
                     document.getElementById('emailSent').textContent = email;
                 } else {
-                    alert(data.error || 'Error al enviar cñ³digo');
+                    alert(data.error || 'Error al enviar cÃƒÂ±Ã‚Â³digo');
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Enviar Cñ³digo de Verificaciñ³n';
+            btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Enviar CÃƒÂ±Ã‚Â³digo de VerificaciÃƒÂ±Ã‚Â³n';
         }
 
         async function verifyCode() {
@@ -1878,7 +1878,7 @@
             const password = document.getElementById('regPassword').value;
             const nombre = document.getElementById('regNombre').value;
             const username = document.getElementById('regUsername').value;
-            if (!code || code.length !== 6) return alert('Ingresa el cñ³digo de 6 dñ­gitos');
+            if (!code || code.length !== 6) return alert('Ingresa el cÃƒÂ±Ã‚Â³digo de 6 dÃƒÂ±Ã‚Â­gitos');
             try {
                 const res = await fetch(API_URL + '/api/verify-code', {
                     method: 'POST',
@@ -1895,10 +1895,10 @@
                     // Generar PIX
                     generarPagoPix(data.user.id, nombre, email);
                 } else {
-                    alert(data.error || 'Cñ³digo incorrecto');
+                    alert(data.error || 'CÃƒÂ±Ã‚Â³digo incorrecto');
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
 
@@ -1921,7 +1921,7 @@
                 pixContainer.style.display = 'block';
                 
                 if (data.success && data.qrCode && !data.manual) {
-                    // PIX Automñ¡tico con QR Code de Asaas
+                    // PIX AutomÃƒÂ±Ã‚Â¡tico con QR Code de Asaas
                     pendingPaymentId = data.paymentId;
                     pixContainer.innerHTML = `
                         <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">
@@ -1962,9 +1962,9 @@
                                 <i class="fas fa-copy me-2"></i>Copiar Chave PIX
                             </button>
                             <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
-                                <i class="fas fa-info-circle me-1"></i>Apñ³s pagar, envie o comprovante por WhatsApp
+                                <i class="fas fa-info-circle me-1"></i>ApÃƒÂ±Ã‚Â³s pagar, envie o comprovante por WhatsApp
                             </p>
-                            <a href="https://wa.me/79998555813?text=Olñ¡! Acabei de pagar R$ 99,00 para FinanGest. Meu email: ${userEmail}" 
+                            <a href="https://wa.me/79998555813?text=OlÃƒÂ±Ã‚Â¡! Acabei de pagar R$ 99,00 para FinanGest. Meu email: ${userEmail}" 
                                target="_blank" class="btn btn-success-custom mt-2" style="background: #25D366;">
                                 <i class="fab fa-whatsapp me-2"></i>Enviar Comprovante
                             </a>
@@ -1972,7 +1972,7 @@
                     `;
                 }
             } catch (e) {
-                // Error de conexiñ³n - mostrar PIX manual
+                // Error de conexiÃƒÂ±Ã‚Â³n - mostrar PIX manual
                 pixLoading.style.display = 'none';
                 pixContainer.style.display = 'block';
                 pendingPaymentId = null;
@@ -1995,9 +1995,9 @@
                             <i class="fas fa-copy me-2"></i>Copiar Chave PIX
                         </button>
                         <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
-                            <i class="fas fa-info-circle me-1"></i>Apñ³s pagar, envie o comprovante por WhatsApp
+                            <i class="fas fa-info-circle me-1"></i>ApÃƒÂ±Ã‚Â³s pagar, envie o comprovante por WhatsApp
                         </p>
-                        <a href="https://wa.me/79998555813?text=Olñ¡! Acabei de pagar R$ 99,00 para FinanGest. Meu email: ${email}" 
+                        <a href="https://wa.me/79998555813?text=OlÃƒÂ±Ã‚Â¡! Acabei de pagar R$ 99,00 para FinanGest. Meu email: ${email}" 
                            target="_blank" class="btn btn-success-custom mt-2" style="background: #25D366;">
                             <i class="fab fa-whatsapp me-2"></i>Enviar Comprovante
                         </a>
@@ -2008,13 +2008,13 @@
 
         function copyPixKey(key) {
             navigator.clipboard.writeText(key);
-            alert('¡Chave PIX copiada!');
+            alert('Ã‚Â¡Chave PIX copiada!');
         }
 
         function copyPixCode() {
             const pixCode = document.getElementById('pixCopyPaste').value;
             navigator.clipboard.writeText(pixCode);
-            alert('¡Cñ³digo PIX copiado!');
+            alert('Ã‚Â¡CÃƒÂ±Ã‚Â³digo PIX copiado!');
         }
 
         let verificacionInterval = null;
@@ -2036,7 +2036,7 @@
                 const res = await fetch(API_URL + '/api/verificar-pago/' + pendingPaymentId);
                 const data = await res.json();
                 if (data.status === 'PAID') {
-                    alert('ðŸŽ‰ ¡Pago confirmado! Bienvenido a FinanGest');
+                    alert('ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬Â° Ã‚Â¡Pago confirmado! Bienvenido a FinanGest');
                     currentUser = pendingUser;
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     showMainApp();
@@ -2049,9 +2049,9 @@
         async function verificarPago() {
             const btn = document.getElementById('btnVerificarPago');
             
-            // Si es PIX manual, no hay verificaciñ³n automñ¡tica
+            // Si es PIX manual, no hay verificaciÃƒÂ±Ã‚Â³n automÃƒÂ±Ã‚Â¡tica
             if (!pendingPaymentId) {
-                alert('Para PIX manual, envñ­a el comprobante por WhatsApp y espera la activaciñ³n.');
+                alert('Para PIX manual, envÃƒÂ±Ã‚Â­a el comprobante por WhatsApp y espera la activaciÃƒÂ±Ã‚Â³n.');
                 return;
             }
             
@@ -2062,18 +2062,18 @@
                 const res = await fetch(API_URL + '/api/verificar-pago/' + pendingPaymentId);
                 const data = await res.json();
                 if (data.status === 'PAID') {
-                    alert('ðŸŽ‰ ¡Pago confirmado! Bienvenido a FinanGest');
+                    alert('ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬Â° Ã‚Â¡Pago confirmado! Bienvenido a FinanGest');
                     currentUser = pendingUser;
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     showMainApp();
                 } else {
-                    alert('Pago añºn no detectado. Espera unos segundos despuñ©s de pagar.');
+                    alert('Pago aÃƒÂ±Ã‚Âºn no detectado. Espera unos segundos despuÃƒÂ±Ã‚Â©s de pagar.');
                 }
             } catch (e) {
                 alert('Error verificando pago');
             }
             
-            btn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Ya paguñ© - Verificar';
+            btn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Ya paguÃƒÂ±Ã‚Â© - Verificar';
             btn.disabled = false;
         }
 
@@ -2120,9 +2120,9 @@
             } else {
                 menu.innerHTML = `
                     <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-pie"></i>Dashboard</div>
-                    <div class="nav-item" onclick="showSection('estadisticas')"><i class="fas fa-chart-bar"></i>Estadñ­sticas</div>
+                    <div class="nav-item" onclick="showSection('estadisticas')"><i class="fas fa-chart-bar"></i>EstadÃƒÂ±Ã‚Â­sticas</div>
                     <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i>Clientes</div>
-                    <div class="nav-item" onclick="showSection('cobros')"><i class="fas fa-calendar-check"></i>Cobros del Dñ­a</div>
+                    <div class="nav-item" onclick="showSection('cobros')"><i class="fas fa-calendar-check"></i>Cobros del DÃƒÂ±Ã‚Â­a</div>
                     <div class="nav-item" onclick="showSection('gastos')"><i class="fas fa-wallet"></i>Gastos</div>
                     <div class="nav-item" onclick="showSection('mapa')"><i class="fas fa-map-marked-alt"></i>Mapa</div>
                     <div class="nav-item" onclick="showSection('historial')"><i class="fas fa-history"></i>Mi Historial</div>
@@ -2138,13 +2138,13 @@
                 event.target.closest('.nav-item').classList.add('active');
             }
             
-            // Cargar backups si es la secciñ³n de backups
+            // Cargar backups si es la secciÃƒÂ±Ã‚Â³n de backups
             if (id === 'adminBackups') {
                 cargarBackups();
             }
             
             const titles = {
-                dashboard: 'Dashboard', clientes: 'Clientes', estadisticas: 'Mis Estadñ­sticas', cobros: 'Cobros del Dñ­a',
+                dashboard: 'Dashboard', clientes: 'Clientes', estadisticas: 'Mis EstadÃƒÂ±Ã‚Â­sticas', cobros: 'Cobros del DÃƒÂ±Ã‚Â­a',
                 gastos: 'Gastos Personales', historial: 'Mi Historial', mapa: 'Mapa de Clientes', adminUsuarios: 'Usuarios Registrados',
                 adminCalendario: 'Calendario de Clientes', adminHistorial: 'Historial de Trabajador', 
                 adminVerTodo: 'Control Total - Trabajador', adminBackups: 'Backups del Sistema'
@@ -2211,7 +2211,7 @@
 
         // Soporte
         function openSupport() {
-            const supportNumber = '573000000000'; // Cambia este nñºmero
+            const supportNumber = '573000000000'; // Cambia este nÃƒÂ±Ã‚Âºmero
             const message = encodeURIComponent('Hola, necesito ayuda con FinanGestPay');
             window.open(`https://wa.me/${supportNumber}?text=${message}`, '_blank');
         }
@@ -2269,7 +2269,7 @@
                         <i class="fas fa-chart-line fa-3x mb-3" style="color: var(--accent-cyan); opacity: 0.5;"></i>
                         <h5 style="color: var(--text-secondary);">Sin datos para mostrar</h5>
                         <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                            Los grñ¡ficos aparecerñ¡n cuando haya clientes y transacciones registradas.
+                            Los grÃƒÂ±Ã‚Â¡ficos aparecerÃƒÂ±Ã‚Â¡n cuando haya clientes y transacciones registradas.
                         </p>
                     </div>
                     <canvas id="mainChart" style="display:none;"></canvas>
@@ -2299,7 +2299,7 @@
                     inputFin.value = fechaFin.toISOString().split('T')[0];
                 }
             } else {
-                // Por defecto: desde 1 de enero del añ±o actual hasta hoy
+                // Por defecto: desde 1 de enero del aÃƒÂ±Ã‚Â±o actual hasta hoy
                 const hoy = new Date();
                 fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
                 fechaInicio = new Date(hoy.getFullYear(), 0, 1, 0, 0, 0); // 1 de enero
@@ -2308,7 +2308,7 @@
                 inputFin.value = fechaFin.toISOString().split('T')[0];
             }
             
-            // Generar dñ­as entre las fechas
+            // Generar dÃƒÂ±Ã‚Â­as entre las fechas
             let current = new Date(fechaInicio);
             while (current <= fechaFin) {
                 const dia = current.getDate();
@@ -2349,7 +2349,7 @@
                 current.setDate(current.getDate() + 1);
             }
             
-            // Crear gradientes para un look mñ¡s profesional
+            // Crear gradientes para un look mÃƒÂ±Ã‚Â¡s profesional
             const gradientCobrado = ctx.createLinearGradient(0, 0, 0, 300);
             gradientCobrado.addColorStop(0, 'rgba(0,212,255,0.4)');
             gradientCobrado.addColorStop(1, 'rgba(0,212,255,0.02)');
@@ -2450,7 +2450,7 @@
                     <div style="text-align: center; padding: 20px;">
                         <i class="fas fa-clipboard-check fa-2x mb-3" style="color: var(--accent-green); opacity: 0.5;"></i>
                         <p class="text-secondary" style="font-size: 0.9rem;">No hay cobros pendientes para hoy</p>
-                        <small class="text-secondary">Los cobros aparecerñ¡n cuando registres clientes activos</small>
+                        <small class="text-secondary">Los cobros aparecerÃƒÂ±Ã‚Â¡n cuando registres clientes activos</small>
                     </div>
                 `;
                 return;
@@ -2512,7 +2512,7 @@
                 );
             }
             
-            // Ordenar: primero por renovaciones (mñ¡s renovaciones arriba), luego por fecha
+            // Ordenar: primero por renovaciones (mÃƒÂ±Ã‚Â¡s renovaciones arriba), luego por fecha
             clientesFiltrados.sort((a, b) => {
                 const renovA = a.renovaciones || 0;
                 const renovB = b.renovaciones || 0;
@@ -2527,15 +2527,15 @@
                 return;
             }
             
-            const tipoLabels = { nuevo: 'ðŸ†•', bueno: 'œ…', regular: 'š ï¸', malo: 'Œ' };
+            const tipoLabels = { nuevo: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢', bueno: 'Ã…â€œÃ¢â‚¬Â¦', regular: 'Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â', malo: 'Ã‚ÂÃ…â€™' };
             tbody.innerHTML = clientesFiltrados.map(c => {
                 const restante = (c.totalAPagar || 0) - (c.montoPagado || 0);
                 const statusClass = c.estado === 'ativo' ? 'active' : c.estado === 'finalizado' ? 'finished' : 'late';
-                const tipoIcon = tipoLabels[c.tipoCliente] || 'ðŸ†•';
+                const tipoIcon = tipoLabels[c.tipoCliente] || 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢';
                 const renovaciones = c.renovaciones || 0;
                 return `
                 <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td><strong>${c.nombre}</strong>${renovaciones > 0 ? `<br><small style="color: var(--accent-purple);">ðŸ”„ ${renovaciones}x renovado</small>` : ''}</td>
+                    <td><strong>${c.nombre}</strong>${renovaciones > 0 ? `<br><small style="color: var(--accent-purple);">ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ ${renovaciones}x renovado</small>` : ''}</td>
                     <td style="font-size: 1.2rem;">${tipoIcon}</td>
                     <td>${c.telefono || '-'}</td>
                     <td>R$ ${(c.montoTotal || 0).toFixed(2)}</td>
@@ -2545,7 +2545,7 @@
                     <td><span class="badge-status badge-${statusClass}">${c.estado}</span></td>
                     <td>
                         ${c.estado === 'finalizado' && !c.renovado ? `
-                        <button class="btn btn-sm me-1" style="background: var(--accent-purple); color: #fff;" onclick="renovarCliente('${c.id}')" title="Renovar prñ©stamo">
+                        <button class="btn btn-sm me-1" style="background: var(--accent-purple); color: #fff;" onclick="renovarCliente('${c.id}')" title="Renovar prÃƒÂ±Ã‚Â©stamo">
                             <i class="fas fa-redo"></i>
                         </button>
                         ` : c.estado !== 'finalizado' ? `
@@ -2599,7 +2599,7 @@
                 }
             });
             
-            // Calcular totales del dñ­a
+            // Calcular totales del dÃƒÂ±Ã‚Â­a
             const totalCobradoHoy = pagosDelDia.reduce((s, p) => s + p.valor, 0);
             const totalPendienteHoy = activos.reduce((s, c) => s + (c.valorParcela || 0), 0);
             
@@ -2608,7 +2608,7 @@
                 <div class="col-md-4">
                     <div class="stat-card green">
                         <div class="stat-value">R$ ${totalCobradoHoy.toFixed(2)}</div>
-                        <div class="stat-label"><i class="fas fa-check-circle me-2"></i>Cobrado este dñ­a</div>
+                        <div class="stat-label"><i class="fas fa-check-circle me-2"></i>Cobrado este dÃƒÂ±Ã‚Â­a</div>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -2625,7 +2625,7 @@
                 </div>
             `;
             
-            // Mostrar pagos del dñ­a si hay
+            // Mostrar pagos del dÃƒÂ±Ã‚Â­a si hay
             let html = '';
             
             if (pagosDelDia.length > 0) {
@@ -2635,7 +2635,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-4">
                                 <strong>${p.cliente}</strong><br>
-                                <small class="text-secondary">${p.telefono || 'Sin telñ©fono'}</small>
+                                <small class="text-secondary">${p.telefono || 'Sin telÃƒÂ±Ã‚Â©fono'}</small>
                             </div>
                             <div class="col-md-4">
                                 <small class="text-secondary">Pago realizado${p.hora ? ' a las ' + p.hora : ''}</small><br>
@@ -2657,7 +2657,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-3">
                                 <strong>${c.nombre}</strong><br>
-                                <small class="text-secondary">${c.telefono || 'Sin telñ©fono'}</small>
+                                <small class="text-secondary">${c.telefono || 'Sin telÃƒÂ±Ã‚Â©fono'}</small>
                             </div>
                             <div class="col-md-2">
                                 <small class="text-secondary">Parcela</small><br>
@@ -2723,7 +2723,7 @@
                 const totalPrestado = allClients.reduce((s, c) => s + (c.montoTotal || 0), 0);
                 document.getElementById('adminTotalPrestado').textContent = 'R$ ' + totalPrestado.toFixed(2);
                 
-                // Mostrar secciñ³n de pendientes si hay
+                // Mostrar secciÃƒÂ±Ã‚Â³n de pendientes si hay
                 const pendientesSection = document.getElementById('pendientesSection');
                 const pendientesList = document.getElementById('pendientesList');
                 const pendientesBadge = document.getElementById('pendientesBadge');
@@ -2830,7 +2830,7 @@
         }
         
         async function activarUsuario(userId) {
-            if (!confirm('¿Activar este usuario? Podrñ¡ acceder a la aplicaciñ³n.')) return;
+            if (!confirm('Ã‚Â¿Activar este usuario? PodrÃƒÂ±Ã‚Â¡ acceder a la aplicaciÃƒÂ±Ã‚Â³n.')) return;
             try {
                 const res = await fetch(API_URL + '/api/users/' + userId, { 
                     method: 'PUT',
@@ -2839,19 +2839,19 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('œ… Usuario activado correctamente');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Usuario activado correctamente');
                     renderAdminUsuarios();
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo activar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
         
         async function rechazarUsuario(userId) {
-            if (!confirm('¿Rechazar y eliminar este usuario?')) return;
-            if (!confirm('š ï¸ Esta acciñ³n eliminarñ¡ al usuario permanentemente. ¿Continuar?')) return;
+            if (!confirm('Ã‚Â¿Rechazar y eliminar este usuario?')) return;
+            if (!confirm('Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Esta acciÃƒÂ±Ã‚Â³n eliminarÃƒÂ±Ã‚Â¡ al usuario permanentemente. Ã‚Â¿Continuar?')) return;
             try {
                 const res = await fetch(API_URL + '/api/users/' + userId, { method: 'DELETE' });
                 const data = await res.json();
@@ -2862,7 +2862,7 @@
                     alert('Error: ' + (data.error || 'No se pudo eliminar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
 
@@ -2918,7 +2918,7 @@
                     });
                 }
                 
-                // Ordenar por fecha (mñ¡s reciente primero)
+                // Ordenar por fecha (mÃƒÂ±Ã‚Â¡s reciente primero)
                 clientesFiltrados.sort((a, b) => {
                     const fechaA = new Date(a.fechaInicio || a.fechaRegistro || 0);
                     const fechaB = new Date(b.fechaInicio || b.fechaRegistro || 0);
@@ -2976,7 +2976,7 @@
         function initHistorial() {
             const selectAnio = document.getElementById('historialAnio');
             const anioActual = new Date().getFullYear();
-            let opciones = '<option value="">Todos los añ±os</option>';
+            let opciones = '<option value="">Todos los aÃƒÂ±Ã‚Â±os</option>';
             for (let a = anioActual; a >= anioActual - 5; a--) {
                 opciones += `<option value="${a}">${a}</option>`;
             }
@@ -3002,7 +3002,7 @@
             // Filtrar clientes del usuario actual
             let clientesFiltrados = [...clientes];
             
-            // Filtrar por añ±o
+            // Filtrar por aÃƒÂ±Ã‚Â±o
             if (anio) {
                 clientesFiltrados = clientesFiltrados.filter(c => {
                     const fecha = new Date(c.fechaInicio || c.fechaRegistro || 0);
@@ -3018,7 +3018,7 @@
                 });
             }
             
-            // Filtrar por dñ­a especñ­fico
+            // Filtrar por dÃƒÂ±Ã‚Â­a especÃƒÂ±Ã‚Â­fico
             if (dia) {
                 const fechaDia = new Date(dia);
                 clientesFiltrados = clientesFiltrados.filter(c => {
@@ -3037,7 +3037,7 @@
                 clientesFiltrados = clientesFiltrados.filter(c => (c.tipoCliente || 'nuevo') === tipo);
             }
             
-            // Ordenar por fecha (mñ¡s reciente primero)
+            // Ordenar por fecha (mÃƒÂ±Ã‚Â¡s reciente primero)
             clientesFiltrados.sort((a, b) => {
                 const fechaA = new Date(a.fechaInicio || a.fechaRegistro || 0);
                 const fechaB = new Date(b.fechaInicio || b.fechaRegistro || 0);
@@ -3076,7 +3076,7 @@
             if (clientesFiltrados.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="9" class="text-center text-secondary py-4">No hay clientes para estos filtros</td></tr>';
             } else {
-                const tipoLabels = { nuevo: 'ðŸ†•', bueno: 'œ…', regular: 'š ï¸', malo: 'Œ' };
+                const tipoLabels = { nuevo: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢', bueno: 'Ã…â€œÃ¢â‚¬Â¦', regular: 'Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â', malo: 'Ã‚ÂÃ…â€™' };
                 tbody.innerHTML = clientesFiltrados.map(c => {
                     const fecha = c.fechaInicio || c.fechaRegistro;
                     const fechaFormateada = fecha ? new Date(fecha).toLocaleDateString('es-ES', {
@@ -3089,7 +3089,7 @@
                     
                     const statusClass = c.estado === 'ativo' ? 'active' : c.estado === 'finalizado' ? 'finished' : 'late';
                     const statusText = c.estado === 'ativo' ? 'Activo' : c.estado === 'finalizado' ? 'Finalizado' : 'Atrasado';
-                    const tipoIcon = tipoLabels[c.tipoCliente] || 'ðŸ†•';
+                    const tipoIcon = tipoLabels[c.tipoCliente] || 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢';
                     
                     return `
                     <tr style="border-bottom: 1px solid var(--border-color);">
@@ -3105,7 +3105,7 @@
                 }).join('');
             }
             
-            // Renderizar ñºltimos pagos
+            // Renderizar ÃƒÂ±Ã‚Âºltimos pagos
             renderHistorialPagos(clientesFiltrados);
         }
 
@@ -3126,10 +3126,10 @@
                 }
             });
             
-            // Ordenar por fecha mñ¡s reciente
+            // Ordenar por fecha mÃƒÂ±Ã‚Â¡s reciente
             todosPagos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
             
-            // Mostrar ñºltimos 20
+            // Mostrar ÃƒÂ±Ã‚Âºltimos 20
             todosPagos = todosPagos.slice(0, 20);
             
             if (todosPagos.length === 0) {
@@ -3149,14 +3149,14 @@
         }
         // ========== FIN HISTORIAL TRABAJADOR ==========
 
-        // ========== HISTORIAL ADMIN (VER TRABAJADOR ESPECñFICO) ==========
+        // ========== HISTORIAL ADMIN (VER TRABAJADOR ESPECÃƒÂ±Ã‚ÂFICO) ==========
         let adminHistorialUserId = null;
 
         function verHistorialTrabajador(userId, nombre) {
             adminHistorialUserId = userId;
             document.getElementById('adminHistNombre').textContent = nombre;
             
-            // Inicializar añ±os
+            // Inicializar aÃƒÂ±Ã‚Â±os
             const selectAnio = document.getElementById('adminHistAnio');
             const anioActual = new Date().getFullYear();
             let opciones = '<option value="">Todos</option>';
@@ -3221,7 +3221,7 @@
                     clientesFiltrados = clientesFiltrados.filter(c => (c.tipoCliente || 'nuevo') === tipo);
                 }
                 
-                // Ordenar por fecha (mñ¡s reciente primero)
+                // Ordenar por fecha (mÃƒÂ±Ã‚Â¡s reciente primero)
                 clientesFiltrados.sort((a, b) => {
                     const fechaA = new Date(a.fechaInicio || a.fechaRegistro || 0);
                     const fechaB = new Date(b.fechaInicio || b.fechaRegistro || 0);
@@ -3250,7 +3250,7 @@
                 
                 // Renderizar tabla
                 const tbody = document.getElementById('adminHistTable');
-                const tipoLabels = { nuevo: 'ðŸ†•', bueno: 'œ…', regular: 'š ï¸', malo: 'Œ' };
+                const tipoLabels = { nuevo: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢', bueno: 'Ã…â€œÃ¢â‚¬Â¦', regular: 'Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â', malo: 'Ã‚ÂÃ…â€™' };
                 
                 if (clientesFiltrados.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary py-4">No hay clientes para estos filtros</td></tr>';
@@ -3267,7 +3267,7 @@
                         
                         const statusClass = c.estado === 'ativo' ? 'active' : c.estado === 'finalizado' ? 'finished' : 'late';
                         const statusText = c.estado === 'ativo' ? 'Activo' : c.estado === 'finalizado' ? 'Finalizado' : 'Atrasado';
-                        const tipoIcon = tipoLabels[c.tipoCliente] || 'ðŸ†•';
+                        const tipoIcon = tipoLabels[c.tipoCliente] || 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢';
                         
                         return `
                         <tr style="border-bottom: 1px solid var(--border-color);">
@@ -3288,7 +3288,7 @@
         }
         // ========== FIN HISTORIAL ADMIN ==========
 
-        // ========== ESTADñSTICAS TRABAJADOR ==========
+        // ========== ESTADÃƒÂ±Ã‚ÂSTICAS TRABAJADOR ==========
         function initEstadisticas() {
             const hoy = new Date();
             document.getElementById('estFecha').value = hoy.toISOString().split('T')[0];
@@ -3471,7 +3471,7 @@
             actividades = actividades.slice(0, 50);
             
             if (actividades.length === 0) {
-                container.innerHTML = '<p class="text-secondary text-center py-3">No hay actividad en este perñ­odo</p>';
+                container.innerHTML = '<p class="text-secondary text-center py-3">No hay actividad en este perÃƒÂ±Ã‚Â­odo</p>';
                 return;
             }
             
@@ -3492,7 +3492,7 @@
                 </div>`;
             }).join('');
         }
-        // ========== FIN ESTADñSTICAS TRABAJADOR ==========
+        // ========== FIN ESTADÃƒÂ±Ã‚ÂSTICAS TRABAJADOR ==========
 
         // ========== VER TODO TRABAJADOR (ADMIN) ==========
         let verTodoUserId = null;
@@ -3588,7 +3588,7 @@
         }
 
         function renderVerTodoClientes(container) {
-            const tipoLabels = { nuevo: 'ðŸ†•', bueno: 'œ…', regular: 'š ï¸', malo: 'Œ' };
+            const tipoLabels = { nuevo: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢', bueno: 'Ã…â€œÃ¢â‚¬Â¦', regular: 'Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â', malo: 'Ã‚ÂÃ…â€™' };
             const busqueda = (document.getElementById('vtBuscador')?.value || '').toLowerCase().trim();
             
             let clientesFiltrados = verTodoClientes;
@@ -3617,7 +3617,7 @@
                                 <th>Fecha</th>
                                 <th>Cliente</th>
                                 <th>Tipo</th>
-                                <th>Telñ©fono</th>
+                                <th>TelÃƒÂ±Ã‚Â©fono</th>
                                 <th>Prestado</th>
                                 <th>Cobrado</th>
                                 <th>Pendiente</th>
@@ -3639,7 +3639,7 @@
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td>${fechaStr}</td>
                                     <td><strong>${c.nombre}</strong></td>
-                                    <td style="font-size: 1.2rem;">${tipoLabels[c.tipoCliente] || 'ðŸ†•'}</td>
+                                    <td style="font-size: 1.2rem;">${tipoLabels[c.tipoCliente] || 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢'}</td>
                                     <td>${c.telefono || '-'}</td>
                                     <td style="color: var(--accent-green);">R$ ${prestado.toFixed(2)}</td>
                                     <td style="color: var(--accent-yellow);">R$ ${cobrado.toFixed(2)}</td>
@@ -3702,8 +3702,8 @@
                         <thead style="position: sticky; top: 0; background: var(--bg-hover); z-index: 10;">
                             <tr>
                                 <th>Fecha</th>
-                                <th>Descripciñ³n</th>
-                                <th>Categorñ­a</th>
+                                <th>DescripciÃƒÂ±Ã‚Â³n</th>
+                                <th>CategorÃƒÂ±Ã‚Â­a</th>
                                 <th>Valor</th>
                                 <th>Acciones</th>
                             </tr>
@@ -3805,7 +3805,7 @@
                     tipo: 'cliente',
                     fecha: new Date(c.fechaCreacion || c.fechaInicio || 0),
                     texto: `Nuevo cliente: ${c.nombre}`,
-                    detalle: `Prñ©stamo: R$ ${(c.montoTotal || 0).toFixed(2)}`,
+                    detalle: `PrÃƒÂ±Ã‚Â©stamo: R$ ${(c.montoTotal || 0).toFixed(2)}`,
                     icono: 'fa-user-plus',
                     color: 'var(--accent-cyan)'
                 });
@@ -3842,7 +3842,7 @@
                 actividades.push({
                     tipo: 'gasto',
                     fecha: new Date(g.fecha || 0),
-                    texto: `Gasto: ${g.descripcion || 'Sin descripciñ³n'}`,
+                    texto: `Gasto: ${g.descripcion || 'Sin descripciÃƒÂ±Ã‚Â³n'}`,
                     detalle: `R$ ${(parseFloat(g.valor) || 0).toFixed(2)}`,
                     icono: 'fa-wallet',
                     color: 'var(--accent-red)'
@@ -3953,35 +3953,35 @@
                 const res = await fetch(API_URL + '/api/admin/backup-trabajador/' + backupTrabajadorId, { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
-                    alert('œ… Backup creado correctamente');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Backup creado correctamente');
                     cargarBackupsTrabajador();
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo crear'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
 
         async function restaurarBackupTrabajador(backupId) {
-            if (!confirm('š ï¸ ¿RESTAURAR este backup?\n\nEsto reemplazarñ¡ TODOS los datos de ' + backupTrabajadorNombre + ' con los del backup.\n\nLos datos de otros trabajadores NO se afectarñ¡n.\n\n¿Continuar?')) return;
+            if (!confirm('Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Ã‚Â¿RESTAURAR este backup?\n\nEsto reemplazarÃƒÂ±Ã‚Â¡ TODOS los datos de ' + backupTrabajadorNombre + ' con los del backup.\n\nLos datos de otros trabajadores NO se afectarÃƒÂ±Ã‚Â¡n.\n\nÃ‚Â¿Continuar?')) return;
             
             try {
                 const res = await fetch(API_URL + '/api/admin/restore-trabajador/' + backupId, { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
-                    alert('œ… Backup restaurado correctamente para ' + backupTrabajadorNombre);
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Backup restaurado correctamente para ' + backupTrabajadorNombre);
                     verBackupsTrabajador(backupTrabajadorId, backupTrabajadorNombre);
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo restaurar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
 
         async function eliminarBackupTrabajador(backupId) {
-            if (!confirm('¿Eliminar este backup?')) return;
+            if (!confirm('Ã‚Â¿Eliminar este backup?')) return;
             try {
                 const res = await fetch(API_URL + '/api/admin/delete-backup-trabajador/' + backupId, { method: 'DELETE' });
                 const data = await res.json();
@@ -3992,7 +3992,7 @@
                     alert('Error: ' + (data.error || 'No se pudo eliminar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
         // ========== FIN BACKUPS POR TRABAJADOR ==========
@@ -4001,35 +4001,35 @@
             const cliente = adminAllClients.find(c => c.id === clienteId);
             if (!cliente) return alert('Cliente no encontrado');
             
-            const tipoLabels = { nuevo: 'ðŸ†• Nuevo', bueno: 'œ… Buen Cliente', regular: 'š ï¸ Regular', malo: 'Œ Mala Paga' };
-            const tipoLabel = tipoLabels[cliente.tipoCliente] || 'ðŸ†• Nuevo';
+            const tipoLabels = { nuevo: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevo', bueno: 'Ã…â€œÃ¢â‚¬Â¦ Buen Cliente', regular: 'Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regular', malo: 'Ã‚ÂÃ…â€™ Mala Paga' };
+            const tipoLabel = tipoLabels[cliente.tipoCliente] || 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevo';
             const restante = (cliente.totalAPagar || 0) - (cliente.montoPagado || 0);
             
             const info = `
-ðŸ“‹ DATOS DEL CLIENTE
+ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹ DATOS DEL CLIENTE
 
-ðŸ‘¤ Nombre: ${cliente.nombre}
-ðŸ“ž Telñ©fono: ${cliente.telefono || 'No registrado'}
-ðŸ“ Ubicaciñ³n: ${cliente.ubicacion || 'No registrada'}
-­ Tipo: ${tipoLabel}
-ðŸ“ Notas: ${cliente.notas || 'Sin notas'}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ Nombre: ${cliente.nombre}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â¾ TelÃƒÂ±Ã‚Â©fono: ${cliente.telefono || 'No registrado'}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â UbicaciÃƒÂ±Ã‚Â³n: ${cliente.ubicacion || 'No registrada'}
+Ã‚Â­Ã‚Â Tipo: ${tipoLabel}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â Notas: ${cliente.notas || 'Sin notas'}
 
-ðŸ’° INFORMACIñ“N FINANCIERA
+ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° INFORMACIÃƒÂ±Ã¢â‚¬Å“N FINANCIERA
 
-ðŸ’µ Prestado: R$ ${(cliente.montoTotal || 0).toFixed(2)}
-ðŸ“Š Comisiñ³n: ${cliente.comisionPorcentaje || 20}%
-ðŸ’³ Total a Pagar: R$ ${(cliente.totalAPagar || 0).toFixed(2)}
-œ… Cobrado: R$ ${(cliente.montoPagado || 0).toFixed(2)}
-Œ Restante: R$ ${restante.toFixed(2)}
-ðŸ“… Parcelas: ${cliente.parcelasPagas || 0}/${cliente.numeroParcelas}
-ðŸ”„ Estado: ${cliente.estado}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Âµ Prestado: R$ ${(cliente.montoTotal || 0).toFixed(2)}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â  ComisiÃƒÂ±Ã‚Â³n: ${cliente.comisionPorcentaje || 20}%
+ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â³ Total a Pagar: R$ ${(cliente.totalAPagar || 0).toFixed(2)}
+Ã…â€œÃ¢â‚¬Â¦ Cobrado: R$ ${(cliente.montoPagado || 0).toFixed(2)}
+Ã‚ÂÃ…â€™ Restante: R$ ${restante.toFixed(2)}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Parcelas: ${cliente.parcelasPagas || 0}/${cliente.numeroParcelas}
+ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Estado: ${cliente.estado}
             `.trim();
             
             alert(info);
         }
 
         async function toggleBlockUser(userId) {
-            if (!confirm('¿Estñ¡s seguro de cambiar el estado de este usuario?')) return;
+            if (!confirm('Ã‚Â¿EstÃƒÂ±Ã‚Â¡s seguro de cambiar el estado de este usuario?')) return;
             try {
                 const res = await fetch(API_URL + '/api/users/' + userId + '/toggle-block', {
                     method: 'POST'
@@ -4042,7 +4042,7 @@
                     alert(data.error || 'Error al cambiar estado');
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
 
@@ -4076,7 +4076,7 @@
                     <div class="d-flex justify-content-between align-items-center py-2 ${i > 0 ? 'border-top' : ''}" style="border-color: var(--border-color) !important;">
                         <div>
                             <strong><i class="fas fa-file-archive me-2" style="color: var(--accent-cyan);"></i>${b.usuario || 'Usuario'}</strong>
-                            <br><small class="text-secondary">${fecha} - ${b.tamañ±o || ''}</small>
+                            <br><small class="text-secondary">${fecha} - ${b.tamaÃƒÂ±Ã‚Â±o || ''}</small>
                         </div>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm" style="background: var(--accent-yellow); color: #000;" onclick="restaurarBackupGeneral('${b.id}')" title="Restaurar">
@@ -4091,36 +4091,36 @@
         }
 
         async function crearBackupManual() {
-            if (!confirm('¿Crear un backup ahora?')) return;
+            if (!confirm('Ã‚Â¿Crear un backup ahora?')) return;
             try {
                 const res = await fetch(API_URL + '/api/admin/backup', { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
-                    alert('œ… ' + data.archivo);
+                    alert('Ã…â€œÃ¢â‚¬Â¦ ' + data.archivo);
                     cargarBackups();
                 } else {
                     alert('Error creando backup');
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
 
         async function restaurarBackupGeneral(backupId) {
-            if (!confirm('š ï¸ ¿RESTAURAR este backup?\n\nEsto reemplazarñ¡ los datos del trabajador con los del backup.\n\n¿Estñ¡s seguro?')) return;
-            if (!confirm('š ï¸ ñšLTIMA CONFIRMACIñ“N\n\n¿Continuar?')) return;
+            if (!confirm('Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Ã‚Â¿RESTAURAR este backup?\n\nEsto reemplazarÃƒÂ±Ã‚Â¡ los datos del trabajador con los del backup.\n\nÃ‚Â¿EstÃƒÂ±Ã‚Â¡s seguro?')) return;
+            if (!confirm('Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â ÃƒÂ±Ã…Â¡LTIMA CONFIRMACIÃƒÂ±Ã¢â‚¬Å“N\n\nÃ‚Â¿Continuar?')) return;
             
             try {
                 const res = await fetch(API_URL + '/api/admin/restore/' + backupId, { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
-                    alert('œ… Backup restaurado correctamente');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Backup restaurado correctamente');
                     cargarBackups();
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo restaurar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
 
@@ -4129,20 +4129,20 @@
         }
 
         async function restaurarBackup(filename) {
-            if (!confirm('š ï¸ ¿RESTAURAR este backup?\n\nEsto reemplazarñ¡ TODOS los datos actuales con los del backup.\n\n¿Estñ¡s seguro?')) return;
-            if (!confirm('š ï¸ ñšLTIMA CONFIRMACIñ“N\n\nSe perderñ¡n todos los cambios desde que se creñ³ este backup.\n\n¿Continuar?')) return;
+            if (!confirm('Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Ã‚Â¿RESTAURAR este backup?\n\nEsto reemplazarÃƒÂ±Ã‚Â¡ TODOS los datos actuales con los del backup.\n\nÃ‚Â¿EstÃƒÂ±Ã‚Â¡s seguro?')) return;
+            if (!confirm('Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â ÃƒÂ±Ã…Â¡LTIMA CONFIRMACIÃƒÂ±Ã¢â‚¬Å“N\n\nSe perderÃƒÂ±Ã‚Â¡n todos los cambios desde que se creÃƒÂ±Ã‚Â³ este backup.\n\nÃ‚Â¿Continuar?')) return;
             
             try {
                 const res = await fetch(API_URL + '/api/admin/restore/' + filename, { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
-                    alert('œ… Backup restaurado correctamente');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Backup restaurado correctamente');
                     location.reload();
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo restaurar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
         // ============ FIN FUNCIONES DE BACKUP ============
@@ -4238,7 +4238,7 @@
             const comision = monto * (porcentaje / 100);
             const total = monto + comision;
             
-            // Contar renovaciones previas de este cliente (por telñ©fono)
+            // Contar renovaciones previas de este cliente (por telÃƒÂ±Ã‚Â©fono)
             let renovacionesPrevias = 0;
             if (telefono) {
                 clientes.forEach(c => {
@@ -4269,7 +4269,7 @@
                 creadoPorNombre: currentUser.nombre
             };
             
-            // Si es una renovaciñ³n, marcar el cliente original como renovado
+            // Si es una renovaciÃƒÂ±Ã‚Â³n, marcar el cliente original como renovado
             if (clienteRenovandoId) {
                 const clienteOriginal = clientes.find(c => c.id === clienteRenovandoId);
                 if (clienteOriginal) {
@@ -4314,7 +4314,7 @@
         async function confirmarPago() {
             if (!clienteParaPago) return;
             const valor = parseFloat(document.getElementById('pagoValor').value);
-            if (!valor || valor <= 0) return alert('Ingresa un valor vñ¡lido');
+            if (!valor || valor <= 0) return alert('Ingresa un valor vÃƒÂ±Ã‚Â¡lido');
             clienteParaPago.montoPagado = (clienteParaPago.montoPagado || 0) + valor;
             clienteParaPago.parcelasPagas = Math.floor(clienteParaPago.montoPagado / (clienteParaPago.valorParcela || 1));
             if (clienteParaPago.montoPagado >= (clienteParaPago.totalAPagar || 0)) {
@@ -4340,7 +4340,7 @@
                 updateStats();
                 renderClientes();
                 renderCobros();
-                alert('œ… Pago registrado');
+                alert('Ã…â€œÃ¢â‚¬Â¦ Pago registrado');
             } catch (e) { 
                 console.error('Error pago:', e);
                 alert('Error al registrar pago: ' + e.message); 
@@ -4354,7 +4354,7 @@
                 alert('Este cliente ya no tiene deuda pendiente');
                 return;
             }
-            if (!confirm(`¿Confirmar pago total de R$ ${restante.toFixed(2)}?\n\nEsto saldarñ¡ toda la deuda de ${clienteParaPago.nombre}.`)) return;
+            if (!confirm(`Ã‚Â¿Confirmar pago total de R$ ${restante.toFixed(2)}?\n\nEsto saldarÃƒÂ±Ã‚Â¡ toda la deuda de ${clienteParaPago.nombre}.`)) return;
             
             document.getElementById('pagoValor').value = restante.toFixed(2);
             await confirmarPago();
@@ -4363,7 +4363,7 @@
         function verDetalles(id) {
             const c = clientes.find(cl => cl.id === id);
             if (!c) return;
-            alert(`${c.nombre}\nTelñ©fono: ${c.telefono || 'N/A'}\nPrestado: R$ ${c.montoTotal}\nTotal: R$ ${c.totalAPagar}\nPagado: R$ ${c.montoPagado}\nParcelas: ${c.parcelasPagas}/${c.numeroParcelas}`);
+            alert(`${c.nombre}\nTelÃƒÂ±Ã‚Â©fono: ${c.telefono || 'N/A'}\nPrestado: R$ ${c.montoTotal}\nTotal: R$ ${c.totalAPagar}\nPagado: R$ ${c.montoPagado}\nParcelas: ${c.parcelasPagas}/${c.numeroParcelas}`);
         }
         
         let clienteRenovandoId = null;
@@ -4372,7 +4372,7 @@
             const c = clientes.find(cl => cl.id === id);
             if (!c) return;
             
-            // Guardar ID del cliente que se estñ¡ renovando
+            // Guardar ID del cliente que se estÃƒÂ±Ã‚Â¡ renovando
             clienteRenovandoId = id;
             
             // Abrir modal de nuevo cliente con datos prellenados
@@ -4444,7 +4444,7 @@
         }
 
         async function eliminarGasto(id) {
-            if (!confirm('¿Eliminar este gasto?')) return;
+            if (!confirm('Ã‚Â¿Eliminar este gasto?')) return;
             try {
                 await fetch(API_URL + '/api/gastos/' + id, { method: 'DELETE' });
                 gastos = gastos.filter(g => g.id !== id);
@@ -4485,19 +4485,19 @@
             }
             
             const categoriaIcons = {
-                servicios: 'ðŸ’¡', comida: 'ðŸ”', transporte: 'ðŸš—', salud: 'ðŸ’Š',
-                entretenimiento: 'ðŸŽ¬', ropa: 'ðŸ‘•', educacion: 'ðŸ“š', hogar: 'ðŸ ', otro: 'ðŸ“¦'
+                servicios: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¡', comida: 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ¢â‚¬Â', transporte: 'ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â‚¬â€', salud: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã…Â ',
+                entretenimiento: 'ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¬', ropa: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ¢â‚¬Â¢', educacion: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â¡', hogar: 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â ', otro: 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦'
             };
             
             container.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-color: var(--border-color) !important;">
-                    <strong>Total del dñ­a:</strong>
+                    <strong>Total del dÃƒÂ±Ã‚Â­a:</strong>
                     <span style="color: var(--accent-red); font-size: 1.3rem;">R$ ${totalDia.toFixed(2)}</span>
                 </div>
                 ${gastosFiltrados.map(g => `
                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
                         <div>
-                            <span style="font-size: 1.2rem;">${categoriaIcons[g.categoria] || 'ðŸ“¦'}</span>
+                            <span style="font-size: 1.2rem;">${categoriaIcons[g.categoria] || 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦'}</span>
                             <strong class="ms-2">${g.descripcion}</strong>
                             <br><small class="text-secondary">${g.categoria}</small>
                         </div>
@@ -4527,9 +4527,9 @@
             
             // Inicializar mapa si no existe
             if (!map) {
-                map = L.map('mapContainer').setView([4.6097, -74.0817], 12); // Bogotñ¡ por defecto
+                map = L.map('mapContainer').setView([4.6097, -74.0817], 12); // BogotÃƒÂ±Ã‚Â¡ por defecto
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap'
+                    attribution: 'Ã‚Â© OpenStreetMap'
                 }).addTo(map);
             }
             
@@ -4555,12 +4555,12 @@
                 marker.bindPopup(`
                     <div style="min-width: 200px;">
                         <strong style="font-size: 1.1rem;">${c.nombre}</strong><br>
-                        <small>${c.ubicacion || 'Sin direcciñ³n'}</small><hr style="margin: 8px 0;">
+                        <small>${c.ubicacion || 'Sin direcciÃƒÂ±Ã‚Â³n'}</small><hr style="margin: 8px 0;">
                         <div><i class="fas fa-phone"></i> ${c.telefono || 'N/A'}</div>
                         <div><i class="fas fa-money-bill"></i> Restante: R$ ${restante.toFixed(2)}</div>
                         <div style="margin-top: 10px;">
                             <a href="https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lng}" target="_blank" class="btn btn-sm btn-primary-custom" style="width: 100%;">
-                                <i class="fas fa-directions"></i> Cñ³mo llegar
+                                <i class="fas fa-directions"></i> CÃƒÂ±Ã‚Â³mo llegar
                             </a>
                         </div>
                     </div>
@@ -4584,7 +4584,7 @@
         function renderListaClientesMapa(clientesConUbi) {
             const container = document.getElementById('listaClientesMapa');
             if (clientesConUbi.length === 0) {
-                container.innerHTML = '<p class="text-secondary text-center">No hay clientes con ubicaciñ³n guardada</p>';
+                container.innerHTML = '<p class="text-secondary text-center">No hay clientes con ubicaciÃƒÂ±Ã‚Â³n guardada</p>';
                 return;
             }
             
@@ -4594,7 +4594,7 @@
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
                     <div>
                         <strong>${c.nombre}</strong>
-                        <br><small class="text-secondary"><i class="fas fa-map-marker-alt"></i> ${c.ubicacion || 'Sin direcciñ³n'}</small>
+                        <br><small class="text-secondary"><i class="fas fa-map-marker-alt"></i> ${c.ubicacion || 'Sin direcciÃƒÂ±Ã‚Â³n'}</small>
                     </div>
                     <div class="d-flex gap-2">
                         <button class="btn btn-sm" style="background: var(--bg-hover);" onclick="centrarEnCliente('${c.id}')">
@@ -4623,7 +4623,7 @@
 
         function obtenerMiUbicacion() {
             if (!navigator.geolocation) {
-                alert('Tu navegador no soporta geolocalizaciñ³n');
+                alert('Tu navegador no soporta geolocalizaciÃƒÂ±Ã‚Â³n');
                 return;
             }
             
@@ -4642,13 +4642,13 @@
                     });
                     
                     miMarcador = L.marker([miUbicacion.lat, miUbicacion.lng], { icon }).addTo(map);
-                    miMarcador.bindPopup('<strong>Tu ubicaciñ³n</strong>').openPopup();
+                    miMarcador.bindPopup('<strong>Tu ubicaciÃƒÂ±Ã‚Â³n</strong>').openPopup();
                     
                     map.setView([miUbicacion.lat, miUbicacion.lng], 14);
                     document.getElementById('miUbicacionCard').style.display = 'block';
                 },
                 (err) => {
-                    alert('No se pudo obtener tu ubicaciñ³n. Asegñºrate de dar permiso.');
+                    alert('No se pudo obtener tu ubicaciÃƒÂ±Ã‚Â³n. AsegÃƒÂ±Ã‚Âºrate de dar permiso.');
                 },
                 { enableHighAccuracy: true }
             );
@@ -4657,11 +4657,11 @@
         function obtenerUbicacionCliente() {
             const direccion = document.getElementById('clienteUbicacion').value;
             if (!direccion || direccion.trim() === '') {
-                alert('Escribe una direcciñ³n primero');
+                alert('Escribe una direcciÃƒÂ±Ã‚Â³n primero');
                 return;
             }
             
-            // Buscar coordenadas de la direcciñ³n usando Nominatim (OpenStreetMap)
+            // Buscar coordenadas de la direcciÃƒÂ±Ã‚Â³n usando Nominatim (OpenStreetMap)
             fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(direccion)}&format=json&limit=1`)
                 .then(r => r.json())
                 .then(data => {
@@ -4676,11 +4676,11 @@
                         // Mostrar mini mapa en un modal
                         mostrarMapaPreview(lat, lng, direccion);
                     } else {
-                        alert('No se encontrñ³ la direcciñ³n. Intenta ser mñ¡s especñ­fico (ej: "Calle 10 #5-20, Bogotñ¡, Colombia")');
+                        alert('No se encontrÃƒÂ±Ã‚Â³ la direcciÃƒÂ±Ã‚Â³n. Intenta ser mÃƒÂ±Ã‚Â¡s especÃƒÂ±Ã‚Â­fico (ej: "Calle 10 #5-20, BogotÃƒÂ±Ã‚Â¡, Colombia")');
                     }
                 })
                 .catch(() => {
-                    alert('Error al buscar la direcciñ³n. Intenta de nuevo.');
+                    alert('Error al buscar la direcciÃƒÂ±Ã‚Â³n. Intenta de nuevo.');
                 });
         }
 
@@ -4694,7 +4694,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title"><i class="fas fa-map-marker-alt me-2"></i>Ubicaciñ³n encontrada</h5>
+                                <h5 class="modal-title"><i class="fas fa-map-marker-alt me-2"></i>UbicaciÃƒÂ±Ã‚Â³n encontrada</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
@@ -4704,7 +4704,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                                 <button type="button" class="btn btn-success-custom" data-bs-dismiss="modal">
-                                    <i class="fas fa-check me-2"></i>Confirmar ubicaciñ³n
+                                    <i class="fas fa-check me-2"></i>Confirmar ubicaciÃƒÂ±Ã‚Â³n
                                 </button>
                             </div>
                         </div>
@@ -4720,7 +4720,7 @@
             const bsModal = new bootstrap.Modal(modal);
             bsModal.show();
             
-            // Inicializar mapa despuñ©s de que el modal estñ© visible
+            // Inicializar mapa despuÃƒÂ±Ã‚Â©s de que el modal estÃƒÂ±Ã‚Â© visible
             modal.addEventListener('shown.bs.modal', function initPreviewMap() {
                 if (previewMap) {
                     previewMap.remove();
@@ -4728,7 +4728,7 @@
                 
                 previewMap = L.map('mapaPreviewContainer').setView([lat, lng], 16);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap'
+                    attribution: 'Ã‚Â© OpenStreetMap'
                 }).addTo(previewMap);
                 
                 const icon = L.divIcon({
@@ -4748,7 +4748,7 @@
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
-            // Si viene con ?logout en la URL, borrar sesiñ³n
+            // Si viene con ?logout en la URL, borrar sesiÃƒÂ±Ã‚Â³n
             if (window.location.search.includes('logout')) {
                 localStorage.removeItem('finangest_user');
                 window.history.replaceState({}, '', window.location.pathname);
@@ -4775,7 +4775,7 @@
             const cliente = verTodoClientes.find(c => c.id === clienteId);
             if (!cliente) return alert('Cliente no encontrado');
             
-            // Crear modal de ediciñ³n
+            // Crear modal de ediciÃƒÂ±Ã‚Â³n
             let modal = document.getElementById('adminEditClienteModal');
             if (modal) modal.remove();
             
@@ -4794,16 +4794,16 @@
                                     <input type="text" class="form-control form-control-dark" id="adminEditNombre" value="${cliente.nombre || ''}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Telñ©fono</label>
+                                    <label class="form-label">TelÃƒÂ±Ã‚Â©fono</label>
                                     <input type="text" class="form-control form-control-dark" id="adminEditTelefono" value="${cliente.telefono || ''}">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Tipo de Cliente</label>
                                     <select class="form-control form-control-dark" id="adminEditTipo">
-                                        <option value="nuevo" ${cliente.tipoCliente === 'nuevo' ? 'selected' : ''}>ðŸ†• Nuevo</option>
-                                        <option value="bueno" ${cliente.tipoCliente === 'bueno' ? 'selected' : ''}>œ… Buen Cliente</option>
-                                        <option value="regular" ${cliente.tipoCliente === 'regular' ? 'selected' : ''}>š ï¸ Regular</option>
-                                        <option value="malo" ${cliente.tipoCliente === 'malo' ? 'selected' : ''}>Œ Mala Paga</option>
+                                        <option value="nuevo" ${cliente.tipoCliente === 'nuevo' ? 'selected' : ''}>ÃƒÂ°Ã…Â¸Ã¢â‚¬Â Ã¢â‚¬Â¢ Nuevo</option>
+                                        <option value="bueno" ${cliente.tipoCliente === 'bueno' ? 'selected' : ''}>Ã…â€œÃ¢â‚¬Â¦ Buen Cliente</option>
+                                        <option value="regular" ${cliente.tipoCliente === 'regular' ? 'selected' : ''}>Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Regular</option>
+                                        <option value="malo" ${cliente.tipoCliente === 'malo' ? 'selected' : ''}>Ã‚ÂÃ…â€™ Mala Paga</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
@@ -4827,7 +4827,7 @@
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalPagar" value="${cliente.totalAPagar || 0}" step="0.01">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Comisiñ³n (%)</label>
+                                    <label class="form-label">ComisiÃƒÂ±Ã‚Â³n (%)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditComision" value="${cliente.comisionPorcentaje || 20}">
                                 </div>
                                 <div class="col-md-6">
@@ -4839,7 +4839,7 @@
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalParcelas" value="${cliente.numeroParcelas || 0}">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Ubicaciñ³n</label>
+                                    <label class="form-label">UbicaciÃƒÂ±Ã‚Â³n</label>
                                     <input type="text" class="form-control form-control-dark" id="adminEditUbicacion" value="${cliente.ubicacion || ''}">
                                 </div>
                                 <div class="col-12">
@@ -4888,7 +4888,7 @@
                 const data = await res.json();
                 
                 if (data.success) {
-                    alert('œ… Cliente actualizado correctamente');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Cliente actualizado correctamente');
                     bootstrap.Modal.getInstance(document.getElementById('adminEditClienteModal')).hide();
                     // Recargar datos
                     await verTodoTrabajador(verTodoUserId);
@@ -4896,7 +4896,7 @@
                     alert('Error: ' + (data.error || 'No se pudo actualizar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
         
@@ -4904,8 +4904,8 @@
             const cliente = verTodoClientes.find(c => c.id === clienteId);
             if (!cliente) return alert('Cliente no encontrado');
             
-            if (!confirm(`š ï¸ ¿Eliminar al cliente "${cliente.nombre}"?\n\nEsta acciñ³n no se puede deshacer.`)) return;
-            if (!confirm('š ï¸ ñšLTIMA CONFIRMACIñ“N\n\n¿Estñ¡s seguro de eliminar este cliente?')) return;
+            if (!confirm(`Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Ã‚Â¿Eliminar al cliente "${cliente.nombre}"?\n\nEsta acciÃƒÂ±Ã‚Â³n no se puede deshacer.`)) return;
+            if (!confirm('Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â ÃƒÂ±Ã…Â¡LTIMA CONFIRMACIÃƒÂ±Ã¢â‚¬Å“N\n\nÃ‚Â¿EstÃƒÂ±Ã‚Â¡s seguro de eliminar este cliente?')) return;
             
             try {
                 const res = await fetch(API_URL + '/api/admin/cliente/' + clienteId, {
@@ -4914,13 +4914,13 @@
                 const data = await res.json();
                 
                 if (data.success) {
-                    alert('œ… Cliente eliminado');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Cliente eliminado');
                     await verTodoTrabajador(verTodoUserId);
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo eliminar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
         
@@ -4944,17 +4944,17 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">Descripciñ³n</label>
+                                <label class="form-label">DescripciÃƒÂ±Ã‚Â³n</label>
                                 <input type="text" class="form-control form-control-dark" id="adminEditGastoDesc" value="${gasto.descripcion || ''}">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Categorñ­a</label>
+                                <label class="form-label">CategorÃƒÂ±Ã‚Â­a</label>
                                 <select class="form-control form-control-dark" id="adminEditGastoCat">
-                                    <option value="transporte" ${gasto.categoria === 'transporte' ? 'selected' : ''}>ðŸš— Transporte</option>
-                                    <option value="alimentacion" ${gasto.categoria === 'alimentacion' ? 'selected' : ''}>ðŸ” Alimentaciñ³n</option>
-                                    <option value="comunicacion" ${gasto.categoria === 'comunicacion' ? 'selected' : ''}>ðŸ“± Comunicaciñ³n</option>
-                                    <option value="oficina" ${gasto.categoria === 'oficina' ? 'selected' : ''}>ðŸ“Ž Oficina</option>
-                                    <option value="otros" ${gasto.categoria === 'otros' ? 'selected' : ''}>ðŸ“¦ Otros</option>
+                                    <option value="transporte" ${gasto.categoria === 'transporte' ? 'selected' : ''}>ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â‚¬â€ Transporte</option>
+                                    <option value="alimentacion" ${gasto.categoria === 'alimentacion' ? 'selected' : ''}>ÃƒÂ°Ã…Â¸Ã‚ÂÃ¢â‚¬Â AlimentaciÃƒÂ±Ã‚Â³n</option>
+                                    <option value="comunicacion" ${gasto.categoria === 'comunicacion' ? 'selected' : ''}>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â± ComunicaciÃƒÂ±Ã‚Â³n</option>
+                                    <option value="oficina" ${gasto.categoria === 'oficina' ? 'selected' : ''}>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â½ Oficina</option>
+                                    <option value="otros" ${gasto.categoria === 'otros' ? 'selected' : ''}>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¦ Otros</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -4998,14 +4998,14 @@
                 const data = await res.json();
                 
                 if (data.success) {
-                    alert('œ… Gasto actualizado correctamente');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Gasto actualizado correctamente');
                     bootstrap.Modal.getInstance(document.getElementById('adminEditGastoModal')).hide();
                     await verTodoTrabajador(verTodoUserId);
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo actualizar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
         
@@ -5013,7 +5013,7 @@
             const gasto = verTodoGastos.find(g => g.id === gastoId);
             if (!gasto) return alert('Gasto no encontrado');
             
-            if (!confirm(`š ï¸ ¿Eliminar el gasto "${gasto.descripcion}"?\n\nEsta acciñ³n no se puede deshacer.`)) return;
+            if (!confirm(`Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Ã‚Â¿Eliminar el gasto "${gasto.descripcion}"?\n\nEsta acciÃƒÂ±Ã‚Â³n no se puede deshacer.`)) return;
             
             try {
                 const res = await fetch(API_URL + '/api/admin/gasto/' + gastoId, {
@@ -5022,13 +5022,13 @@
                 const data = await res.json();
                 
                 if (data.success) {
-                    alert('œ… Gasto eliminado');
+                    alert('Ã…â€œÃ¢â‚¬Â¦ Gasto eliminado');
                     await verTodoTrabajador(verTodoUserId);
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo eliminar'));
                 }
             } catch (e) {
-                alert('Error de conexiñ³n');
+                alert('Error de conexiÃƒÂ±Ã‚Â³n');
             }
         }
         // ============ FIN FUNCIONES ADMIN EDITAR/ELIMINAR ============
