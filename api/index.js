@@ -625,6 +625,39 @@ app.get('/api/users-status', async (req, res) => {
     }
 });
 
+// Admin backups - listar backups
+app.get('/api/admin/backups', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const backups = await database.collection('backups').find({}).sort({ fecha: -1 }).toArray();
+        res.json(backups);
+    } catch (e) {
+        res.json([]);
+    }
+});
+
+// Admin backups - crear backup
+app.post('/api/admin/backup', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const users = await database.collection('users').find({}).toArray();
+        const clients = await database.collection('clients').find({}).toArray();
+        
+        const backup = {
+            id: Date.now().toString(),
+            fecha: new Date(),
+            usuarios: users.length,
+            clientes: clients.length,
+            data: { users, clients }
+        };
+        
+        await database.collection('backups').insertOne(backup);
+        res.json({ success: true, archivo: `Backup creado: ${users.length} usuarios, ${clients.length} clientes` });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Servir archivos HTML
 app.get('/', (req, res) => {
     const htmlPath = path.join(__dirname, '..', 'index.html');

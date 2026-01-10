@@ -4073,10 +4073,14 @@
         async function cargarBackups() {
             try {
                 const res = await fetch(API_URL + '/api/admin/backups');
+                if (!res.ok) {
+                    document.getElementById('backupsList').innerHTML = '<p class="text-secondary text-center py-3">No hay backups disponibles</p>';
+                    return;
+                }
                 const backups = await res.json();
                 const container = document.getElementById('backupsList');
                 
-                if (backups.length === 0) {
+                if (!backups || backups.length === 0 || backups.error) {
                     container.innerHTML = '<p class="text-secondary text-center py-3">No hay backups disponibles</p>';
                     return;
                 }
@@ -4097,7 +4101,7 @@
                     </div>`;
                 }).join('');
             } catch (e) {
-                console.error('Error cargando backups:', e);
+                document.getElementById('backupsList').innerHTML = '<p class="text-secondary text-center py-3">No hay backups disponibles</p>';
             }
         }
 
