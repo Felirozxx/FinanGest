@@ -598,6 +598,33 @@ exports.handler = async (event, context) => {
             return respond(200, { success: result.modifiedCount > 0 });
         }
 
+        // ============ ADMIN GASTOS ============
+        
+        // UPDATE GASTO (Admin)
+        if (path.match(/^\/admin\/gasto\/[^/]+$/) && method === 'PUT') {
+            const gastoId = path.split('/').pop();
+            const { _id, ...updateData } = body;
+            let result;
+            try {
+                result = await db.collection('gastos').updateOne({ _id: new ObjectId(gastoId) }, { $set: updateData });
+            } catch (e) {
+                result = await db.collection('gastos').updateOne({ id: gastoId }, { $set: updateData });
+            }
+            return respond(200, { success: result.matchedCount > 0 });
+        }
+        
+        // DELETE GASTO (Admin)
+        if (path.match(/^\/admin\/gasto\/[^/]+$/) && method === 'DELETE') {
+            const gastoId = path.split('/').pop();
+            let result;
+            try {
+                result = await db.collection('gastos').deleteOne({ _id: new ObjectId(gastoId) });
+            } catch (e) {
+                result = await db.collection('gastos').deleteOne({ id: gastoId });
+            }
+            return respond(200, { success: result.deletedCount > 0 });
+        }
+
         // ============ BACKUPS DE TRABAJADOR ============
         
         // GET backups de un trabajador
@@ -621,9 +648,13 @@ exports.handler = async (event, context) => {
         if (path.match(/^\/admin\/backup-trabajador\/(.+)$/) && method === 'POST') {
             const userId = path.split('/').pop();
             
-            // Obtener datos del trabajador
-            const clientesData = await db.collection('clientes').find({ creadoPor: userId }).toArray();
-            const gastosData = await db.collection('gastos').find({ creadoPor: userId }).toArray();
+            // Obtener datos del trabajador (usar 'clients' que es la colección correcta)
+            const clientesData = await db.collection('clients').find({ 
+                $or: [{ creadoPor: userId }, { 'cliente.creadoPor': userId }, { userId: userId }] 
+            }).toArray();
+            const gastosData = await db.collection('gastos').find({ 
+                $or: [{ creadoPor: userId }, { userId: userId }] 
+            }).toArray();
             
             const backup = {
                 creadoPor: userId,
@@ -663,9 +694,13 @@ exports.handler = async (event, context) => {
             
             const userId = backup.creadoPor;
             
-            // Eliminar datos actuales del trabajador
-            await db.collection('clientes').deleteMany({ creadoPor: userId });
-            await db.collection('gastos').deleteMany({ creadoPor: userId });
+            // Eliminar datos actuales del trabajador (usar 'clients')
+            await db.collection('clients').deleteMany({ 
+                $or: [{ creadoPor: userId }, { 'cliente.creadoPor': userId }, { userId: userId }] 
+            });
+            await db.collection('gastos').deleteMany({ 
+                $or: [{ creadoPor: userId }, { userId: userId }] 
+            });
             
             // Restaurar datos del backup
             if (backup.clientes && backup.clientes.length > 0) {
@@ -674,7 +709,7 @@ exports.handler = async (event, context) => {
                     const { _id, ...rest } = c;
                     return { ...rest, id: c.id || _id?.toString() || crypto.randomUUID() };
                 });
-                await db.collection('clientes').insertMany(clientesSinId);
+                await db.collection('clients').insertMany(clientesSinId);
             }
             
             if (backup.gastos && backup.gastos.length > 0) {
@@ -716,9 +751,9 @@ exports.handler = async (event, context) => {
         // POST crear backup del sistema (admin)
         if (path === '/admin/backup' && method === 'POST') {
             try {
-                // Obtener todos los datos del sistema
+                // Obtener todos los datos del sistema (usar 'clients')
                 const usuariosData = await db.collection('users').find({}).toArray();
-                const clientesData = await db.collection('clientes').find({}).toArray();
+                const clientesData = await db.collection('clients').find({}).toArray();
                 const gastosData = await db.collection('gastos').find({}).toArray();
                 
                 const backup = {
@@ -778,14 +813,14 @@ exports.handler = async (event, context) => {
                 }
             }
             
-            // Restaurar clientes
-            await db.collection('clientes').deleteMany({});
+            // Restaurar clientes (usar 'clients')
+            await db.collection('clients').deleteMany({});
             if (backup.clientes && backup.clientes.length > 0) {
                 const clientesSinId = backup.clientes.map(c => {
                     const { _id, ...rest } = c;
                     return { ...rest, id: c.id || _id?.toString() || crypto.randomUUID() };
                 });
-                await db.collection('clientes').insertMany(clientesSinId);
+                await db.collection('clients').insertMany(clientesSinId);
             }
             
             // Restaurar gastos
