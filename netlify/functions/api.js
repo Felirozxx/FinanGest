@@ -109,6 +109,11 @@ exports.handler = async (event, context) => {
             
             // Verificar suscripción
             if (user.role !== 'admin') {
+                // TEMPORAL: Forzar mensaje de vencido para prueba (usuario rubiel)
+                if (user.username === 'rubiel' || user.nombre === 'rubiel') {
+                    return respond(200, { success: false, needsPayment: true, expired: true, userId: user._id, nombre: user.nombre, email: user.email });
+                }
+                
                 if (!user.paid) {
                     return respond(200, { success: false, needsPayment: true, userId: user._id, nombre: user.nombre, email: user.email });
                 }
