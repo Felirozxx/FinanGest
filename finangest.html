@@ -3641,8 +3641,9 @@
                 const allClients = await clientsRes.json();
                 verTodoClientes = allClients.filter(c => c.creadoPor === userId);
                 
-                const gastosRes = await fetch(API_URL + '/api/gastos/' + userId);
-                verTodoGastos = await gastosRes.json();
+                const gastosRes = await fetch(API_URL + '/api/gastos?userId=' + userId);
+                const gastosData = await gastosRes.json();
+                verTodoGastos = Array.isArray(gastosData) ? gastosData : [];
                 
                 const totalClientes = verTodoClientes.length;
                 const totalPrestado = verTodoClientes.reduce((s, c) => s + (parseFloat(c.montoTotal) || 0), 0);
