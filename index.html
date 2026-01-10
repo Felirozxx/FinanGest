@@ -1113,28 +1113,40 @@
             <div id="adminUsuarios" class="section">
                 <h5 class="mb-4"><i class="fas fa-users-cog me-2" style="color: var(--accent-yellow);"></i>Usuarios Registrados</h5>
                 <div class="row g-4 mb-4">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="stat-card purple">
                             <div class="stat-value" id="adminTotalUsers">0</div>
                             <div class="stat-label">Total Usuarios</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-card" style="border-left: 4px solid #ff6b35;">
-                            <div class="stat-value" id="adminPendientes" style="color: #ff6b35;">0</div>
-                            <div class="stat-label">Pendientes Activar</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="stat-card green">
-                            <div class="stat-value" id="adminTotalClients">0</div>
-                            <div class="stat-label">Total Clientes</div>
+                            <div class="stat-value" id="adminOnline">0</div>
+                            <div class="stat-label">Conectados</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <div class="stat-card">
+                            <div class="stat-value" id="adminOffline" style="color: #6c757d;">0</div>
+                            <div class="stat-label">Offline</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="stat-card red">
+                            <div class="stat-value" id="adminPendientes">0</div>
+                            <div class="stat-label">Pendientes</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="stat-card">
+                            <div class="stat-value" id="adminTotalClients">0</div>
+                            <div class="stat-label">Clientes</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="stat-card yellow">
                             <div class="stat-value" id="adminTotalPrestado">R$ 0</div>
-                            <div class="stat-label">Total Prestado</div>
+                            <div class="stat-label">Prestado</div>
                         </div>
                     </div>
                 </div>
@@ -2074,11 +2086,26 @@
         function showMainApp() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('userName').textContent = currentUser.nombre;
-            document.getElementById('userAvatar').textContent = currentUser.nombre.charAt(0).toUpperCase();
+            const isAdmin = currentUser.role === 'admin' || currentUser.isAdmin;
+            document.getElementById('userName').textContent = isAdmin ? 'Administrador' : currentUser.nombre;
+            document.getElementById('userAvatar').textContent = isAdmin ? 'A' : currentUser.nombre.charAt(0).toUpperCase();
             loadTheme();
             buildNavMenu();
             loadData();
+            // Iniciar heartbeat cada 2 minutos
+            sendHeartbeat();
+            setInterval(sendHeartbeat, 120000);
+        }
+
+        async function sendHeartbeat() {
+            if (!currentUser || !currentUser.id) return;
+            try {
+                await fetch(API_URL + '/api/heartbeat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUser.id })
+                });
+            } catch (e) {}
         }
 
         function buildNavMenu() {
@@ -2655,7 +2682,14 @@
                 const usuariosPendientes = allUsers.filter(u => !u.pagado && !u.activo);
                 const usuariosActivos = allUsers.filter(u => u.pagado || u.activo);
                 
+                // Calcular online/offline (activo si lastSeen < 5 minutos)
+                const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+                const usuariosOnline = usuariosActivos.filter(u => u.lastSeen && new Date(u.lastSeen) > fiveMinutesAgo);
+                const usuariosOffline = usuariosActivos.filter(u => !u.lastSeen || new Date(u.lastSeen) <= fiveMinutesAgo);
+                
                 document.getElementById('adminTotalUsers').textContent = allUsers.length;
+                document.getElementById('adminOnline').textContent = usuariosOnline.length;
+                document.getElementById('adminOffline').textContent = usuariosOffline.length;
                 document.getElementById('adminPendientes').textContent = usuariosPendientes.length;
                 document.getElementById('adminTotalClients').textContent = allClients.length;
                 const totalPrestado = allClients.reduce((s, c) => s + (c.montoTotal || 0), 0);
@@ -2705,13 +2739,18 @@
                     const userPrestado = userClients.reduce((s, c) => s + (c.montoTotal || 0), 0);
                     const userCobrado = userClients.reduce((s, c) => s + (c.montoPagado || 0), 0);
                     const bloqueado = u.bloqueado || false;
+                    const isOnline = u.lastSeen && new Date(u.lastSeen) > fiveMinutesAgo;
+                    const statusColor = isOnline ? '#2ecc71' : '#6c757d';
+                    const statusText = isOnline ? 'Online' : 'Offline';
                     return `
                     <div class="card-dark mb-3" style="${bloqueado ? 'opacity: 0.6; border-left: 3px solid var(--accent-red);' : ''}">
                         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                             <div style="cursor: pointer;" onclick="toggleUserClients('${u.id}')">
                                 <strong>
+                                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${statusColor}; margin-right: 8px;"></span>
                                     <i class="fas fa-user me-2" style="color: ${bloqueado ? 'var(--accent-red)' : 'var(--accent-cyan)'};"></i>
                                     ${u.nombre}
+                                    <span style="font-size: 0.7rem; color: ${statusColor}; margin-left: 5px;">${statusText}</span>
                                     ${bloqueado ? '<span class="badge-status badge-late ms-2">BLOQUEADO</span>' : ''}
                                 </strong>
                                 <br><small class="text-secondary">${u.email}</small>

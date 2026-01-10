@@ -448,4 +448,65 @@ app.post('/api/verificar-pago', async (req, res) => {
     }
 });
 
+// Heartbeat - registrar actividad del usuario
+app.post('/api/heartbeat', async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) return res.json({ success: false });
+        const database = await connectDB();
+        await database.collection('users').updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { lastSeen: new Date() } }
+        );
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false });
+    }
+});
+
+// Heartbeat - actualizar último visto
+app.post('/api/heartbeat', async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) return res.json({ success: false });
+        const database = await connectDB();
+        await database.collection('users').updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { lastSeen: new Date() } }
+        );
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Obtener usuarios con estado online/offline
+app.get('/api/users-status', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const users = await database.collection('users').find({}).toArray();
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        
+        let online = 0;
+        let offline = 0;
+        
+        const usersWithStatus = users.map(u => {
+            const isOnline = u.lastSeen && new Date(u.lastSeen) > fiveMinutesAgo;
+            if (u.role !== 'admin') {
+                if (isOnline) online++;
+                else offline++;
+            }
+            return {
+                ...u,
+                password: undefined,
+                isOnline
+            };
+        });
+        
+        res.json({ users: usersWithStatus, online, offline });
+    } catch (e) {
+        res.json({ error: e.message });
+    }
+});
+
 module.exports = app;
