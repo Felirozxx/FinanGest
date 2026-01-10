@@ -2653,25 +2653,18 @@
             const busqueda = (document.getElementById('cobrosBuscar')?.value || '').toLowerCase().trim();
             const filtroEstado = document.getElementById('cobrosFiltroEstado')?.value || '';
             
-            // Filtrar clientes activos
-            let activos = clientes.filter(c => c.estado === 'ativo');
-            
-            // Aplicar búsqueda a clientes activos
-            if (busqueda) {
-                activos = activos.filter(c => 
-                    (c.nombre || '').toLowerCase().includes(busqueda) ||
-                    (c.telefono || '').toLowerCase().includes(busqueda)
-                );
-            }
-            
             // Filtrar pagos realizados en la fecha seleccionada
             let pagosDelDia = [];
+            const clientesQuePagaronHoy = new Set();
+            
             clientes.forEach(c => {
                 if (c.pagos && c.pagos.length > 0) {
                     c.pagos.forEach(p => {
                         // Comparar solo la parte de fecha (YYYY-MM-DD)
                         const fechaPago = (p.fecha || '').split('T')[0];
                         if (fechaPago === fechaSeleccionada) {
+                            // Marcar que este cliente ya pagó hoy
+                            clientesQuePagaronHoy.add(c.id);
                             // Extraer hora si existe
                             let hora = '';
                             if (p.fecha && p.fecha.includes('T')) {
@@ -2689,6 +2682,17 @@
                     });
                 }
             });
+            
+            // Filtrar clientes activos que NO han pagado hoy
+            let activos = clientes.filter(c => c.estado === 'ativo' && !clientesQuePagaronHoy.has(c.id));
+            
+            // Aplicar búsqueda a clientes activos
+            if (busqueda) {
+                activos = activos.filter(c => 
+                    (c.nombre || '').toLowerCase().includes(busqueda) ||
+                    (c.telefono || '').toLowerCase().includes(busqueda)
+                );
+            }
             
             // Aplicar búsqueda a pagos del día
             if (busqueda) {
