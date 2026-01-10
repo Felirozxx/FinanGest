@@ -140,7 +140,7 @@ exports.handler = async (event, context) => {
             await sessions.insertOne(sessionData);
             
             return respond(200, { success: true, sessionId, user: {
-                id: user._id, nombre: user.nombre, username: user.username,
+                id: user._id.toString(), nombre: user.nombre, username: user.username,
                 email: user.email, role: user.role || 'client', isAdmin: user.role === 'admin' || user.isAdmin
             }});
         }
