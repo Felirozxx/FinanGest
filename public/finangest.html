@@ -7747,7 +7747,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/admin/cliente/' + clienteId, {
+                const res = await fetch(API_URL + '/api/clientes/' + clienteId, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updates)
@@ -7784,7 +7784,7 @@
             if (!confirm('⚠️ ÚLTIMA CONFIRMACIÓN\n\n¿Estás seguro de eliminar este cliente?')) return;
             
             try {
-                const res = await fetch(API_URL + '/api/admin/cliente/' + clienteId, {
+                const res = await fetch(API_URL + '/api/clientes/' + clienteId, {
                     method: 'DELETE'
                 });
                 const data = await res.json();
