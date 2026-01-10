@@ -2503,11 +2503,14 @@
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     
                     // Backup automático al iniciar sesión
-                    fetch(API_URL + '/api/admin/backup-trabajador/' + currentUser.id, { 
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ auto: true })
-                    }).catch(() => {});
+                    const userId = currentUser.id || currentUser._id;
+                    if (userId) {
+                        fetch(API_URL + '/api/admin/backup-trabajador/' + userId, { 
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ auto: true })
+                        }).catch(err => console.error('Error backup auto:', err));
+                    }
                     
                     showMainApp();
                 } else if (data.needsPayment) {
@@ -5771,7 +5774,8 @@
                     return;
                 }
                 
-                const res = await fetch(API_URL + '/api/admin/backups-trabajador/' + currentUser.id);
+                const userId = currentUser.id || currentUser._id;
+                const res = await fetch(API_URL + '/api/admin/backups-trabajador/' + userId);
                 const backups = await res.json();
                 const container = document.getElementById('misBackupsList');
                 
@@ -5816,7 +5820,8 @@
             
             if (!confirm('¿Crear un backup de tus datos ahora?')) return;
             try {
-                const res = await fetch(API_URL + '/api/admin/backup-trabajador/' + currentUser.id, { method: 'POST' });
+                const userId = currentUser.id || currentUser._id;
+                const res = await fetch(API_URL + '/api/admin/backup-trabajador/' + userId, { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
                     alert('✅ Backup creado correctamente');
