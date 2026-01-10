@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="64" fill="#0a0a0f"/>
+  <g transform="translate(96, 96)">
+    <!-- Gráfico de línea ascendente -->
+    <path d="M20 260 L20 290 L300 290" stroke="#00d4ff" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M50 210 L130 130 L210 170 L280 60" stroke="#00d4ff" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Flecha hacia arriba -->
+    <path d="M255 90 L280 60 L280 100" stroke="#00d4ff" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
