@@ -1377,9 +1377,9 @@
             <!-- Mis Backups Section (Trabajadores) -->
             <div id="misBackups" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5><i class="fas fa-database me-2" style="color: var(--accent-cyan);"></i>Mis Backups</h5>
+                    <h5><i class="fas fa-database me-2" style="color: var(--accent-cyan);"></i><span data-translate="misBackups">Mis Backups</span></h5>
                     <button class="btn btn-success-custom" onclick="crearMiBackup()">
-                        <i class="fas fa-plus me-2"></i>Crear Backup Ahora
+                        <i class="fas fa-plus me-2"></i><span data-translate="crearBackupAhora">Crear Backup Ahora</span>
                     </button>
                 </div>
                 <div class="card-dark p-3 mb-4">
@@ -1388,15 +1388,15 @@
                             <i class="fas fa-shield-alt" style="color: #fff;"></i>
                         </div>
                         <div>
-                            <strong>Sistema de Backups Automáticos</strong>
-                            <p class="text-secondary mb-0" style="font-size: 0.85rem;">
+                            <strong data-translate="sistemaBackupsAuto">Sistema de Backups Automáticos</strong>
+                            <p class="text-secondary mb-0" style="font-size: 0.85rem;" data-translate="backupsDescripcion">
                                 Tus datos se guardan automáticamente cada hora. Se mantienen los últimos 7 días de backups.
                             </p>
                         </div>
                     </div>
                 </div>
                 <div class="card-dark p-3">
-                    <h6 class="mb-3"><i class="fas fa-clock-rotate-left me-2" style="color: var(--accent-cyan);"></i>Backups Disponibles</h6>
+                    <h6 class="mb-3"><i class="fas fa-clock-rotate-left me-2" style="color: var(--accent-cyan);"></i><span data-translate="backupsDisponibles">Backups Disponibles</span></h6>
                     <div id="misBackupsList"><!-- Se llena dinámicamente --></div>
                 </div>
             </div>
@@ -2484,6 +2484,10 @@
                 sinUbicacion: 'Sin ubicación',
                 ubicacionActiva: 'Ubicación activa',
                 backupsDisponibles: 'Backups Disponibles',
+                misBackups: 'Mis Backups',
+                crearBackupAhora: 'Crear Backup Ahora',
+                sistemaBackupsAuto: 'Sistema de Backups Automáticos',
+                backupsDescripcion: 'Tus datos se guardan automáticamente cada hora. Se mantienen los últimos 7 días de backups.',
                 sesionesActivas: 'Sesiones Activas',
                 notificaciones: 'Notificaciones',
                 recordatorioCobros: 'Recordatorio de cobros del día',
@@ -2679,6 +2683,10 @@
                 sinUbicacion: 'Sem localização',
                 ubicacionActiva: 'Localização ativa',
                 backupsDisponibles: 'Backups Disponíveis',
+                misBackups: 'Meus Backups',
+                crearBackupAhora: 'Criar Backup Agora',
+                sistemaBackupsAuto: 'Sistema de Backups Automáticos',
+                backupsDescripcion: 'Seus dados são salvos automaticamente a cada hora. Os últimos 7 dias de backups são mantidos.',
                 sesionesActivas: 'Sessões Ativas',
                 notificaciones: 'Notificações',
                 recordatorioCobros: 'Lembrete de cobranças do dia',
