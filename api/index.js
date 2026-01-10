@@ -536,8 +536,6 @@ app.put('/api/clientes/:id', async (req, res) => {
         res.json({ success: false, error: e.message });
     }
 });
-    }
-});
 
 // Delete client
 app.delete('/api/clients/:id', async (req, res) => {
