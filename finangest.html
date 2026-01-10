@@ -1,11 +1,11 @@
 ﻿<!DOCTYPE html>
-<html lang="es">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200, initial-scale=0.5">
-    <title>FinanGest - Gestión Financiera Profesional</title>
+    <title>FinanGest - Gestão Financeira Profissional</title>
     <!-- PWA Meta Tags -->
-    <meta name="description" content="FinanGest - Gestión financiera personal. Organiza tus cuentas, controla pagos y gastos.">
+    <meta name="description" content="FinanGest - Gestão financeira pessoal. Organize suas contas, controle pagamentos e despesas.">
     <meta name="theme-color" content="#00d4ff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -336,59 +336,69 @@
         <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 50px 40px; background: linear-gradient(180deg, #080b10 0%, #0d1117 100%);">
             <div style="width: 100%; max-width: 400px;">
                 <!-- Logo -->
-                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 50px;">
+                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 30px;">
                     <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #00d4ff, #0099cc); border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,212,255,0.3);">
                         <i class="fas fa-chart-line" style="color: #fff; font-size: 1.4rem;"></i>
                     </div>
                     <span style="font-size: 1.7rem; font-weight: 700; color: #fff;">FinanGest</span>
                 </div>
                 
-                <h1 style="font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; color: #fff;">¡Bienvenido!</h1>
-                <p style="color: #6b7280; margin-bottom: 40px; font-size: 1.05rem;">Ingresa tus credenciales para acceder al sistema</p>
+                <!-- Selector de Idioma en Login -->
+                <div style="display: flex; gap: 10px; margin-bottom: 30px;">
+                    <button id="authLangEs" onclick="cambiarIdiomaAuth('es')" style="flex: 1; padding: 10px; background: #161b22; border: 2px solid #30363d; border-radius: 8px; color: #9ca3af; font-size: 0.9rem; cursor: pointer; transition: all 0.3s;">
+                        🇪🇸 Español
+                    </button>
+                    <button id="authLangPt" onclick="cambiarIdiomaAuth('pt')" style="flex: 1; padding: 10px; background: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; color: #000; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; font-weight: 600;">
+                        🇧🇷 Português
+                    </button>
+                </div>
+                
+                <h1 id="authTitulo" style="font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; color: #fff;">Bem-vindo!</h1>
+                <p id="authSubtitulo" style="color: #6b7280; margin-bottom: 40px; font-size: 1.05rem;">Digite suas credenciais para acessar o sistema</p>
                 
                 <!-- Login Form -->
                 <div id="loginForm">
                     <div style="margin-bottom: 24px;">
-                        <label style="display: block; color: #9ca3af; font-size: 0.9rem; margin-bottom: 10px; font-weight: 500;">Email o Usuario</label>
-                        <input type="email" id="loginEmail" placeholder="tu@email.com" autocomplete="off"
+                        <label id="labelEmail" style="display: block; color: #9ca3af; font-size: 0.9rem; margin-bottom: 10px; font-weight: 500;">Email ou Usuário</label>
+                        <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="off"
                             style="width: 100%; padding: 16px 20px; background: #161b22; border: 2px solid #30363d; border-radius: 12px; color: #fff; font-size: 1rem; transition: all 0.3s; outline: none; box-sizing: border-box;"
                             onfocus="this.style.borderColor='#00d4ff'; this.style.boxShadow='0 0 0 4px rgba(0,212,255,0.15)'"
                             onblur="this.style.borderColor='#30363d'; this.style.boxShadow='none'">
                     </div>
                     <div style="margin-bottom: 32px;">
-                        <label style="display: block; color: #9ca3af; font-size: 0.9rem; margin-bottom: 10px; font-weight: 500;">Contraseña</label>
+                        <label id="labelSenha" style="display: block; color: #9ca3af; font-size: 0.9rem; margin-bottom: 10px; font-weight: 500;">Senha</label>
                         <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="new-password"
                             style="width: 100%; padding: 16px 20px; background: #161b22; border: 2px solid #30363d; border-radius: 12px; color: #fff; font-size: 1rem; transition: all 0.3s; outline: none; box-sizing: border-box;"
                             onfocus="this.style.borderColor='#00d4ff'; this.style.boxShadow='0 0 0 4px rgba(0,212,255,0.15)'"
                             onblur="this.style.borderColor='#30363d'; this.style.boxShadow='none'">
                     </div>
-                    <button onclick="handleLogin()" 
+                    <button id="btnLogin" onclick="handleLogin()" 
                         style="width: 100%; padding: 16px; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border: none; border-radius: 12px; color: #000; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,212,255,0.35);"
                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(0,212,255,0.45)'"
                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,212,255,0.35)'">
-                        Iniciar Sesión
+                        Entrar
                     </button>
                     <div style="text-align: center; margin-top: 28px; display: flex; justify-content: center; gap: 20px;">
-                        <a href="#" onclick="showForgotPassword(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.9rem;">
-                            ¿Olvidaste tu contraseña?
+                        <a id="linkOlvidoSenha" href="#" onclick="showForgotPassword(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.9rem;">
+                            Esqueceu sua senha?
                         </a>
                         <span style="color: #4b5563;">|</span>
-                        <a href="#" onclick="showChangeUsername(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.9rem;">
-                            ¿Deseas cambiar tu usuario?
+                        <a id="linkCambiarUsuario" href="#" onclick="showChangeUsername(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.9rem;">
+                            Deseja mudar seu usuário?
                         </a>
                     </div>
                     <div style="text-align: center; margin-top: 16px;">
-                        <span style="color: #6b7280; font-size: 0.95rem;">¿No tienes cuenta? </span>
-                        <a href="#" onclick="showAuthTab('register'); return false;" style="color: #00d4ff; text-decoration: none; font-weight: 600;">Regístrate</a>
+                        <span id="spanNoCuenta" style="color: #6b7280; font-size: 0.95rem;">Não tem conta? </span>
+                        <a id="linkRegistrarse" href="#" onclick="showAuthTab('register'); return false;" style="color: #00d4ff; text-decoration: none; font-weight: 600;">Cadastre-se</a>
                     </div>
                 </div>
                 
                 <!-- Renewal Payment Form (for expired subscriptions) -->
                 <div id="renewalPaymentForm" style="display: none;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: #ff6b6b;">Suscripción Vencida</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 25px;">Renueva tu suscripción para continuar</p>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: #ff6b6b;">Assinatura Vencida</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 25px;">Renove sua assinatura para continuar</p>
                     <div style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plan Mensual</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plano Mensal</p>
                         <h2 style="color: var(--accent-green); font-size: 2.5rem; margin: 0;">R$ 79,50</h2>
                     </div>
                     <div id="renewalPixContainer" style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
@@ -411,7 +421,7 @@
                     </button>
                     <div class="text-center mt-3">
                         <a href="#" onclick="volverAlLogin()" style="color: var(--text-secondary); text-decoration: none;">
-                            <i class="fas fa-arrow-left me-1"></i>Volver al Login
+                            <i class="fas fa-arrow-left me-1"></i>Voltar ao Login
                         </a>
                     </div>
                 </div>
@@ -419,38 +429,38 @@
                 <!-- Forgot Password Form -->
                 <div id="forgotPasswordForm" style="display: none;">
                     <div id="forgotStep1">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Recuperar Contraseña</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Ingresa tu email para recibir un código</p>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Recuperar Senha</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Digite seu email para receber um código</p>
                         <div class="mb-4">
                             <label class="form-label text-secondary">Email</label>
-                            <input type="email" class="form-control form-control-dark" id="forgotEmail" placeholder="tu@email.com" style="padding: 14px 16px;">
+                            <input type="email" class="form-control form-control-dark" id="forgotEmail" placeholder="seu@email.com" style="padding: 14px 16px;">
                         </div>
                         <button class="btn btn-primary-custom w-100" onclick="sendResetCode()" id="btnSendResetCode" style="padding: 14px;">
                             Enviar Código
                         </button>
                         <div class="text-center mt-3">
                             <a href="#" onclick="backToLogin()" style="color: var(--text-secondary); text-decoration: none;">
-                                <i class="fas fa-arrow-left me-1"></i>Volver al Login
+                                <i class="fas fa-arrow-left me-1"></i>Voltar ao Login
                             </a>
                         </div>
                     </div>
                     <div id="forgotStep2" style="display: none;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Verifica tu Código</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Enviamos un código a <span id="forgotEmailSent" style="color: var(--accent-cyan);"></span></p>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Verifique seu Código</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Enviamos um código para <span id="forgotEmailSent" style="color: var(--accent-cyan);"></span></p>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Código</label>
                             <input type="text" class="form-control form-control-dark text-center" id="resetCode" placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px; padding: 14px;">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Nueva Contraseña</label>
+                            <label class="form-label text-secondary">Nova Senha</label>
                             <input type="password" class="form-control form-control-dark" id="newPassword" placeholder="Mínimo 6 caracteres" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-4">
-                            <label class="form-label text-secondary">Confirmar Contraseña</label>
-                            <input type="password" class="form-control form-control-dark" id="confirmPassword" placeholder="Repetir contraseña" style="padding: 14px 16px;">
+                            <label class="form-label text-secondary">Confirmar Senha</label>
+                            <input type="password" class="form-control form-control-dark" id="confirmPassword" placeholder="Repetir senha" style="padding: 14px 16px;">
                         </div>
                         <button class="btn btn-success-custom w-100" onclick="resetPassword()" id="btnResetPassword" style="padding: 14px;">
-                            Cambiar Contraseña
+                            Alterar Senha
                         </button>
                     </div>
                 </div>
@@ -458,35 +468,35 @@
                 <!-- Change Username Form -->
                 <div id="changeUsernameForm" style="display: none;">
                     <div id="usernameStep1">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Cambiar Usuario</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Ingresa tu email para verificar tu cuenta</p>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Alterar Usuário</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Digite seu email para verificar sua conta</p>
                         <div class="mb-4">
                             <label class="form-label text-secondary">Email</label>
-                            <input type="email" class="form-control form-control-dark" id="changeUserEmail" placeholder="tu@email.com" style="padding: 14px 16px;">
+                            <input type="email" class="form-control form-control-dark" id="changeUserEmail" placeholder="seu@email.com" style="padding: 14px 16px;">
                         </div>
                         <button class="btn btn-primary-custom w-100" onclick="sendUsernameCode()" id="btnSendUsernameCode" style="padding: 14px;">
                             Enviar Código
                         </button>
                         <div class="text-center mt-3">
                             <a href="#" onclick="backToLogin()" style="color: var(--text-secondary); text-decoration: none;">
-                                <i class="fas fa-arrow-left me-1"></i>Volver al Login
+                                <i class="fas fa-arrow-left me-1"></i>Voltar ao Login
                             </a>
                         </div>
                     </div>
                     <div id="usernameStep2" style="display: none;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Nuevo Usuario</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Código enviado a <span id="usernameEmailSent" style="color: var(--accent-cyan);"></span></p>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Novo Usuário</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Código enviado para <span id="usernameEmailSent" style="color: var(--accent-cyan);"></span></p>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Código de Verificación</label>
+                            <label class="form-label text-secondary">Código de Verificação</label>
                             <input type="text" class="form-control form-control-dark text-center" id="usernameCode" placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px; padding: 14px;">
                         </div>
                         <div class="mb-4">
-                            <label class="form-label text-secondary">Nuevo Nombre de Usuario</label>
-                            <input type="text" class="form-control form-control-dark" id="newUsername" placeholder="nuevo_usuario" style="padding: 14px 16px;">
-                            <small class="text-secondary">Sin espacios, solo letras, números y guiones</small>
+                            <label class="form-label text-secondary">Novo Nome de Usuário</label>
+                            <input type="text" class="form-control form-control-dark" id="newUsername" placeholder="novo_usuario" style="padding: 14px 16px;">
+                            <small class="text-secondary">Sem espaços, apenas letras, números e hífens</small>
                         </div>
                         <button class="btn btn-success-custom w-100" onclick="changeUsername()" id="btnChangeUsername" style="padding: 14px;">
-                            <i class="fas fa-user-edit me-2"></i>Cambiar Usuario
+                            <i class="fas fa-user-edit me-2"></i>Alterar Usuário
                         </button>
                     </div>
                 </div>
@@ -494,29 +504,29 @@
                 <!-- Register Form -->
                 <div id="registerForm" style="display: none;">
                     <div id="registerStep1">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Crear Cuenta</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Completa tus datos para registrarte</p>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Criar Conta</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Complete seus dados para se cadastrar</p>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Nombre Completo</label>
-                            <input type="text" class="form-control form-control-dark" id="regNombre" placeholder="Tu nombre" style="padding: 14px 16px;">
+                            <label class="form-label text-secondary">Nome Completo</label>
+                            <input type="text" class="form-control form-control-dark" id="regNombre" placeholder="Seu nome" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Usuario</label>
+                            <label class="form-label text-secondary">Usuário</label>
                             <input type="text" class="form-control form-control-dark" id="regUsername" placeholder="usuario123" autocomplete="off" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-secondary">Email</label>
-                            <input type="email" class="form-control form-control-dark" id="regEmail" placeholder="tu@gmail.com" style="padding: 14px 16px;">
+                            <input type="email" class="form-control form-control-dark" id="regEmail" placeholder="seu@gmail.com" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-secondary">Contraseña</label>
+                            <label class="form-label text-secondary">Senha</label>
                             <input type="password" class="form-control form-control-dark" id="regPassword" placeholder="Mínimo 6 caracteres" style="padding: 14px 16px;">
                         </div>
                         <div class="mb-4">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="acceptTerms" style="cursor: pointer;">
                                 <label class="form-check-label text-secondary" for="acceptTerms" style="font-size: 0.85rem; cursor: pointer;">
-                                    Acepto los <a href="politicas.html#terminos" target="_blank" style="color: var(--accent-cyan);">Términos</a> y <a href="politicas.html" target="_blank" style="color: var(--accent-cyan);">Privacidad</a>
+                                    Aceito os <a href="politicas.html#terminos" target="_blank" style="color: var(--accent-cyan);">Termos</a> e <a href="politicas.html" target="_blank" style="color: var(--accent-cyan);">Privacidade</a>
                                 </label>
                             </div>
                         </div>
@@ -524,36 +534,36 @@
                             Enviar Código
                         </button>
                         <div class="text-center mt-3">
-                            <span style="color: var(--text-secondary); font-size: 0.9rem;">¿Ya tienes cuenta? </span>
-                            <a href="#" onclick="showAuthTab('login')" style="color: var(--accent-cyan); text-decoration: none;">Ingresar</a>
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;">Já tem conta? </span>
+                            <a href="#" onclick="showAuthTab('login')" style="color: var(--accent-cyan); text-decoration: none;">Entrar</a>
                         </div>
                     </div>
                     <div id="registerStep2" style="display: none;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Verifica tu Email</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Código enviado a <span id="emailSent" style="color: var(--accent-cyan);"></span></p>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Verifique seu Email</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Código enviado para <span id="emailSent" style="color: var(--accent-cyan);"></span></p>
                         <div class="mb-4">
-                            <label class="form-label text-secondary">Código de Verificación</label>
+                            <label class="form-label text-secondary">Código de Verificação</label>
                             <input type="text" class="form-control form-control-dark text-center" id="verificationCode" placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px; padding: 14px;">
                         </div>
                         <button class="btn btn-success-custom w-100" onclick="verifyCode()" style="padding: 14px;">
-                            Verificar y Crear Cuenta
+                            Verificar e Criar Conta
                         </button>
                         <div class="text-center mt-3">
-                            <a href="#" onclick="resendCode()" style="color: var(--text-secondary); text-decoration: none;">¿No recibiste el código? Reenviar</a>
+                            <a href="#" onclick="resendCode()" style="color: var(--text-secondary); text-decoration: none;">Não recebeu o código? Reenviar</a>
                         </div>
                     </div>
                     <!-- Paso 3: Pago PIX -->
                     <div id="registerStep3" style="display: none;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: var(--accent-green);">¡Cuenta Creada!</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Último paso: Activa tu suscripción</p>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: var(--accent-green);">Conta Criada!</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Último passo: Ative sua assinatura</p>
                         <div style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
-                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plan Mensual</p>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plano Mensal</p>
                             <h2 style="color: var(--accent-green); font-size: 2.5rem; margin: 0;">R$ 79,50</h2>
                         </div>
                         <div id="pixQrContainer" style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                             <div id="pixLoading">
                                 <i class="fas fa-spinner fa-spin fa-2x mb-3" style="color: var(--accent-cyan);"></i>
-                                <p class="text-secondary">Generando código PIX...</p>
+                                <p class="text-secondary">Gerando código PIX...</p>
                             </div>
                             <div id="pixQrCode" style="display: none;">
                                 <img id="pixQrImage" src="" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;">
@@ -566,7 +576,7 @@
                             </div>
                         </div>
                         <button class="btn btn-success-custom w-100" onclick="verificarPago()" id="btnVerificarPago" style="padding: 14px;">
-                            Ya pagué - Verificar
+                            Já paguei - Verificar
                         </button>
                     </div>
                 </div>
@@ -590,14 +600,14 @@
                 
                 <!-- Título -->
                 <h1 style="font-size: 4rem; font-weight: 800; color: #fff; margin-bottom: 15px; letter-spacing: -1px;">FinanGest</h1>
-                <p style="font-size: 1.15rem; color: #00d4ff; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 55px; font-weight: 500;">Sistema Financiero</p>
+                <p id="brandingSistema" style="font-size: 1.15rem; color: #00d4ff; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 55px; font-weight: 500;">Sistema Financeiro</p>
                 
                 <!-- Botón Instalar -->
                 <button id="installBtn" onclick="installApp()" 
                     style="padding: 18px 55px; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border: none; border-radius: 50px; color: #000; font-size: 1.15rem; font-weight: 700; cursor: pointer; box-shadow: 0 10px 40px rgba(0,212,255,0.4); transition: all 0.3s; margin-bottom: 60px;"
                     onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 15px 50px rgba(0,212,255,0.5)'"
                     onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 40px rgba(0,212,255,0.4)'">
-                    <i class="fas fa-download" style="margin-right: 12px;"></i>Instalar Aplicación
+                    <i class="fas fa-download" style="margin-right: 12px;"></i>Instalar Aplicativo
                 </button>
                 
                 <!-- Features Card -->
@@ -607,8 +617,8 @@
                             <i class="fas fa-users" style="color: #00d4ff; font-size: 1.2rem;"></i>
                         </div>
                         <div style="text-align: left;">
-                            <p style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Control de Clientes</p>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Gestiona todos tus clientes fácilmente</p>
+                            <p id="brandingControl" style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Controle de Clientes</p>
+                            <p id="brandingControlDesc" style="color: #6b7280; font-size: 0.9rem; margin: 0;">Gerencie todos os seus clientes facilmente</p>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 18px; margin-bottom: 25px;">
@@ -616,8 +626,8 @@
                             <i class="fas fa-money-bill-wave" style="color: #2ecc71; font-size: 1.2rem;"></i>
                         </div>
                         <div style="text-align: left;">
-                            <p style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Seguimiento de Pagos</p>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Cobros automáticos y alertas</p>
+                            <p id="brandingSeguimiento" style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Acompanhamento de Pagamentos</p>
+                            <p id="brandingSeguimientoDesc" style="color: #6b7280; font-size: 0.9rem; margin: 0;">Cobranças automáticas e alertas</p>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 18px;">
@@ -625,8 +635,8 @@
                             <i class="fas fa-chart-bar" style="color: #a855f7; font-size: 1.2rem;"></i>
                         </div>
                         <div style="text-align: left;">
-                            <p style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Reportes en Tiempo Real</p>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Estadísticas y gráficos detallados</p>
+                            <p id="brandingReportes" style="color: #fff; font-weight: 600; margin: 0 0 4px 0; font-size: 1.05rem;">Relatórios em Tempo Real</p>
+                            <p id="brandingReportesDesc" style="color: #6b7280; font-size: 0.9rem; margin: 0;">Estatísticas e gráficos detalhados</p>
                         </div>
                     </div>
                 </div>
@@ -2366,7 +2376,7 @@
         let lastEditKeyStatus = null; // Para detectar cambios en la llave
         
         // Sistema de idiomas
-        let currentLang = localStorage.getItem('finangest_lang') || 'es';
+        let currentLang = localStorage.getItem('finangest_lang') || 'pt';
         const translations = {
             es: {
                 // Navegación
@@ -2814,6 +2824,154 @@
             console.log('Idioma cambiado a:', lang);
         }
         
+        // Función para cambiar idioma en pantalla de Auth (login/registro)
+        function cambiarIdiomaAuth(lang) {
+            currentLang = lang;
+            localStorage.setItem('finangest_lang', lang);
+            
+            // Actualizar botones de idioma en auth
+            const btnEs = document.getElementById('authLangEs');
+            const btnPt = document.getElementById('authLangPt');
+            if (btnEs && btnPt) {
+                if (lang === 'es') {
+                    btnEs.style.background = '#00d4ff';
+                    btnEs.style.borderColor = '#00d4ff';
+                    btnEs.style.color = '#000';
+                    btnEs.style.fontWeight = '600';
+                    btnPt.style.background = '#161b22';
+                    btnPt.style.borderColor = '#30363d';
+                    btnPt.style.color = '#9ca3af';
+                    btnPt.style.fontWeight = 'normal';
+                } else {
+                    btnPt.style.background = '#00d4ff';
+                    btnPt.style.borderColor = '#00d4ff';
+                    btnPt.style.color = '#000';
+                    btnPt.style.fontWeight = '600';
+                    btnEs.style.background = '#161b22';
+                    btnEs.style.borderColor = '#30363d';
+                    btnEs.style.color = '#9ca3af';
+                    btnEs.style.fontWeight = 'normal';
+                }
+            }
+            
+            // Textos de Auth
+            const authTexts = {
+                es: {
+                    titulo: '¡Bienvenido!',
+                    subtitulo: 'Ingresa tus credenciales para acceder al sistema',
+                    labelEmail: 'Email o Usuario',
+                    labelSenha: 'Contraseña',
+                    btnLogin: 'Iniciar Sesión',
+                    olvidoSenha: '¿Olvidaste tu contraseña?',
+                    cambiarUsuario: '¿Deseas cambiar tu usuario?',
+                    noCuenta: '¿No tienes cuenta? ',
+                    registrarse: 'Regístrate',
+                    // Registro
+                    crearCuenta: 'Crear Cuenta',
+                    completaDatos: 'Completa tus datos para registrarte',
+                    nombreCompleto: 'Nombre Completo',
+                    usuario: 'Usuario',
+                    contrasena: 'Contraseña',
+                    aceptoTerminos: 'Acepto los',
+                    terminos: 'Términos',
+                    privacidad: 'Privacidad',
+                    enviarCodigo: 'Enviar Código',
+                    yaTieneCuenta: '¿Ya tienes cuenta? ',
+                    ingresar: 'Ingresar',
+                    // Branding
+                    sistemaFinanciero: 'Sistema Financiero',
+                    instalarApp: 'Instalar Aplicación',
+                    controlClientes: 'Control de Clientes',
+                    gestionaClientes: 'Gestiona todos tus clientes fácilmente',
+                    seguimientoPagos: 'Seguimiento de Pagos',
+                    cobrosAutomaticos: 'Cobros automáticos y alertas',
+                    reportesTiempoReal: 'Reportes en Tiempo Real',
+                    estadisticasGraficos: 'Estadísticas y gráficos detallados',
+                    // Recuperar
+                    recuperarSenha: 'Recuperar Contraseña',
+                    ingresaEmail: 'Ingresa tu email para recibir un código',
+                    volverLogin: 'Volver al Login'
+                },
+                pt: {
+                    titulo: 'Bem-vindo!',
+                    subtitulo: 'Digite suas credenciais para acessar o sistema',
+                    labelEmail: 'Email ou Usuário',
+                    labelSenha: 'Senha',
+                    btnLogin: 'Entrar',
+                    olvidoSenha: 'Esqueceu sua senha?',
+                    cambiarUsuario: 'Deseja mudar seu usuário?',
+                    noCuenta: 'Não tem conta? ',
+                    registrarse: 'Cadastre-se',
+                    // Registro
+                    crearCuenta: 'Criar Conta',
+                    completaDatos: 'Complete seus dados para se cadastrar',
+                    nombreCompleto: 'Nome Completo',
+                    usuario: 'Usuário',
+                    contrasena: 'Senha',
+                    aceptoTerminos: 'Aceito os',
+                    terminos: 'Termos',
+                    privacidad: 'Privacidade',
+                    enviarCodigo: 'Enviar Código',
+                    yaTieneCuenta: 'Já tem conta? ',
+                    ingresar: 'Entrar',
+                    // Branding
+                    sistemaFinanciero: 'Sistema Financeiro',
+                    instalarApp: 'Instalar Aplicativo',
+                    controlClientes: 'Controle de Clientes',
+                    gestionaClientes: 'Gerencie todos os seus clientes facilmente',
+                    seguimientoPagos: 'Acompanhamento de Pagamentos',
+                    cobrosAutomaticos: 'Cobranças automáticas e alertas',
+                    reportesTiempoReal: 'Relatórios em Tempo Real',
+                    estadisticasGraficos: 'Estatísticas e gráficos detalhados',
+                    // Recuperar
+                    recuperarSenha: 'Recuperar Senha',
+                    ingresaEmail: 'Digite seu email para receber um código',
+                    volverLogin: 'Voltar ao Login'
+                }
+            };
+            
+            const txt = authTexts[lang];
+            
+            // Actualizar textos del login
+            const el = (id) => document.getElementById(id);
+            if (el('authTitulo')) el('authTitulo').textContent = txt.titulo;
+            if (el('authSubtitulo')) el('authSubtitulo').textContent = txt.subtitulo;
+            if (el('labelEmail')) el('labelEmail').textContent = txt.labelEmail;
+            if (el('labelSenha')) el('labelSenha').textContent = txt.labelSenha;
+            if (el('btnLogin')) el('btnLogin').textContent = txt.btnLogin;
+            if (el('linkOlvidoSenha')) el('linkOlvidoSenha').textContent = txt.olvidoSenha;
+            if (el('linkCambiarUsuario')) el('linkCambiarUsuario').textContent = txt.cambiarUsuario;
+            if (el('spanNoCuenta')) el('spanNoCuenta').textContent = txt.noCuenta;
+            if (el('linkRegistrarse')) el('linkRegistrarse').textContent = txt.registrarse;
+            
+            // Actualizar textos del branding
+            if (el('brandingSistema')) el('brandingSistema').textContent = txt.sistemaFinanciero;
+            if (el('installBtn')) el('installBtn').innerHTML = '<i class="fas fa-download" style="margin-right: 12px;"></i>' + txt.instalarApp;
+            if (el('brandingControl')) el('brandingControl').textContent = txt.controlClientes;
+            if (el('brandingControlDesc')) el('brandingControlDesc').textContent = txt.gestionaClientes;
+            if (el('brandingSeguimiento')) el('brandingSeguimiento').textContent = txt.seguimientoPagos;
+            if (el('brandingSeguimientoDesc')) el('brandingSeguimientoDesc').textContent = txt.cobrosAutomaticos;
+            if (el('brandingReportes')) el('brandingReportes').textContent = txt.reportesTiempoReal;
+            if (el('brandingReportesDesc')) el('brandingReportesDesc').textContent = txt.estadisticasGraficos;
+            
+            // Actualizar textos del registro
+            if (el('regTitulo')) el('regTitulo').textContent = txt.crearCuenta;
+            if (el('regSubtitulo')) el('regSubtitulo').textContent = txt.completaDatos;
+            if (el('labelNombre')) el('labelNombre').textContent = txt.nombreCompleto;
+            if (el('labelUsuario')) el('labelUsuario').textContent = txt.usuario;
+            if (el('labelRegSenha')) el('labelRegSenha').textContent = txt.contrasena;
+            if (el('spanYaCuenta')) el('spanYaCuenta').textContent = txt.yaTieneCuenta;
+            if (el('linkIngresar')) el('linkIngresar').textContent = txt.ingresar;
+            
+            console.log('Idioma Auth cambiado a:', lang);
+        }
+        
+        // Inicializar idioma en Auth al cargar
+        function initIdiomaAuth() {
+            const lang = localStorage.getItem('finangest_lang') || 'pt';
+            cambiarIdiomaAuth(lang);
+        }
+        
         // Inicializar idioma al cargar
         function initIdioma() {
             const lang = localStorage.getItem('finangest_lang') || 'es';
@@ -2859,9 +3017,9 @@
                     // Detectar cambio de estado de la llave
                     if (lastEditKeyStatus !== null && lastEditKeyStatus !== myUser.editKeyEnabled) {
                         if (myUser.editKeyEnabled) {
-                            alert('🔑 ¡El administrador ha ACTIVADO tu llave de edición!\n\nAhora puedes editar préstamos e información de clientes.');
+                            alert('🔑 O administrador ATIVOU sua chave de edição!\n\nAgora você pode editar empréstimos e informações de clientes.');
                         } else {
-                            alert('🔒 El administrador ha DESACTIVADO tu llave de edición.\n\nYa no puedes editar préstamos ni información de clientes.');
+                            alert('🔒 O administrador DESATIVOU sua chave de edição.\n\nVocê não pode mais editar empréstimos nem informações de clientes.');
                         }
                     }
                     lastEditKeyStatus = myUser.editKeyEnabled;
@@ -2921,7 +3079,7 @@
 
         async function sendResetCode() {
             const email = document.getElementById('forgotEmail').value;
-            if (!email) return alert('Ingresa tu email');
+            if (!email) return alert('Digite seu email');
             const btn = document.getElementById('btnSendResetCode');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
@@ -2955,9 +3113,9 @@
             const code = document.getElementById('resetCode').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            if (!code || code.length !== 6) return alert('Ingresa el código de 6 dígitos');
-            if (!newPassword || newPassword.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
-            if (newPassword !== confirmPassword) return alert('Las contraseñas no coinciden');
+            if (!code || code.length !== 6) return alert('Digite o código de 6 dígitos');
+            if (!newPassword || newPassword.length < 6) return alert('A senha deve ter pelo menos 6 caracteres');
+            if (newPassword !== confirmPassword) return alert('As senhas não coincidem');
             const btn = document.getElementById('btnResetPassword');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Cambiando...';
@@ -2969,7 +3127,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('¡Contraseña cambiada exitosamente! Ahora puedes iniciar sesión.');
+                    alert('Senha alterada com sucesso! Agora você pode fazer login.');
                     backToLogin();
                     document.getElementById('forgotEmail').value = '';
                     document.getElementById('resetCode').value = '';
@@ -3028,7 +3186,7 @@
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            if (!email || !password) return alert('Completa todos los campos');
+            if (!email || !password) return alert('Preencha todos os campos');
             try {
                 const deviceInfo = getDeviceInfo();
                 const res = await fetch(API_URL + '/api/login', {
@@ -3041,7 +3199,7 @@
                 const contentType = res.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                     console.error('Respuesta no es JSON:', await res.text());
-                    return alert('Error del servidor. Intenta de nuevo.');
+                    return alert('Erro do servidor. Tente novamente.');
                 }
                 
                 const data = await res.json();
@@ -3249,10 +3407,10 @@
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
             const acceptTerms = document.getElementById('acceptTerms').checked;
-            if (!nombre || !username || !email || !password) return alert('Completa todos los campos');
-            if (username.includes(' ')) return alert('El nombre de usuario no puede tener espacios');
-            if (password.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
-            if (!acceptTerms) return alert('Debes aceptar los Términos de Uso y la Política de Privacidad');
+            if (!nombre || !username || !email || !password) return alert('Preencha todos os campos');
+            if (username.includes(' ')) return alert('O nome de usuário não pode ter espaços');
+            if (password.length < 6) return alert('A senha deve ter pelo menos 6 caracteres');
+            if (!acceptTerms) return alert('Você deve aceitar os Termos de Uso e a Política de Privacidade');
             const btn = document.getElementById('btnSendCode');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
@@ -3283,7 +3441,7 @@
             const password = document.getElementById('regPassword').value;
             const nombre = document.getElementById('regNombre').value;
             const username = document.getElementById('regUsername').value;
-            if (!code || code.length !== 6) return alert('Ingresa el código de 6 dígitos');
+            if (!code || code.length !== 6) return alert('Digite o código de 6 dígitos');
             try {
                 const res = await fetch(API_URL + '/api/verify-code', {
                     method: 'POST',
@@ -3416,13 +3574,13 @@
 
         function copyPixKey(key) {
             navigator.clipboard.writeText(key);
-            alert('¡Chave PIX copiada!');
+            alert('Chave PIX copiada!');
         }
 
         function copyPixCode() {
             const pixCode = document.getElementById('pixCopyPaste').value;
             navigator.clipboard.writeText(pixCode);
-            alert('¡Código PIX copiado!');
+            alert('Código PIX copiado!');
         }
 
         let verificacionInterval = null;
@@ -3463,7 +3621,7 @@
             
             // Si es PIX manual, no hay verificación automática
             if (!pendingPaymentId) {
-                alert('Para PIX manual, envía el comprobante por WhatsApp y espera la activación.');
+                alert('Para PIX manual, envie o comprovante por WhatsApp e aguarde a ativação.');
                 return;
             }
             
@@ -3483,10 +3641,10 @@
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     showMainApp();
                 } else {
-                    alert('Pago aún no detectado. Espera unos segundos después de pagar.');
+                    alert('Pagamento ainda não detectado. Aguarde alguns segundos após pagar.');
                 }
             } catch (e) {
-                alert('Error verificando pago');
+                alert('Erro ao verificar pagamento');
             }
             
             btn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Ya pagué - Verificar';
@@ -3780,7 +3938,7 @@
         
         // Cerrar sesión remota
         async function cerrarSesionRemota(sessionId) {
-            if (!confirm('¿Cerrar esta sesión?\n\nEl dispositivo será desconectado.')) return;
+            if (!confirm('Encerrar esta sessão?\n\nO dispositivo será desconectado.')) return;
             
             try {
                 const res = await fetch(API_URL + '/api/sessions/' + sessionId + '/close', {
@@ -3789,17 +3947,17 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('✅ Sesión cerrada');
+                    alert('✅ Sessão encerrada');
                     cargarSesiones();
                 }
             } catch (e) {
-                alert('Error al cerrar sesión');
+                alert('Erro ao encerrar sessão');
             }
         }
         
         // Cerrar todas las sesiones excepto la actual
         async function cerrarTodasSesiones() {
-            if (!confirm('¿Cerrar todas las demás sesiones?\n\nTodos los otros dispositivos serán desconectados.')) return;
+            if (!confirm('Encerrar todas as outras sessões?\n\nTodos os outros dispositivos serão desconectados.')) return;
             
             const currentSessionId = localStorage.getItem('finangest_session');
             
@@ -3811,7 +3969,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('✅ Todas las demás sesiones han sido cerradas');
+                    alert('✅ Todas as outras sessões foram encerradas');
                     cargarSesiones();
                 }
             } catch (e) {
@@ -3876,13 +4034,13 @@
             const confirmar = document.getElementById('passConfirmar').value;
             
             if (!actual || !nueva || !confirmar) {
-                return alert('Completa todos los campos');
+                return alert('Preencha todos os campos');
             }
             if (nueva.length < 6) {
-                return alert('La nueva contraseña debe tener al menos 6 caracteres');
+                return alert('A nova senha deve ter pelo menos 6 caracteres');
             }
             if (nueva !== confirmar) {
-                return alert('Las contraseñas no coinciden');
+                return alert('As senhas não coincidem');
             }
             
             try {
@@ -3895,7 +4053,7 @@
                 const loginData = await loginRes.json();
                 
                 if (!loginData.success) {
-                    return alert('Contraseña actual incorrecta');
+                    return alert('Senha atual incorreta');
                 }
                 
                 // Cambiar contraseña
@@ -3907,12 +4065,12 @@
                 const data = await res.json();
                 
                 if (data.success) {
-                    alert('✅ Contraseña cambiada exitosamente');
+                    alert('✅ Senha alterada com sucesso');
                     document.getElementById('passActual').value = '';
                     document.getElementById('passNueva').value = '';
                     document.getElementById('passConfirmar').value = '';
                 } else {
-                    alert('Error al cambiar contraseña');
+                    alert('Erro ao alterar senha');
                 }
             } catch (e) {
                 alert('Error de conexión');
@@ -4079,7 +4237,7 @@
             btnConfirm.onclick = async () => {
                 const password = document.getElementById('confirmPassword').value;
                 if (!password) {
-                    alert('Ingresa tu contraseña');
+                    alert('Digite sua senha');
                     return;
                 }
                 
@@ -4096,7 +4254,7 @@
                         bootstrap.Modal.getInstance(modal).hide();
                         callback();
                     } else {
-                        alert('❌ Contraseña incorrecta');
+                        alert('❌ Senha incorreta');
                     }
                 } catch (e) {
                     alert('Error al verificar contraseña');
@@ -7961,6 +8119,9 @@
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar idioma en pantalla de Auth
+            initIdiomaAuth();
+            
             // Si viene con ?logout en la URL, borrar sesión
             if (window.location.search.includes('logout')) {
                 localStorage.removeItem('finangest_user');
