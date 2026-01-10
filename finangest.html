@@ -3990,8 +3990,12 @@
                 return s + pagosMes.reduce((ps, p) => ps + (p.valor || p.monto || 0), 0);
             }, 0);
             
-            // Ganancia = cobros - préstamos del mes
-            const ganancia = cobrosMes - prestamosMes;
+            // Ganancia estimada = Total a pagar - Total prestado (la comisión/interés)
+            const gananciaEstimada = clientesMes.reduce((s, c) => {
+                const totalAPagar = c.totalAPagar || 0;
+                const montoTotal = c.montoTotal || 0;
+                return s + (totalAPagar - montoTotal);
+            }, 0);
             
             const el1 = document.getElementById('mesNuevosClientes');
             const el2 = document.getElementById('mesPrestamos');
@@ -4002,8 +4006,8 @@
             if (el2) el2.textContent = 'R$ ' + prestamosMes.toFixed(2);
             if (el3) el3.textContent = 'R$ ' + cobrosMes.toFixed(2);
             if (el4) {
-                el4.textContent = 'R$ ' + ganancia.toFixed(2);
-                el4.style.color = ganancia >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                el4.textContent = 'R$ ' + gananciaEstimada.toFixed(2);
+                el4.style.color = gananciaEstimada >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
             }
         }
         

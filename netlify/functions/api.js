@@ -374,16 +374,28 @@ exports.handler = async (event, context) => {
         // UPDATE CLIENTE
         if ((path.match(/^\/clientes\/[^/]+$/) || path.match(/^\/clients\/[^/]+$/)) && method === 'PUT') {
             const clientId = path.split('/')[2];
+            if (!clientId) {
+                return respond(200, { success: false, error: 'ID de cliente no proporcionado' });
+            }
+            
+            // Remover _id del body para evitar errores de MongoDB
+            const { _id, ...updateData } = body;
+            
             let result;
             try {
                 const doc = await db.collection('clients').findOne({ _id: new ObjectId(clientId) });
                 if (doc && doc.cliente) {
-                    result = await db.collection('clients').updateOne({ _id: new ObjectId(clientId) }, { $set: { cliente: body } });
+                    result = await db.collection('clients').updateOne({ _id: new ObjectId(clientId) }, { $set: { cliente: updateData } });
                 } else {
-                    result = await db.collection('clients').updateOne({ _id: new ObjectId(clientId) }, { $set: body });
+                    result = await db.collection('clients').updateOne({ _id: new ObjectId(clientId) }, { $set: updateData });
                 }
             } catch (e) {
-                result = await db.collection('clients').updateOne({ id: clientId }, { $set: body });
+                // Intentar con id string
+                try {
+                    result = await db.collection('clients').updateOne({ id: clientId }, { $set: updateData });
+                } catch (e2) {
+                    return respond(200, { success: false, error: 'Error al actualizar: ' + e2.message });
+                }
             }
             return respond(200, { success: result && result.matchedCount > 0 });
         }
