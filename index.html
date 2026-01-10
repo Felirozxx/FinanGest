@@ -2098,6 +2098,10 @@
             loadTheme();
             buildNavMenu();
             loadData();
+            // Mostrar sección inicial según rol
+            if (currentUser.role === 'admin' || currentUser.isAdmin) {
+                showSection('adminUsuarios');
+            }
             // Iniciar heartbeat cada 2 minutos
             sendHeartbeat();
             setInterval(sendHeartbeat, 120000);
