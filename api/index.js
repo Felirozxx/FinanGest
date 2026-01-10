@@ -93,8 +93,25 @@ app.post('/api/login', async (req, res) => {
             return res.json({ success: false, error: 'Contraseña incorrecta' });
         }
         
-        if (!user.paid && user.role !== 'admin') {
-            return res.json({ success: false, needsPayment: true, userId: user._id, nombre: user.nombre, email: user.email });
+        // Verificar suscripción
+        if (user.role !== 'admin') {
+            if (!user.paid) {
+                return res.json({ success: false, needsPayment: true, userId: user._id, nombre: user.nombre, email: user.email });
+            }
+            // Verificar si la suscripción expiró (30 días)
+            if (user.subscriptionExpires && new Date(user.subscriptionExpires) < new Date()) {
+                // Suscripción expirada - marcar como no pagado
+                await users.updateOne({ _id: user._id }, { $set: { paid: false } });
+                return res.json({ 
+                    success: false, 
+                    needsPayment: true, 
+                    expired: true,
+                    userId: user._id, 
+                    nombre: user.nombre, 
+                    email: user.email,
+                    message: 'Tu suscripción ha expirado. Renueva para continuar.'
+                });
+            }
         }
         
         // Si la contraseña estaba sin encriptar, actualizarla
@@ -881,27 +898,44 @@ app.post('/api/verificar-pago', async (req, res) => {
             const mpData = await mpResponse.json();
             
             if (mpData.status === 'approved') {
-                // Pago aprobado - activar usuario
+                // Pago aprobado - activar usuario con fecha de expiración (30 días)
+                const subscriptionExpires = new Date();
+                subscriptionExpires.setDate(subscriptionExpires.getDate() + 30);
+                
                 await database.collection('users').updateOne(
                     { _id: new ObjectId(userId) },
-                    { $set: { paid: true, paidAt: new Date(), paymentId: paymentId } }
+                    { $set: { 
+                        paid: true, 
+                        paidAt: new Date(), 
+                        paymentId: paymentId,
+                        subscriptionExpires: subscriptionExpires,
+                        subscriptionType: 'monthly'
+                    }}
                 );
                 
                 // Eliminar pago pendiente
                 await database.collection('pending_payments').deleteOne({ oderId: parseInt(paymentId) });
                 
-                return res.json({ success: true, paid: true, status: 'approved' });
+                return res.json({ success: true, paid: true, status: 'approved', subscriptionExpires: subscriptionExpires });
             } else {
                 return res.json({ success: true, paid: false, status: mpData.status });
             }
         }
         
-        // Fallback: activar manualmente (para pagos manuales)
+        // Fallback: activar manualmente (para pagos manuales) con fecha de expiración
+        const subscriptionExpires = new Date();
+        subscriptionExpires.setDate(subscriptionExpires.getDate() + 30);
+        
         await database.collection('users').updateOne(
             { _id: new ObjectId(userId) },
-            { $set: { paid: true, paidAt: new Date() } }
+            { $set: { 
+                paid: true, 
+                paidAt: new Date(),
+                subscriptionExpires: subscriptionExpires,
+                subscriptionType: 'monthly'
+            }}
         );
-        res.json({ success: true, paid: true });
+        res.json({ success: true, paid: true, subscriptionExpires: subscriptionExpires });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -931,10 +965,19 @@ app.post('/api/mp-webhook', async (req, res) => {
                 const pendingPayment = await database.collection('pending_payments').findOne({ oderId: paymentId });
                 
                 if (pendingPayment) {
-                    // Activar el usuario
+                    // Activar el usuario con fecha de expiración (30 días)
+                    const subscriptionExpires = new Date();
+                    subscriptionExpires.setDate(subscriptionExpires.getDate() + 30);
+                    
                     await database.collection('users').updateOne(
                         { _id: new ObjectId(pendingPayment.userId) },
-                        { $set: { paid: true, paidAt: new Date(), paymentId: paymentId } }
+                        { $set: { 
+                            paid: true, 
+                            paidAt: new Date(), 
+                            paymentId: paymentId,
+                            subscriptionExpires: subscriptionExpires,
+                            subscriptionType: 'monthly'
+                        }}
                     );
                     
                     // Eliminar pago pendiente
