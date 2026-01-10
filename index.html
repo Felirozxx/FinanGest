@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Deploy timestamp: 2026-01-09 22:19:15 -->
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -2093,7 +2092,6 @@
             loadTheme();
             buildNavMenu();
             if (isAdmin) {
-                console.log('ADMIN DETECTED v2');
                 showSection('adminUsuarios');
                 renderAdminUsuarios();
             } else {
@@ -2124,6 +2122,11 @@
                     <div class="nav-item" onclick="showSection('adminCalendario')"><i class="fas fa-calendar-alt"></i>Calendario</div>
                     <div class="nav-item" onclick="showSection('adminBackups')"><i class="fas fa-database"></i>Backups</div>
                 `;
+                // Autoclick en Usuarios para admin
+                setTimeout(() => {
+                    const usuariosBtn = menu.querySelector('.nav-item');
+                    if (usuariosBtn) usuariosBtn.click();
+                }, 100);
             } else {
                 menu.innerHTML = `
                     <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-pie"></i>Dashboard</div>
