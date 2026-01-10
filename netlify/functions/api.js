@@ -350,6 +350,17 @@ exports.handler = async (event, context) => {
             return respond(200, { success: true, blocked: newStatus });
         }
 
+        // DEBUG - Ver cliente raw
+        if (path.match(/^\/debug-cliente\/[^/]+$/) && method === 'GET') {
+            const clientId = path.split('/')[2];
+            try {
+                const doc = await db.collection('clients').findOne({ _id: new ObjectId(clientId) });
+                return respond(200, { raw: doc, id: clientId });
+            } catch (e) {
+                return respond(200, { error: e.message });
+            }
+        }
+
         // GET CLIENTES
         if ((path === '/clientes' || path === '/clients') && method === 'GET') {
             const userId = event.queryStringParameters?.userId;
