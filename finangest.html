@@ -5931,7 +5931,7 @@
             if (!confirm('⚠️ ÚLTIMA CONFIRMACIÓN\n\nSe restaurarán TODOS los usuarios, clientes y gastos del sistema.\n\n¿Continuar?')) return;
             
             try {
-                const res = await fetch(API_URL + '/api/admin/restore/' + backupId, { method: 'POST' });
+                const res = await fetch(API_URL + '/api/admin/restore-sistema/' + backupId, { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
                     alert('✅ Backup restaurado correctamente');

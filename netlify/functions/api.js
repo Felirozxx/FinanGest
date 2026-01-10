@@ -668,6 +668,115 @@ exports.handler = async (event, context) => {
             });
         }
 
+        // ============ BACKUPS DEL SISTEMA (ADMIN) ============
+        
+        // GET todos los backups del sistema
+        if (path === '/admin/backups' && method === 'GET') {
+            const backups = await db.collection('system-backups')
+                .find({})
+                .sort({ fecha: -1 })
+                .limit(20)
+                .toArray();
+            return respond(200, backups.map(b => ({
+                id: b._id.toString(),
+                fecha: b.fecha,
+                usuarios: b.usuarios?.length || 0,
+                clientes: b.clientes?.length || 0,
+                gastos: b.gastos?.length || 0,
+                auto: b.auto || false
+            })));
+        }
+        
+        // POST crear backup del sistema (admin)
+        if (path === '/admin/backup' && method === 'POST') {
+            // Obtener todos los datos del sistema
+            const usuariosData = await db.collection('users').find({}).toArray();
+            const clientesData = await db.collection('clientes').find({}).toArray();
+            const gastosData = await db.collection('gastos').find({}).toArray();
+            
+            const backup = {
+                tipo: 'sistema',
+                fecha: new Date().toISOString(),
+                usuarios: usuariosData,
+                clientes: clientesData,
+                gastos: gastosData,
+                auto: body.auto || false
+            };
+            
+            const result = await db.collection('system-backups').insertOne(backup);
+            
+            // Mantener solo los últimos 7 días de backups
+            const hace7Dias = new Date();
+            hace7Dias.setDate(hace7Dias.getDate() - 7);
+            await db.collection('system-backups').deleteMany({
+                fecha: { $lt: hace7Dias.toISOString() }
+            });
+            
+            return respond(200, { 
+                success: true, 
+                archivo: `Backup creado: ${usuariosData.length} usuarios, ${clientesData.length} clientes, ${gastosData.length} gastos`,
+                backupId: result.insertedId.toString() 
+            });
+        }
+        
+        // POST restaurar backup del sistema
+        if (path.match(/^\/admin\/restore-sistema\/(.+)$/) && method === 'POST') {
+            const backupId = path.split('/').pop();
+            
+            let backup;
+            try {
+                backup = await db.collection('system-backups').findOne({ _id: new ObjectId(backupId) });
+            } catch (e) {
+                return respond(400, { success: false, error: 'ID de backup inválido' });
+            }
+            
+            if (!backup) {
+                return respond(404, { success: false, error: 'Backup no encontrado' });
+            }
+            
+            // Restaurar usuarios (excepto el admin principal)
+            if (backup.usuarios && backup.usuarios.length > 0) {
+                // No eliminar todos los usuarios, solo actualizar
+                for (const u of backup.usuarios) {
+                    const { _id, ...userData } = u;
+                    await db.collection('users').updateOne(
+                        { $or: [{ email: u.email }, { username: u.username }] },
+                        { $set: userData },
+                        { upsert: true }
+                    );
+                }
+            }
+            
+            // Restaurar clientes
+            await db.collection('clientes').deleteMany({});
+            if (backup.clientes && backup.clientes.length > 0) {
+                const clientesSinId = backup.clientes.map(c => {
+                    const { _id, ...rest } = c;
+                    return { ...rest, id: c.id || _id?.toString() || crypto.randomUUID() };
+                });
+                await db.collection('clientes').insertMany(clientesSinId);
+            }
+            
+            // Restaurar gastos
+            await db.collection('gastos').deleteMany({});
+            if (backup.gastos && backup.gastos.length > 0) {
+                const gastosSinId = backup.gastos.map(g => {
+                    const { _id, ...rest } = g;
+                    return { ...rest, id: g.id || _id?.toString() || crypto.randomUUID() };
+                });
+                await db.collection('gastos').insertMany(gastosSinId);
+            }
+            
+            return respond(200, { 
+                success: true, 
+                restored: { 
+                    usuarios: backup.usuarios?.length || 0,
+                    clientes: backup.clientes?.length || 0, 
+                    gastos: backup.gastos?.length || 0 
+                } 
+            });
+        }
+
         // Not found
         return respond(404, { error: 'Endpoint no encontrado', path });
 
