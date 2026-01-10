@@ -7744,6 +7744,20 @@
             // Calcular valor por parcela
             if (updates.numeroParcelas > 0) {
                 updates.valorParcela = updates.totalAPagar / updates.numeroParcelas;
+                // Calcular monto pagado basado en parcelas pagas
+                updates.montoPagado = updates.parcelasPagas * updates.valorParcela;
+            } else {
+                updates.valorParcela = 0;
+                updates.montoPagado = 0;
+            }
+            
+            // Calcular estado automáticamente
+            if (updates.parcelasPagas >= updates.numeroParcelas && updates.numeroParcelas > 0) {
+                updates.estado = 'pagado';
+            } else if (updates.parcelasPagas > 0) {
+                updates.estado = 'parcial';
+            } else {
+                updates.estado = 'pendiente';
             }
             
             try {

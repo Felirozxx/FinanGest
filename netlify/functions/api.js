@@ -379,7 +379,7 @@ exports.handler = async (event, context) => {
             }
             
             // Remover _id y id del body para evitar errores de MongoDB
-            const { _id, id, ...updateData } = body;
+            const { _id, id, creadoPor: bodyCreadoPor, ...updateData } = body;
             
             let result;
             try {
@@ -388,25 +388,25 @@ exports.handler = async (event, context) => {
                     return respond(200, { success: false, error: 'Cliente no encontrado' });
                 }
                 
+                // Obtener el creadoPor original del documento
+                let originalCreadoPor = doc.creadoPor || doc.userId || (doc.cliente && doc.cliente.creadoPor);
+                
                 if (doc.cliente) {
-                    // Documento con estructura anidada - preservar campos originales
-                    const mergedData = { ...doc.cliente, ...updateData };
+                    // Documento con estructura anidada
+                    const mergedData = { 
+                        ...doc.cliente, 
+                        ...updateData,
+                        creadoPor: originalCreadoPor // Siempre preservar
+                    };
                     result = await db.collection('clients').updateOne(
                         { _id: new ObjectId(clientId) }, 
-                        { $set: { cliente: mergedData } }
+                        { $set: { cliente: mergedData, creadoPor: originalCreadoPor } }
                     );
                 } else {
-                    // Documento plano - preservar campos originales como creadoPor, fechaCreacion
-                    const fieldsToPreserve = ['creadoPor', 'fechaCreacion', 'createdAt', 'userId'];
-                    const preservedFields = {};
-                    fieldsToPreserve.forEach(field => {
-                        if (doc[field]) preservedFields[field] = doc[field];
-                    });
-                    
-                    const mergedData = { ...preservedFields, ...updateData };
+                    // Documento plano - NUNCA sobrescribir creadoPor
                     result = await db.collection('clients').updateOne(
                         { _id: new ObjectId(clientId) }, 
-                        { $set: mergedData }
+                        { $set: { ...updateData, creadoPor: originalCreadoPor } }
                     );
                 }
             } catch (e) {
@@ -414,13 +414,11 @@ exports.handler = async (event, context) => {
                 try {
                     const doc = await db.collection('clients').findOne({ id: clientId });
                     if (doc) {
-                        const fieldsToPreserve = ['creadoPor', 'fechaCreacion', 'createdAt', 'userId'];
-                        const preservedFields = {};
-                        fieldsToPreserve.forEach(field => {
-                            if (doc[field]) preservedFields[field] = doc[field];
-                        });
-                        const mergedData = { ...preservedFields, ...updateData };
-                        result = await db.collection('clients').updateOne({ id: clientId }, { $set: mergedData });
+                        let originalCreadoPor = doc.creadoPor || doc.userId;
+                        result = await db.collection('clients').updateOne(
+                            { id: clientId }, 
+                            { $set: { ...updateData, creadoPor: originalCreadoPor } }
+                        );
                     }
                 } catch (e2) {
                     return respond(200, { success: false, error: 'Error al actualizar: ' + e2.message });
