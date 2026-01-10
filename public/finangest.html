@@ -4066,12 +4066,13 @@
                 }
                 
                 container.innerHTML = backups.map((b, i) => {
-                    const fecha = new Date(b.fecha).toLocaleString('es-BR');
+                    const fecha = new Date(b.fecha).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    const nombreBackup = b.nombre || `Backup ${fecha}`;
                     return `
                     <div class="d-flex justify-content-between align-items-center py-2 ${i > 0 ? 'border-top' : ''}" style="border-color: var(--border-color) !important;">
                         <div>
-                            <strong><i class="fas fa-file-archive me-2" style="color: var(--accent-yellow);"></i>${b.nombre}</strong>
-                            <br><small class="text-secondary">${fecha} - ${b.clientes} clientes, ${b.gastos} gastos</small>
+                            <strong><i class="fas fa-file-archive me-2" style="color: var(--accent-yellow);"></i>${nombreBackup}</strong>
+                            <br><small class="text-secondary">${fecha} - ${b.clientes || 0} clientes, ${b.gastos || 0} gastos</small>
                         </div>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm" style="background: var(--accent-yellow); color: #000;" onclick="restaurarBackupTrabajador('${b.id}')" title="Restaurar">

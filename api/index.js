@@ -1012,12 +1012,39 @@ app.post('/api/admin/backup-trabajador/:userId', async (req, res) => {
     try {
         const database = await connectDB();
         const userId = req.params.userId;
-        const clients = await database.collection('clients').find({ creadoPor: userId }).toArray();
-        const gastos = await database.collection('gastos').find({ creadoPor: userId }).toArray();
+        
+        // Obtener nombre del usuario
+        let userName = 'Trabajador';
+        try {
+            const user = await database.collection('users').findOne({ _id: new ObjectId(userId) });
+            if (user) userName = user.nombre || user.username || 'Trabajador';
+        } catch (e) {
+            const user = await database.collection('users').findOne({ id: userId });
+            if (user) userName = user.nombre || user.username || 'Trabajador';
+        }
+        
+        // Buscar clientes por múltiples campos
+        const clients = await database.collection('clients').find({ 
+            $or: [
+                { creadoPor: userId },
+                { creadoPor: userId.toString() },
+                { userId: userId }
+            ]
+        }).toArray();
+        const gastos = await database.collection('gastos').find({ 
+            $or: [
+                { creadoPor: userId },
+                { creadoPor: userId.toString() },
+                { userId: userId }
+            ]
+        }).toArray();
+        
+        const fechaStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
         
         const backup = {
             id: Date.now().toString(),
             fecha: new Date(),
+            nombre: `Backup ${userName} - ${fechaStr}`,
             userId: userId,
             clientes: clients.length,
             gastos: gastos.length,
