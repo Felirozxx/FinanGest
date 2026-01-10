@@ -7575,6 +7575,12 @@
                                     <input type="number" class="form-control form-control-dark" id="adminEditParcelasPagas" value="${cliente.parcelasPagas || 0}">
                                 </div>
                                 <div class="col-md-4 mb-3">
+                                    <label class="form-label">�  Dinero Cobrado (R$)</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditMontoCobrado" value="${cliente.montoPagado || 0}" step="0.01">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label">🛡️ Microseguro (R$)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditMicroseguro" value="${cliente.microseguro || 0}" step="0.01">
                                 </div>
@@ -7739,6 +7745,7 @@
                 parcelasPagas: parseInt(document.getElementById('adminEditParcelasPagas').value) || 0,
                 numeroParcelas: parseInt(document.getElementById('adminEditTotalParcelas').value) || 0,
                 microseguro: parseFloat(document.getElementById('adminEditMicroseguro').value) || 0,
+                montoPagado: parseFloat(document.getElementById('adminEditMontoCobrado').value) || 0,
                 tipoNegocio: document.getElementById('adminEditTipoNegocio').value,
                 ubicacion: document.getElementById('adminEditUbicacion').value,
                 notas: document.getElementById('adminEditNotas').value,
@@ -7750,17 +7757,15 @@
             // Calcular valor por parcela
             if (updates.numeroParcelas > 0) {
                 updates.valorParcela = updates.totalAPagar / updates.numeroParcelas;
-                // Calcular monto pagado basado en parcelas pagas
-                updates.montoPagado = updates.parcelasPagas * updates.valorParcela;
             } else {
                 updates.valorParcela = 0;
-                updates.montoPagado = 0;
             }
             
             // Calcular estado automáticamente
-            if (updates.parcelasPagas >= updates.numeroParcelas && updates.numeroParcelas > 0) {
+            if (updates.montoPagado >= updates.totalAPagar && updates.totalAPagar > 0) {
                 updates.estado = 'pagado';
-            } else if (updates.parcelasPagas > 0) {
+                updates.parcelasPagas = updates.numeroParcelas;
+            } else if (updates.montoPagado > 0) {
                 updates.estado = 'parcial';
             } else {
                 updates.estado = 'pendiente';
