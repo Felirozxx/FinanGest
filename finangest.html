@@ -4105,9 +4105,15 @@
                 case 'all': // Todo (desde el primer cliente)
                     fechaInicio = new Date(2020, 0, 1); // Desde 2020
                     if (clientes && clientes.length > 0) {
-                        const fechas = clientes.map(c => new Date(c.fechaCreacion || c.fechaInicio || c.fechaRegistro)).filter(f => !isNaN(f));
+                        const fechas = clientes.map(c => new Date(c.fechaCreacion || c.fechaInicio || c.fechaRegistro)).filter(f => !isNaN(f.getTime()));
                         if (fechas.length > 0) {
-                            fechaInicio = new Date(Math.min(...fechas));
+                            fechaInicio = new Date(Math.min(...fechas.map(f => f.getTime())));
+                            // Asegurar que haya al menos 7 días de rango
+                            const diffDias = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24));
+                            if (diffDias < 7) {
+                                fechaInicio = new Date(hoy);
+                                fechaInicio.setDate(fechaInicio.getDate() - 7);
+                            }
                         }
                     }
                     break;
