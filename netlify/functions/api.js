@@ -209,23 +209,32 @@ exports.handler = async (event, context) => {
             return respond(200, { success: true, message: 'Código enviado', devCode: !EMAIL_PASS ? code : undefined });
         }
 
-        // VERIFY CODE
+        // VERIFY CODE - Solo guarda como pendiente, no crea cuenta
         if (path === '/verify-code' && method === 'POST') {
             const { email, code, password, username } = body;
-            const users = db.collection('users');
             const codes = db.collection('verification_codes');
+            const pendingUsers = db.collection('pending_users');
             
             const stored = await codes.findOne({ email });
             if (!stored || new Date(stored.expires) < new Date()) return respond(200, { success: false, error: 'Código expirado' });
             if (stored.code !== code) return respond(200, { success: false, error: 'Código incorrecto' });
             
-            const result = await users.insertOne({
-                nombre: stored.nombre, username: username || stored.username, email,
-                password: hashPassword(password), role: 'client', paid: false, createdAt: new Date()
-            });
+            // Guardar como usuario pendiente (no crear cuenta aún)
+            await pendingUsers.updateOne(
+                { email },
+                { $set: {
+                    nombre: stored.nombre, 
+                    username: username || stored.username, 
+                    email,
+                    password: hashPassword(password), 
+                    createdAt: new Date(),
+                    verified: true
+                }},
+                { upsert: true }
+            );
             
             await codes.deleteOne({ email });
-            return respond(200, { success: true, user: { id: result.insertedId, nombre: stored.nombre, email } });
+            return respond(200, { success: true, pendingPayment: true, user: { nombre: stored.nombre, email, username: username || stored.username } });
         }
 
         // FORGOT PASSWORD
@@ -621,8 +630,44 @@ exports.handler = async (event, context) => {
 
         // VERIFICAR PAGO
         if (path === '/verificar-pago' && method === 'POST') {
-            const { oderId, oderId: paymentId, userId } = body;
+            const { oderId, oderId: paymentId, userId, email } = body;
             const id = oderId || paymentId;
+            
+            // Si es usuario nuevo (sin userId), buscar en pending_users
+            if (!userId && email) {
+                const pendingUsers = db.collection('pending_users');
+                const pendingUser = await pendingUsers.findOne({ email });
+                
+                if (pendingUser) {
+                    // Crear la cuenta ahora que pagó
+                    const users = db.collection('users');
+                    const subscriptionExpires = new Date();
+                    subscriptionExpires.setMonth(subscriptionExpires.getMonth() + 1);
+                    
+                    const result = await users.insertOne({
+                        nombre: pendingUser.nombre,
+                        username: pendingUser.username,
+                        email: pendingUser.email,
+                        password: pendingUser.password,
+                        role: 'client',
+                        paid: true,
+                        subscriptionExpires,
+                        subscriptionType: 'monthly',
+                        lastPayment: new Date(),
+                        createdAt: pendingUser.createdAt
+                    });
+                    
+                    // Eliminar de pendientes
+                    await pendingUsers.deleteOne({ email });
+                    
+                    return respond(200, { 
+                        success: true, 
+                        paid: true, 
+                        accountCreated: true,
+                        user: { id: result.insertedId, nombre: pendingUser.nombre, email: pendingUser.email }
+                    });
+                }
+            }
             
             if (!MP_ACCESS_TOKEN || !id) {
                 return respond(200, { success: false, error: 'No se puede verificar' });
@@ -647,6 +692,44 @@ exports.handler = async (event, context) => {
             }
             
             return respond(200, { success: true, paid: false, status: mpData.status });
+        }
+
+        // CONFIRMAR PAGO MANUAL (para usuarios nuevos)
+        if (path === '/confirmar-pago-manual' && method === 'POST') {
+            const { email } = body;
+            
+            const pendingUsers = db.collection('pending_users');
+            const users = db.collection('users');
+            const pendingUser = await pendingUsers.findOne({ email });
+            
+            if (!pendingUser) {
+                return respond(200, { success: false, error: 'Usuario pendiente no encontrado' });
+            }
+            
+            // Crear la cuenta
+            const subscriptionExpires = new Date();
+            subscriptionExpires.setMonth(subscriptionExpires.getMonth() + 1);
+            
+            const result = await users.insertOne({
+                nombre: pendingUser.nombre,
+                username: pendingUser.username,
+                email: pendingUser.email,
+                password: pendingUser.password,
+                role: 'client',
+                paid: true,
+                subscriptionExpires,
+                subscriptionType: 'monthly',
+                lastPayment: new Date(),
+                createdAt: pendingUser.createdAt
+            });
+            
+            // Eliminar de pendientes
+            await pendingUsers.deleteOne({ email });
+            
+            return respond(200, { 
+                success: true, 
+                user: { id: result.insertedId, nombre: pendingUser.nombre, email: pendingUser.email }
+            });
         }
 
         // MAKE ADMIN

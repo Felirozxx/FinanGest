@@ -1563,6 +1563,26 @@
                     <div id="pendientesList"><!-- Se llena dinámicamente --></div>
                 </div>
                 
+                <!-- Dar Acceso Gratis -->
+                <div class="card-dark mb-4" style="border-left: 4px solid var(--accent-green);">
+                    <h6 class="mb-3" style="color: var(--accent-green);">
+                        <i class="fas fa-gift me-2"></i>Dar Acceso Gratis
+                    </h6>
+                    <p class="text-secondary mb-3" style="font-size: 0.85rem;">
+                        Activa la cuenta de un usuario pendiente sin necesidad de pago.
+                    </p>
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <input type="email" class="form-control form-control-dark" id="emailAccesoGratis" placeholder="Email del usuario pendiente">
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn w-100" style="background: var(--accent-green); color: #000;" onclick="darAccesoGratis()">
+                                <i class="fas fa-check me-2"></i>Activar Gratis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
                 <div id="usuariosList"><!-- Se llena dinámicamente --></div>
             </div>
             <!-- Admin: Backups Section -->
@@ -3512,13 +3532,13 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    // Guardar usuario temporalmente
-                    pendingUser = data.user;
+                    // Guardar datos del usuario pendiente (cuenta no creada aún)
+                    pendingUser = { ...data.user, email };
                     // Mostrar pantalla de pago
                     document.getElementById('registerStep2').style.display = 'none';
                     document.getElementById('registerStep3').style.display = 'block';
-                    // Generar PIX
-                    generarPagoPix(data.user.id, nombre, email);
+                    // Generar PIX (sin userId porque la cuenta no existe aún)
+                    generarPagoPix(null, nombre, email);
                 } else {
                     alert(data.error || 'Código incorrecto');
                 }
@@ -3698,14 +3718,19 @@
                 const res = await fetch(API_URL + '/api/verificar-pago', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: pendingUser.id, paymentId: pendingPaymentId })
+                    body: JSON.stringify({ email: pendingUser.email, paymentId: pendingPaymentId })
                 });
                 const data = await res.json();
-                if (data.paid || data.status === 'approved') {
+                if (data.paid || data.status === 'approved' || data.accountCreated) {
                     alert('🎉 ¡Pago confirmado! Bienvenido a FinanGest');
-                    currentUser = pendingUser;
-                    localStorage.setItem('finangest_user', JSON.stringify(currentUser));
-                    showMainApp();
+                    if (data.user) {
+                        currentUser = data.user;
+                        localStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                    }
+                    // Redirigir al login para que inicie sesión
+                    document.getElementById('registerStep3').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'block';
+                    alert('Sua conta foi criada! Faça login para continuar.');
                 } else {
                     alert('Pagamento ainda não detectado. Aguarde alguns segundos após pagar.');
                 }
@@ -6886,6 +6911,35 @@
                     renderAdminUsuarios();
                 } else {
                     alert(data.error || 'Error al cambiar estado');
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function darAccesoGratis() {
+            const email = document.getElementById('emailAccesoGratis').value.trim();
+            if (!email) {
+                alert('Ingresa el email del usuario');
+                return;
+            }
+            
+            if (!confirm(`¿Dar acceso GRATIS a ${email}?\n\nSe creará su cuenta sin necesidad de pago.`)) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/confirmar-pago-manual', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('✅ Cuenta activada!\n\nUsuario: ' + data.user.nombre + '\nEmail: ' + data.user.email + '\n\nYa puede iniciar sesión.');
+                    document.getElementById('emailAccesoGratis').value = '';
+                    renderAdminUsuarios();
+                } else {
+                    alert('❌ ' + (data.error || 'Error al activar cuenta'));
                 }
             } catch (e) {
                 alert('Error de conexión');
