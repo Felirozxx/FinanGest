@@ -1330,6 +1330,48 @@ app.post('/api/users/:id/toggle-block', async (req, res) => {
     }
 });
 
+// Toggle block/unblock backups for user
+app.post('/api/users/:id/toggle-backup-block', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let user;
+        
+        // Buscar usuario
+        try {
+            user = await database.collection('users').findOne({ _id: new ObjectId(searchId) });
+        } catch (e) {
+            user = await database.collection('users').findOne({ id: searchId });
+        }
+        
+        if (!user) {
+            return res.json({ success: false, error: 'Usuario no encontrado' });
+        }
+        
+        const newBackupBlockedStatus = !user.backupBlocked;
+        
+        try {
+            await database.collection('users').updateOne(
+                { _id: new ObjectId(searchId) },
+                { $set: { backupBlocked: newBackupBlockedStatus } }
+            );
+        } catch (e) {
+            await database.collection('users').updateOne(
+                { id: searchId },
+                { $set: { backupBlocked: newBackupBlockedStatus } }
+            );
+        }
+        
+        res.json({ 
+            success: true, 
+            message: newBackupBlockedStatus ? 'Backups bloqueados' : 'Backups desbloqueados',
+            backupBlocked: newBackupBlockedStatus
+        });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Servir archivos HTML
 app.get('/', (req, res) => {
     const htmlPath = path.join(__dirname, '..', 'index.html');
