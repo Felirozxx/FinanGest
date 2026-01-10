@@ -4024,10 +4024,14 @@
             try {
                 const clientsRes = await fetch(API_URL + '/api/clientes?userId=admin');
                 const allClients = await clientsRes.json();
-                const userClients = allClients.filter(c => c.creadoPor === userId);
+                const userClients = Array.isArray(allClients) ? allClients.filter(c => 
+                    c.creadoPor === userId || 
+                    c.creadoPor?.toString() === userId?.toString()
+                ) : [];
                 
-                const gastosRes = await fetch(API_URL + '/api/gastos/' + userId);
-                const userGastos = await gastosRes.json();
+                const gastosRes = await fetch(API_URL + '/api/gastos?userId=' + userId);
+                const gastosData = await gastosRes.json();
+                const userGastos = Array.isArray(gastosData) ? gastosData : [];
                 
                 const totalPrestado = userClients.reduce((s, c) => s + (parseFloat(c.montoTotal) || 0), 0);
                 const totalGastos = userGastos.reduce((s, g) => s + (parseFloat(g.valor) || 0), 0);
