@@ -1189,6 +1189,103 @@
                     <div id="misBackupsList"><!-- Se llena dinámicamente --></div>
                 </div>
             </div>
+            <!-- Mi Configuración Section (Trabajadores) -->
+            <div id="miConfig" class="section">
+                <h5 class="mb-4"><i class="fas fa-cog me-2" style="color: var(--accent-cyan);"></i>Mi Configuración</h5>
+                
+                <!-- Perfil -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-user-circle me-2" style="color: var(--accent-cyan);"></i>Mi Perfil</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Nombre</label>
+                            <input type="text" class="form-control form-control-dark" id="configNombre" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Email</label>
+                            <input type="email" class="form-control form-control-dark" id="configEmail" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Usuario</label>
+                            <input type="text" class="form-control form-control-dark" id="configUsername" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Suscripción</label>
+                            <input type="text" class="form-control form-control-dark" id="configSuscripcion" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cambiar Contraseña -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-key me-2" style="color: var(--accent-yellow);"></i>Cambiar Contraseña</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Contraseña Actual</label>
+                            <input type="password" class="form-control form-control-dark" id="passActual" placeholder="••••••••">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Nueva Contraseña</label>
+                            <input type="password" class="form-control form-control-dark" id="passNueva" placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Confirmar Nueva</label>
+                            <input type="password" class="form-control form-control-dark" id="passConfirmar" placeholder="Repetir contraseña">
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary-custom" onclick="cambiarMiPassword()">
+                                <i class="fas fa-save me-2"></i>Cambiar Contraseña
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tema -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-palette me-2" style="color: var(--accent-purple);"></i>Apariencia</h6>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-secondary">Tema:</span>
+                        <button class="btn btn-sm" style="background: var(--bg-hover); color: var(--text-primary);" onclick="setTheme('dark')">
+                            <i class="fas fa-moon me-1"></i>Oscuro
+                        </button>
+                        <button class="btn btn-sm" style="background: #f2f4f6; color: #1a1a2e;" onclick="setTheme('light')">
+                            <i class="fas fa-sun me-1"></i>Claro
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Notificaciones -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-bell me-2" style="color: var(--accent-green);"></i>Notificaciones</h6>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="notifCobros" checked onchange="guardarPreferencias()">
+                        <label class="form-check-label text-secondary" for="notifCobros">Recordatorio de cobros del día</label>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="notifVencimientos" checked onchange="guardarPreferencias()">
+                        <label class="form-check-label text-secondary" for="notifVencimientos">Alertas de vencimientos</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="notifSonido" checked onchange="guardarPreferencias()">
+                        <label class="form-check-label text-secondary" for="notifSonido">Sonidos de notificación</label>
+                    </div>
+                </div>
+                
+                <!-- Sesiones Activas -->
+                <div class="card-dark">
+                    <h6 class="mb-3"><i class="fas fa-desktop me-2" style="color: var(--accent-red);"></i>Sesión Actual</h6>
+                    <div class="d-flex justify-content-between align-items-center p-3" style="background: var(--bg-hover); border-radius: 8px;">
+                        <div>
+                            <i class="fas fa-laptop me-2" style="color: var(--accent-green);"></i>
+                            <span>Este dispositivo</span>
+                            <span class="badge badge-active ms-2">Activo</span>
+                        </div>
+                        <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="cerrarSesion()">
+                            <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
             <!-- Mapa Section -->
             <div id="mapa" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1303,6 +1400,258 @@
                 <div class="card-dark">
                     <h6 class="mb-3"><i class="fas fa-history me-2"></i>Backups Disponibles</h6>
                     <div id="backupsList"><!-- Se llena dinámicamente --></div>
+                </div>
+            </div>
+            <!-- Admin: Configuración -->
+            <div id="adminConfig" class="section">
+                <h5 class="mb-4"><i class="fas fa-cog me-2" style="color: var(--accent-cyan);"></i>Configuración del Sistema</h5>
+                
+                <!-- Configuración General -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-sliders-h me-2" style="color: var(--accent-cyan);"></i>Configuración General</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Nombre de la Empresa</label>
+                            <input type="text" class="form-control form-control-dark" id="cfgNombreEmpresa" value="FinanGest" onchange="guardarConfigAdmin()">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Moneda</label>
+                            <select class="form-control form-control-dark" id="cfgMoneda" onchange="guardarConfigAdmin()">
+                                <option value="R$" selected>R$ (Real Brasileño)</option>
+                                <option value="$">$ (Dólar)</option>
+                                <option value="€">€ (Euro)</option>
+                                <option value="COP">COP (Peso Colombiano)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Precio Suscripción Mensual</label>
+                            <input type="number" class="form-control form-control-dark" id="cfgPrecioSuscripcion" value="79.50" step="0.01" onchange="guardarConfigAdmin()">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Días de Prueba Gratis</label>
+                            <input type="number" class="form-control form-control-dark" id="cfgDiasPrueba" value="0" onchange="guardarConfigAdmin()">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Configuración de Backups -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-database me-2" style="color: var(--accent-green);"></i>Backups Automáticos</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Frecuencia</label>
+                            <select class="form-control form-control-dark" id="cfgBackupFreq" onchange="guardarConfigAdmin()">
+                                <option value="1">Cada hora</option>
+                                <option value="6">Cada 6 horas</option>
+                                <option value="12">Cada 12 horas</option>
+                                <option value="24">Diario</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Retención (días)</label>
+                            <input type="number" class="form-control form-control-dark" id="cfgBackupRetencion" value="7" onchange="guardarConfigAdmin()">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Máx. Backups</label>
+                            <input type="number" class="form-control form-control-dark" id="cfgBackupMax" value="50" onchange="guardarConfigAdmin()">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Configuración de Notificaciones -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-bell me-2" style="color: var(--accent-yellow);"></i>Notificaciones por Email</h6>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="cfgEmailNuevoUsuario" checked onchange="guardarConfigAdmin()">
+                        <label class="form-check-label text-secondary" for="cfgEmailNuevoUsuario">Notificar nuevo registro de usuario</label>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="cfgEmailPago" checked onchange="guardarConfigAdmin()">
+                        <label class="form-check-label text-secondary" for="cfgEmailPago">Notificar pagos recibidos</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="cfgEmailBackup" onchange="guardarConfigAdmin()">
+                        <label class="form-check-label text-secondary" for="cfgEmailBackup">Notificar backups completados</label>
+                    </div>
+                </div>
+                
+                <!-- Información del Sistema -->
+                <div class="card-dark">
+                    <h6 class="mb-3"><i class="fas fa-info-circle me-2" style="color: var(--accent-purple);"></i>Información del Sistema</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="p-3" style="background: var(--bg-hover); border-radius: 8px;">
+                                <small class="text-secondary">Versión</small>
+                                <div style="font-size: 1.2rem; font-weight: 600;">v2.5.0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3" style="background: var(--bg-hover); border-radius: 8px;">
+                                <small class="text-secondary">Última Actualización</small>
+                                <div style="font-size: 1.2rem; font-weight: 600;">Enero 2026</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3" style="background: var(--bg-hover); border-radius: 8px;">
+                                <small class="text-secondary">Estado</small>
+                                <div style="font-size: 1.2rem; font-weight: 600; color: var(--accent-green);"><i class="fas fa-check-circle me-1"></i>Operativo</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin: Seguridad -->
+            <div id="adminSeguridad" class="section">
+                <h5 class="mb-4"><i class="fas fa-shield-alt me-2" style="color: var(--accent-red);"></i>Centro de Seguridad</h5>
+                
+                <!-- Estado de Seguridad -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card green">
+                            <div class="stat-value" id="segUsuariosActivos">0</div>
+                            <div class="stat-label"><i class="fas fa-user-check me-1"></i>Usuarios Activos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card red">
+                            <div class="stat-value" id="segUsuariosBloqueados">0</div>
+                            <div class="stat-label"><i class="fas fa-user-lock me-1"></i>Bloqueados</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card yellow">
+                            <div class="stat-value" id="segSesionesHoy">0</div>
+                            <div class="stat-label"><i class="fas fa-sign-in-alt me-1"></i>Sesiones Hoy</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card purple">
+                            <div class="stat-value" id="segIntentosLogin">0</div>
+                            <div class="stat-label"><i class="fas fa-exclamation-triangle me-1"></i>Intentos Fallidos</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Políticas de Seguridad -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-lock me-2" style="color: var(--accent-cyan);"></i>Políticas de Contraseña</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Longitud Mínima</label>
+                            <select class="form-control form-control-dark" id="segPassMinLength" onchange="guardarConfigSeguridad()">
+                                <option value="6" selected>6 caracteres</option>
+                                <option value="8">8 caracteres</option>
+                                <option value="10">10 caracteres</option>
+                                <option value="12">12 caracteres</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Expiración</label>
+                            <select class="form-control form-control-dark" id="segPassExpira" onchange="guardarConfigSeguridad()">
+                                <option value="0" selected>Nunca</option>
+                                <option value="30">30 días</option>
+                                <option value="60">60 días</option>
+                                <option value="90">90 días</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary">Intentos Máximos</label>
+                            <select class="form-control form-control-dark" id="segMaxIntentos" onchange="guardarConfigSeguridad()">
+                                <option value="3">3 intentos</option>
+                                <option value="5" selected>5 intentos</option>
+                                <option value="10">10 intentos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="segRequiereMayuscula" onchange="guardarConfigSeguridad()">
+                            <label class="form-check-label text-secondary" for="segRequiereMayuscula">Requerir mayúscula</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="segRequiereNumero" onchange="guardarConfigSeguridad()">
+                            <label class="form-check-label text-secondary" for="segRequiereNumero">Requerir número</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="segRequiereEspecial" onchange="guardarConfigSeguridad()">
+                            <label class="form-check-label text-secondary" for="segRequiereEspecial">Requerir carácter especial (!@#$%)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Control de Sesiones -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-clock me-2" style="color: var(--accent-yellow);"></i>Control de Sesiones</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Tiempo de Inactividad (minutos)</label>
+                            <select class="form-control form-control-dark" id="segTimeoutSesion" onchange="guardarConfigSeguridad()">
+                                <option value="0">Sin límite</option>
+                                <option value="15">15 minutos</option>
+                                <option value="30" selected>30 minutos</option>
+                                <option value="60">1 hora</option>
+                                <option value="120">2 horas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Sesiones Simultáneas</label>
+                            <select class="form-control form-control-dark" id="segSesionesMax" onchange="guardarConfigSeguridad()">
+                                <option value="1">1 dispositivo</option>
+                                <option value="3" selected>3 dispositivos</option>
+                                <option value="5">5 dispositivos</option>
+                                <option value="0">Sin límite</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Acciones de Seguridad -->
+                <div class="card-dark mb-4">
+                    <h6 class="mb-3"><i class="fas fa-tools me-2" style="color: var(--accent-red);"></i>Acciones de Emergencia</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <button class="btn w-100" style="background: var(--accent-yellow); color: #000;" onclick="cerrarTodasSesiones()">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Todas las Sesiones
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn w-100" style="background: var(--accent-red); color: #fff;" onclick="bloquearTodosUsuarios()">
+                                <i class="fas fa-user-lock me-2"></i>Bloquear Todos los Usuarios
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn w-100" style="background: var(--accent-green); color: #000;" onclick="desbloquearTodosUsuarios()">
+                                <i class="fas fa-user-check me-2"></i>Desbloquear Todos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Registro de Actividad -->
+                <div class="card-dark">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="fas fa-list-alt me-2" style="color: var(--accent-purple);"></i>Registro de Actividad</h6>
+                        <button class="btn btn-sm btn-primary-custom" onclick="cargarLogSeguridad()">
+                            <i class="fas fa-sync-alt me-1"></i>Actualizar
+                        </button>
+                    </div>
+                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-dark-custom table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Fecha/Hora</th>
+                                    <th>Usuario</th>
+                                    <th>Acción</th>
+                                    <th>IP</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logSeguridadTable">
+                                <tr><td colspan="5" class="text-center text-secondary">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <!-- Admin: Calendario de Clientes -->
@@ -2300,6 +2649,8 @@
                     <div class="nav-item active" onclick="showSection('adminUsuarios')"><i class="fas fa-users"></i>Usuarios</div>
                     <div class="nav-item" onclick="showSection('adminCalendario')"><i class="fas fa-calendar-alt"></i>Calendario</div>
                     <div class="nav-item" onclick="showSection('adminBackups')"><i class="fas fa-database"></i>Backups</div>
+                    <div class="nav-item" onclick="showSection('adminConfig')"><i class="fas fa-cog"></i>Configuración</div>
+                    <div class="nav-item" onclick="showSection('adminSeguridad')"><i class="fas fa-shield-alt"></i>Seguridad</div>
                 `;
                 // Autoclick en Usuarios para admin
                 setTimeout(() => {
@@ -2316,6 +2667,7 @@
                     <div class="nav-item" onclick="showSection('mapa')"><i class="fas fa-map-marked-alt"></i>Mapa</div>
                     <div class="nav-item" onclick="showSection('historial')"><i class="fas fa-history"></i>Mi Historial</div>
                     <div class="nav-item" onclick="showSection('misBackups')"><i class="fas fa-database"></i>Backups</div>
+                    <div class="nav-item" onclick="showSection('miConfig')"><i class="fas fa-cog"></i>Configuración</div>
                 `;
                 // Autoclick en Dashboard para trabajadores
                 setTimeout(() => {
@@ -2354,9 +2706,11 @@
             const titles = {
                 dashboard: 'Dashboard', clientes: 'Clientes', estadisticas: 'Mis Estadísticas', cobros: 'Cobros del Día',
                 gastos: 'Gastos Personales', historial: 'Mi Historial', mapa: 'Mapa de Clientes', misBackups: 'Mis Backups',
+                miConfig: 'Mi Configuración',
                 adminUsuarios: 'Usuarios Registrados',
                 adminCalendario: 'Calendario de Clientes', adminHistorial: 'Historial de Trabajador', 
-                adminVerTodo: 'Control Total - Trabajador', adminBackups: 'Backups del Sistema'
+                adminVerTodo: 'Control Total - Trabajador', adminBackups: 'Backups del Sistema',
+                adminConfig: 'Configuración del Sistema', adminSeguridad: 'Centro de Seguridad'
             };
             document.getElementById('pageTitle').textContent = titles[id] || 'Dashboard';
             if (id === 'cobros') {
@@ -2384,6 +2738,13 @@
                 renderEstadisticas();
             }
             if (id === 'adminVerTodo') renderVerTodo();
+            if (id === 'miConfig') cargarMiConfig();
+            if (id === 'adminConfig') cargarConfigAdmin();
+            if (id === 'adminSeguridad') {
+                cargarConfigSeguridad();
+                cargarEstadisticasSeguridad();
+                cargarLogSeguridad();
+            }
         }
 
         function toggleSidebar() {
@@ -2396,6 +2757,298 @@
             clientes = [];
             document.getElementById('authScreen').style.display = 'flex';
             document.getElementById('mainApp').style.display = 'none';
+        }
+        
+        // Alias para cerrar sesión
+        function cerrarSesion() {
+            logout();
+        }
+
+        // ============ CONFIGURACIÓN Y SEGURIDAD ============
+        
+        // Cargar configuración del usuario
+        function cargarMiConfig() {
+            if (!currentUser) return;
+            document.getElementById('configNombre').value = currentUser.nombre || '';
+            document.getElementById('configEmail').value = currentUser.email || '';
+            document.getElementById('configUsername').value = currentUser.username || '';
+            
+            // Calcular días restantes de suscripción
+            const prefs = JSON.parse(localStorage.getItem('finangest_prefs_' + currentUser.id) || '{}');
+            document.getElementById('configSuscripcion').value = currentUser.role === 'admin' ? 'Administrador (Ilimitado)' : 'Plan Mensual Activo';
+            
+            // Cargar preferencias
+            document.getElementById('notifCobros').checked = prefs.notifCobros !== false;
+            document.getElementById('notifVencimientos').checked = prefs.notifVencimientos !== false;
+            document.getElementById('notifSonido').checked = prefs.notifSonido !== false;
+        }
+        
+        // Guardar preferencias del usuario
+        function guardarPreferencias() {
+            if (!currentUser) return;
+            const prefs = {
+                notifCobros: document.getElementById('notifCobros').checked,
+                notifVencimientos: document.getElementById('notifVencimientos').checked,
+                notifSonido: document.getElementById('notifSonido').checked
+            };
+            localStorage.setItem('finangest_prefs_' + currentUser.id, JSON.stringify(prefs));
+        }
+        
+        // Cambiar tema
+        function setTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('finangest_theme', 'light');
+            } else {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('finangest_theme', 'dark');
+            }
+        }
+        
+        // Cambiar contraseña del usuario
+        async function cambiarMiPassword() {
+            const actual = document.getElementById('passActual').value;
+            const nueva = document.getElementById('passNueva').value;
+            const confirmar = document.getElementById('passConfirmar').value;
+            
+            if (!actual || !nueva || !confirmar) {
+                return alert('Completa todos los campos');
+            }
+            if (nueva.length < 6) {
+                return alert('La nueva contraseña debe tener al menos 6 caracteres');
+            }
+            if (nueva !== confirmar) {
+                return alert('Las contraseñas no coinciden');
+            }
+            
+            try {
+                // Verificar contraseña actual
+                const loginRes = await fetch(API_URL + '/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentUser.email, password: actual })
+                });
+                const loginData = await loginRes.json();
+                
+                if (!loginData.success) {
+                    return alert('Contraseña actual incorrecta');
+                }
+                
+                // Cambiar contraseña
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: nueva })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('✅ Contraseña cambiada exitosamente');
+                    document.getElementById('passActual').value = '';
+                    document.getElementById('passNueva').value = '';
+                    document.getElementById('passConfirmar').value = '';
+                } else {
+                    alert('Error al cambiar contraseña');
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+        
+        // ============ ADMIN: CONFIGURACIÓN ============
+        
+        function guardarConfigAdmin() {
+            const config = {
+                nombreEmpresa: document.getElementById('cfgNombreEmpresa')?.value || 'FinanGest',
+                moneda: document.getElementById('cfgMoneda')?.value || 'R$',
+                precioSuscripcion: document.getElementById('cfgPrecioSuscripcion')?.value || 79.50,
+                diasPrueba: document.getElementById('cfgDiasPrueba')?.value || 0,
+                backupFreq: document.getElementById('cfgBackupFreq')?.value || 1,
+                backupRetencion: document.getElementById('cfgBackupRetencion')?.value || 7,
+                backupMax: document.getElementById('cfgBackupMax')?.value || 50,
+                emailNuevoUsuario: document.getElementById('cfgEmailNuevoUsuario')?.checked,
+                emailPago: document.getElementById('cfgEmailPago')?.checked,
+                emailBackup: document.getElementById('cfgEmailBackup')?.checked
+            };
+            localStorage.setItem('finangest_admin_config', JSON.stringify(config));
+        }
+        
+        function cargarConfigAdmin() {
+            const config = JSON.parse(localStorage.getItem('finangest_admin_config') || '{}');
+            if (document.getElementById('cfgNombreEmpresa')) {
+                document.getElementById('cfgNombreEmpresa').value = config.nombreEmpresa || 'FinanGest';
+                document.getElementById('cfgMoneda').value = config.moneda || 'R$';
+                document.getElementById('cfgPrecioSuscripcion').value = config.precioSuscripcion || 79.50;
+                document.getElementById('cfgDiasPrueba').value = config.diasPrueba || 0;
+                document.getElementById('cfgBackupFreq').value = config.backupFreq || 1;
+                document.getElementById('cfgBackupRetencion').value = config.backupRetencion || 7;
+                document.getElementById('cfgBackupMax').value = config.backupMax || 50;
+                document.getElementById('cfgEmailNuevoUsuario').checked = config.emailNuevoUsuario !== false;
+                document.getElementById('cfgEmailPago').checked = config.emailPago !== false;
+                document.getElementById('cfgEmailBackup').checked = config.emailBackup || false;
+            }
+        }
+        
+        // ============ ADMIN: SEGURIDAD ============
+        
+        function guardarConfigSeguridad() {
+            const segConfig = {
+                passMinLength: document.getElementById('segPassMinLength')?.value || 6,
+                passExpira: document.getElementById('segPassExpira')?.value || 0,
+                maxIntentos: document.getElementById('segMaxIntentos')?.value || 5,
+                requiereMayuscula: document.getElementById('segRequiereMayuscula')?.checked,
+                requiereNumero: document.getElementById('segRequiereNumero')?.checked,
+                requiereEspecial: document.getElementById('segRequiereEspecial')?.checked,
+                timeoutSesion: document.getElementById('segTimeoutSesion')?.value || 30,
+                sesionesMax: document.getElementById('segSesionesMax')?.value || 3
+            };
+            localStorage.setItem('finangest_seguridad_config', JSON.stringify(segConfig));
+        }
+        
+        function cargarConfigSeguridad() {
+            const config = JSON.parse(localStorage.getItem('finangest_seguridad_config') || '{}');
+            if (document.getElementById('segPassMinLength')) {
+                document.getElementById('segPassMinLength').value = config.passMinLength || 6;
+                document.getElementById('segPassExpira').value = config.passExpira || 0;
+                document.getElementById('segMaxIntentos').value = config.maxIntentos || 5;
+                document.getElementById('segRequiereMayuscula').checked = config.requiereMayuscula || false;
+                document.getElementById('segRequiereNumero').checked = config.requiereNumero || false;
+                document.getElementById('segRequiereEspecial').checked = config.requiereEspecial || false;
+                document.getElementById('segTimeoutSesion').value = config.timeoutSesion || 30;
+                document.getElementById('segSesionesMax').value = config.sesionesMax || 3;
+            }
+        }
+        
+        async function cargarEstadisticasSeguridad() {
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                
+                const activos = users.filter(u => !u.blocked && u.role !== 'admin').length;
+                const bloqueados = users.filter(u => u.blocked).length;
+                const online = users.filter(u => u.lastSeen && (Date.now() - new Date(u.lastSeen).getTime()) < 300000).length;
+                
+                document.getElementById('segUsuariosActivos').textContent = activos;
+                document.getElementById('segUsuariosBloqueados').textContent = bloqueados;
+                document.getElementById('segSesionesHoy').textContent = online;
+                document.getElementById('segIntentosLogin').textContent = '0';
+            } catch (e) {
+                console.log('Error cargando estadísticas de seguridad');
+            }
+        }
+        
+        function cargarLogSeguridad() {
+            const logs = JSON.parse(localStorage.getItem('finangest_security_log') || '[]');
+            const table = document.getElementById('logSeguridadTable');
+            
+            if (logs.length === 0) {
+                table.innerHTML = '<tr><td colspan="5" class="text-center text-secondary">No hay registros de actividad</td></tr>';
+                return;
+            }
+            
+            table.innerHTML = logs.slice(-20).reverse().map(log => `
+                <tr>
+                    <td>${new Date(log.fecha).toLocaleString()}</td>
+                    <td>${log.usuario || 'Sistema'}</td>
+                    <td>${log.accion}</td>
+                    <td>${log.ip || '-'}</td>
+                    <td><span class="badge ${log.estado === 'success' ? 'badge-active' : 'badge-late'}">${log.estado === 'success' ? 'OK' : 'Error'}</span></td>
+                </tr>
+            `).join('');
+        }
+        
+        function registrarLogSeguridad(accion, estado = 'success') {
+            const logs = JSON.parse(localStorage.getItem('finangest_security_log') || '[]');
+            logs.push({
+                fecha: new Date().toISOString(),
+                usuario: currentUser?.email || 'Sistema',
+                accion: accion,
+                ip: '-',
+                estado: estado
+            });
+            // Mantener solo los últimos 100 registros
+            if (logs.length > 100) logs.shift();
+            localStorage.setItem('finangest_security_log', JSON.stringify(logs));
+        }
+        
+        async function cerrarTodasSesiones() {
+            if (!confirm('⚠️ Esto cerrará la sesión de TODOS los usuarios (excepto tú). ¿Continuar?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                
+                for (const user of users) {
+                    if (user._id !== currentUser.id && user.id !== currentUser.id) {
+                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ forceLogout: true, lastSeen: null })
+                        });
+                    }
+                }
+                
+                registrarLogSeguridad('Cerró todas las sesiones');
+                alert('✅ Todas las sesiones han sido cerradas');
+                cargarEstadisticasSeguridad();
+            } catch (e) {
+                alert('Error al cerrar sesiones');
+            }
+        }
+        
+        async function bloquearTodosUsuarios() {
+            if (!confirm('⚠️ ATENCIÓN: Esto bloqueará a TODOS los usuarios (excepto admin). ¿Estás seguro?')) return;
+            if (!confirm('⚠️ ÚLTIMA CONFIRMACIÓN: Los usuarios no podrán acceder hasta que los desbloquees. ¿Continuar?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                
+                let bloqueados = 0;
+                for (const user of users) {
+                    if (user.role !== 'admin' && !user.isAdmin) {
+                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ blocked: true })
+                        });
+                        bloqueados++;
+                    }
+                }
+                
+                registrarLogSeguridad(`Bloqueó ${bloqueados} usuarios`);
+                alert(`✅ ${bloqueados} usuarios han sido bloqueados`);
+                cargarEstadisticasSeguridad();
+            } catch (e) {
+                alert('Error al bloquear usuarios');
+            }
+        }
+        
+        async function desbloquearTodosUsuarios() {
+            if (!confirm('¿Desbloquear a todos los usuarios?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users');
+                const users = await res.json();
+                
+                let desbloqueados = 0;
+                for (const user of users) {
+                    if (user.blocked) {
+                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ blocked: false })
+                        });
+                        desbloqueados++;
+                    }
+                }
+                
+                registrarLogSeguridad(`Desbloqueó ${desbloqueados} usuarios`);
+                alert(`✅ ${desbloqueados} usuarios han sido desbloqueados`);
+                cargarEstadisticasSeguridad();
+            } catch (e) {
+                alert('Error al desbloquear usuarios');
+            }
         }
 
         // Tema claro/oscuro
