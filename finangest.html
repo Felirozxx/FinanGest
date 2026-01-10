@@ -154,6 +154,24 @@
             border-radius: 4px; transition: width 0.5s;
         }
         .chart-container { position: relative; height: 300px; }
+        .chart-range-btn {
+            padding: 4px 10px !important;
+            font-size: 0.75rem !important;
+            border-color: #3d3d5c !important;
+            color: #8892b0 !important;
+            background: transparent !important;
+        }
+        .chart-range-btn:hover {
+            background: rgba(0,212,255,0.1) !important;
+            border-color: #00d4ff !important;
+            color: #00d4ff !important;
+        }
+        .chart-range-btn.active {
+            background: #00d4ff !important;
+            border-color: #00d4ff !important;
+            color: #000 !important;
+            font-weight: 600 !important;
+        }
         .modal-dark .modal-content {
             background: var(--bg-card); border: 1px solid var(--border-color);
             border-radius: 16px;
@@ -214,8 +232,25 @@
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
-            #brandingSide { display: none !important; }
-            #authScreen { flex-direction: column !important; }
+            #authScreen { flex-direction: column !important; min-height: 100vh; }
+            #authScreen > div:first-child { 
+                flex: none !important; 
+                min-height: auto !important;
+                padding: 30px 25px !important;
+            }
+            #brandingSide { 
+                display: flex !important; 
+                flex: 1 !important;
+                padding: 40px 25px !important;
+                min-height: auto !important;
+            }
+            #brandingSide h1 { font-size: 2.5rem !important; }
+            #brandingSide p { font-size: 0.9rem !important; letter-spacing: 3px !important; margin-bottom: 30px !important; }
+            #brandingSide button { padding: 14px 40px !important; font-size: 1rem !important; margin-bottom: 30px !important; }
+            #brandingSide > div > div:last-child { padding: 25px !important; }
+            #brandingSide > div > div:first-child { margin-bottom: 25px !important; }
+            #brandingSide > div > div:first-child > div { width: 100px !important; height: 100px !important; }
+            #brandingSide > div > div:first-child > div > i { font-size: 3rem !important; }
         }
         /* Animaciones para login */
         @keyframes float {
@@ -333,9 +368,13 @@
                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,212,255,0.35)'">
                         Iniciar Sesión
                     </button>
-                    <div style="text-align: center; margin-top: 28px;">
-                        <a href="#" onclick="showForgotPassword(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.95rem;">
+                    <div style="text-align: center; margin-top: 28px; display: flex; justify-content: center; gap: 20px;">
+                        <a href="#" onclick="showForgotPassword(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.9rem;">
                             ¿Olvidaste tu contraseña?
+                        </a>
+                        <span style="color: #4b5563;">|</span>
+                        <a href="#" onclick="showChangeUsername(); return false;" style="color: #00d4ff; text-decoration: none; font-size: 0.9rem;">
+                            ¿Deseas cambiar tu usuario?
                         </a>
                     </div>
                     <div style="text-align: center; margin-top: 16px;">
@@ -379,6 +418,42 @@
                         </div>
                         <button class="btn btn-success-custom w-100" onclick="resetPassword()" id="btnResetPassword" style="padding: 14px;">
                             Cambiar Contraseña
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Change Username Form -->
+                <div id="changeUsernameForm" style="display: none;">
+                    <div id="usernameStep1">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Cambiar Usuario</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Ingresa tu email para verificar tu cuenta</p>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Email</label>
+                            <input type="email" class="form-control form-control-dark" id="changeUserEmail" placeholder="tu@email.com" style="padding: 14px 16px;">
+                        </div>
+                        <button class="btn btn-primary-custom w-100" onclick="sendUsernameCode()" id="btnSendUsernameCode" style="padding: 14px;">
+                            Enviar Código
+                        </button>
+                        <div class="text-center mt-3">
+                            <a href="#" onclick="backToLogin()" style="color: var(--text-secondary); text-decoration: none;">
+                                <i class="fas fa-arrow-left me-1"></i>Volver al Login
+                            </a>
+                        </div>
+                    </div>
+                    <div id="usernameStep2" style="display: none;">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Nuevo Usuario</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">Código enviado a <span id="usernameEmailSent" style="color: var(--accent-cyan);"></span></p>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary">Código de Verificación</label>
+                            <input type="text" class="form-control form-control-dark text-center" id="usernameCode" placeholder="000000" maxlength="6" style="font-size: 1.5rem; letter-spacing: 8px; padding: 14px;">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Nuevo Nombre de Usuario</label>
+                            <input type="text" class="form-control form-control-dark" id="newUsername" placeholder="nuevo_usuario" style="padding: 14px 16px;">
+                            <small class="text-secondary">Sin espacios, solo letras, números y guiones</small>
+                        </div>
+                        <button class="btn btn-success-custom w-100" onclick="changeUsername()" id="btnChangeUsername" style="padding: 14px;">
+                            <i class="fas fa-user-edit me-2"></i>Cambiar Usuario
                         </button>
                     </div>
                 </div>
@@ -461,13 +536,6 @@
                             Ya pagué - Verificar
                         </button>
                     </div>
-                </div>
-                
-                <!-- Footer -->
-                <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                    <p style="color: var(--text-secondary); font-size: 0.8rem;">
-                        © 2026 FinanGest · <a href="politicas.html" style="color: var(--text-secondary);">Privacidad</a> · <a href="politicas.html#terminos" style="color: var(--text-secondary);">Términos</a>
-                    </p>
                 </div>
             </div>
         </div>
@@ -602,13 +670,21 @@
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <div class="card-dark">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                                 <h5 class="mb-0"><i class="fas fa-chart-area me-2" style="color: var(--accent-cyan);"></i>Resumen</h5>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <input type="date" id="chartFechaInicio" class="form-control form-control-dark" style="width: auto;" onchange="renderChart()">
-                                    <span class="text-secondary">a</span>
-                                    <input type="date" id="chartFechaFin" class="form-control form-control-dark" style="width: auto;" onchange="renderChart()">
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="resetChartDates()" title="Restaurar fechas"><i class="fas fa-undo"></i></button>
+                                <div class="d-flex gap-2 align-items-center flex-wrap">
+                                    <!-- Botones de filtro rápido -->
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-secondary chart-range-btn" onclick="setChartRange('1w')">1s</button>
+                                        <button type="button" class="btn btn-outline-secondary chart-range-btn" onclick="setChartRange('1m')">1m</button>
+                                        <button type="button" class="btn btn-outline-secondary chart-range-btn" onclick="setChartRange('3m')">3m</button>
+                                        <button type="button" class="btn btn-outline-secondary chart-range-btn active" onclick="setChartRange('6m')">6m</button>
+                                        <button type="button" class="btn btn-outline-secondary chart-range-btn" onclick="setChartRange('1y')">1a</button>
+                                        <button type="button" class="btn btn-outline-secondary chart-range-btn" onclick="setChartRange('all')">Todo</button>
+                                    </div>
+                                    <input type="date" id="chartFechaInicio" class="form-control form-control-dark" style="width: 130px; font-size: 0.85rem;" onchange="renderChart()">
+                                    <span class="text-secondary">→</span>
+                                    <input type="date" id="chartFechaFin" class="form-control form-control-dark" style="width: 130px; font-size: 0.85rem;" onchange="renderChart()">
                                 </div>
                             </div>
                             <div class="chart-container"><canvas id="mainChart"></canvas></div>
@@ -1208,53 +1284,6 @@
             <div id="miConfig" class="section">
                 <h5 class="mb-4"><i class="fas fa-cog me-2" style="color: var(--accent-cyan);"></i>Mi Configuración</h5>
                 
-                <!-- Perfil -->
-                <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-user-circle me-2" style="color: var(--accent-cyan);"></i>Mi Perfil</h6>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label text-secondary">Nombre</label>
-                            <input type="text" class="form-control form-control-dark" id="configNombre" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-secondary">Email</label>
-                            <input type="email" class="form-control form-control-dark" id="configEmail" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-secondary">Usuario</label>
-                            <input type="text" class="form-control form-control-dark" id="configUsername" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-secondary">Suscripción</label>
-                            <input type="text" class="form-control form-control-dark" id="configSuscripcion" readonly>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Cambiar Contraseña -->
-                <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-key me-2" style="color: var(--accent-yellow);"></i>Cambiar Contraseña</h6>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label text-secondary">Contraseña Actual</label>
-                            <input type="password" class="form-control form-control-dark" id="passActual" placeholder="••••••••">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-secondary">Nueva Contraseña</label>
-                            <input type="password" class="form-control form-control-dark" id="passNueva" placeholder="Mínimo 6 caracteres">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-secondary">Confirmar Nueva</label>
-                            <input type="password" class="form-control form-control-dark" id="passConfirmar" placeholder="Repetir contraseña">
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-primary-custom" onclick="cambiarMiPassword()">
-                                <i class="fas fa-save me-2"></i>Cambiar Contraseña
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Tema -->
                 <div class="card-dark mb-4">
                     <h6 class="mb-3"><i class="fas fa-palette me-2" style="color: var(--accent-purple);"></i>Apariencia</h6>
@@ -1288,16 +1317,16 @@
                 
                 <!-- Sesiones Activas -->
                 <div class="card-dark">
-                    <h6 class="mb-3"><i class="fas fa-desktop me-2" style="color: var(--accent-red);"></i>Sesión Actual</h6>
-                    <div class="d-flex justify-content-between align-items-center p-3" style="background: var(--bg-hover); border-radius: 8px;">
-                        <div>
-                            <i class="fas fa-laptop me-2" style="color: var(--accent-green);"></i>
-                            <span>Este dispositivo</span>
-                            <span class="badge badge-active ms-2">Activo</span>
-                        </div>
-                        <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="cerrarSesion()">
-                            <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="fas fa-desktop me-2" style="color: var(--accent-red);"></i>Sesiones Activas</h6>
+                        <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="cerrarTodasSesiones()">
+                            <i class="fas fa-sign-out-alt me-1"></i>Cerrar Todas
                         </button>
+                    </div>
+                    <div id="listaSesiones">
+                        <div class="text-center py-3">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando sesiones...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1626,7 +1655,7 @@
                     <h6 class="mb-3"><i class="fas fa-tools me-2" style="color: var(--accent-red);"></i>Acciones de Emergencia</h6>
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <button class="btn w-100" style="background: var(--accent-yellow); color: #000;" onclick="cerrarTodasSesiones()">
+                            <button class="btn w-100" style="background: var(--accent-yellow); color: #000;" onclick="cerrarTodasSesionesAdmin()">
                                 <i class="fas fa-sign-out-alt me-2"></i>Cerrar Todas las Sesiones
                             </button>
                         </div>
@@ -2327,15 +2356,56 @@
             btn.innerHTML = '<i class="fas fa-check me-2"></i>Cambiar Contraseña';
         }
 
+        // Función para detectar información del dispositivo
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            let deviceName = 'Dispositivo';
+            let deviceType = 'desktop';
+            let os = 'Sistema';
+            let browser = 'Navegador';
+            
+            // Detectar OS
+            if (/Windows/i.test(ua)) os = 'Windows';
+            else if (/Mac/i.test(ua)) os = 'macOS';
+            else if (/Linux/i.test(ua)) os = 'Linux';
+            else if (/Android/i.test(ua)) os = 'Android';
+            else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+            
+            // Detectar tipo de dispositivo y nombre
+            if (/iPhone/i.test(ua)) { deviceType = 'mobile'; deviceName = 'iPhone'; }
+            else if (/iPad/i.test(ua)) { deviceType = 'tablet'; deviceName = 'iPad'; }
+            else if (/Motorola|Moto/i.test(ua)) { deviceType = 'mobile'; deviceName = 'Motorola'; }
+            else if (/Samsung/i.test(ua)) { deviceType = 'mobile'; deviceName = 'Samsung'; }
+            else if (/Xiaomi|Redmi|POCO/i.test(ua)) { deviceType = 'mobile'; deviceName = 'Xiaomi'; }
+            else if (/Huawei/i.test(ua)) { deviceType = 'mobile'; deviceName = 'Huawei'; }
+            else if (/OPPO/i.test(ua)) { deviceType = 'mobile'; deviceName = 'OPPO'; }
+            else if (/Vivo/i.test(ua)) { deviceType = 'mobile'; deviceName = 'Vivo'; }
+            else if (/OnePlus/i.test(ua)) { deviceType = 'mobile'; deviceName = 'OnePlus'; }
+            else if (/LG/i.test(ua)) { deviceType = 'mobile'; deviceName = 'LG'; }
+            else if (/Android/i.test(ua)) { deviceType = 'mobile'; deviceName = 'Android'; }
+            else if (/Windows/i.test(ua)) { deviceType = 'desktop'; deviceName = 'Windows PC'; }
+            else if (/Mac/i.test(ua)) { deviceType = 'desktop'; deviceName = 'Mac'; }
+            
+            // Detectar navegador
+            if (/Chrome/i.test(ua) && !/Edge|Edg/i.test(ua)) browser = 'Chrome';
+            else if (/Firefox/i.test(ua)) browser = 'Firefox';
+            else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = 'Safari';
+            else if (/Edge|Edg/i.test(ua)) browser = 'Edge';
+            else if (/Opera|OPR/i.test(ua)) browser = 'Opera';
+            
+            return { deviceName, deviceType, os, browser };
+        }
+
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             if (!email || !password) return alert('Completa todos los campos');
             try {
+                const deviceInfo = getDeviceInfo();
                 const res = await fetch(API_URL + '/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password, deviceInfo })
                 });
                 
                 // Verificar si la respuesta es JSON
@@ -2348,6 +2418,10 @@
                 const data = await res.json();
                 if (data.success) {
                     currentUser = data.user;
+                    // Guardar sessionId
+                    if (data.sessionId) {
+                        localStorage.setItem('finangest_session', data.sessionId);
+                    }
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     
                     // Backup automático
@@ -2760,7 +2834,10 @@
                 renderEstadisticas();
             }
             if (id === 'adminVerTodo') renderVerTodo();
-            if (id === 'miConfig') cargarMiConfig();
+            if (id === 'miConfig') {
+                cargarMiConfig();
+                cargarSesiones();
+            }
             if (id === 'adminConfig') cargarConfigAdmin();
             if (id === 'adminSeguridad') {
                 cargarConfigSeguridad();
@@ -2774,7 +2851,17 @@
         }
 
         function logout() {
+            // Cerrar sesión en el servidor
+            const sessionId = localStorage.getItem('finangest_session');
+            if (sessionId) {
+                fetch(API_URL + '/api/sessions/' + sessionId + '/close', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(() => {});
+            }
+            
             localStorage.removeItem('finangest_user');
+            localStorage.removeItem('finangest_session');
             currentUser = null;
             clientes = [];
             document.getElementById('authScreen').style.display = 'flex';
@@ -2784,6 +2871,149 @@
         // Alias para cerrar sesión
         function cerrarSesion() {
             logout();
+        }
+        
+        // ============ GESTIÓN DE SESIONES ============
+        
+        // Cargar sesiones activas del usuario
+        async function cargarSesiones() {
+            if (!currentUser) return;
+            const container = document.getElementById('listaSesiones');
+            if (!container) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/sessions/' + currentUser.id);
+                const data = await res.json();
+                
+                if (data.success && data.sessions) {
+                    const currentSessionId = localStorage.getItem('finangest_session');
+                    
+                    if (data.sessions.length === 0) {
+                        container.innerHTML = `
+                            <div class="text-center py-3 text-secondary">
+                                <i class="fas fa-info-circle me-2"></i>No hay sesiones activas
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    container.innerHTML = data.sessions.map(s => {
+                        const isCurrentSession = s.sessionId === currentSessionId;
+                        const icon = getDeviceIcon(s.deviceType, s.deviceName);
+                        const timeAgo = getTimeAgo(s.lastActivity);
+                        
+                        return `
+                            <div class="d-flex justify-content-between align-items-center p-3 mb-2" style="background: var(--bg-hover); border-radius: 8px; ${isCurrentSession ? 'border: 1px solid var(--accent-green);' : ''}">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3" style="font-size: 1.5rem; color: ${isCurrentSession ? 'var(--accent-green)' : 'var(--text-secondary)'};">
+                                        ${icon}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">${s.deviceName || 'Dispositivo'}</div>
+                                        <small class="text-secondary">
+                                            ${s.browser || ''} • ${s.os || ''}<br>
+                                            ${isCurrentSession ? '<span class="text-success">Este dispositivo</span>' : timeAgo}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div>
+                                    ${isCurrentSession ? 
+                                        '<span class="badge" style="background: var(--accent-green);">Activo</span>' : 
+                                        `<button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="cerrarSesionRemota('${s.sessionId}')">
+                                            <i class="fas fa-times"></i>
+                                        </button>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-3 text-secondary">
+                            <i class="fas fa-exclamation-circle me-2"></i>Error al cargar sesiones
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                container.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center p-3" style="background: var(--bg-hover); border-radius: 8px;">
+                        <div>
+                            <i class="fas fa-laptop me-2" style="color: var(--accent-green);"></i>
+                            <span>Este dispositivo</span>
+                            <span class="badge" style="background: var(--accent-green);">Activo</span>
+                        </div>
+                        <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="cerrarSesion()">
+                            <i class="fas fa-sign-out-alt me-1"></i>Cerrar
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Obtener icono según tipo de dispositivo
+        function getDeviceIcon(deviceType, deviceName) {
+            if (deviceName && deviceName.toLowerCase().includes('iphone')) return '<i class="fab fa-apple"></i>';
+            if (deviceName && deviceName.toLowerCase().includes('ipad')) return '<i class="fab fa-apple"></i>';
+            if (deviceName && (deviceName.toLowerCase().includes('motorola') || deviceName.toLowerCase().includes('samsung') || deviceName.toLowerCase().includes('xiaomi') || deviceName.toLowerCase().includes('android'))) return '<i class="fab fa-android"></i>';
+            if (deviceType === 'mobile') return '<i class="fas fa-mobile-alt"></i>';
+            if (deviceType === 'tablet') return '<i class="fas fa-tablet-alt"></i>';
+            if (deviceName && deviceName.toLowerCase().includes('mac')) return '<i class="fab fa-apple"></i>';
+            if (deviceName && deviceName.toLowerCase().includes('windows')) return '<i class="fab fa-windows"></i>';
+            return '<i class="fas fa-laptop"></i>';
+        }
+        
+        // Calcular tiempo transcurrido
+        function getTimeAgo(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) return 'Hace un momento';
+            if (diff < 3600) return `Hace ${Math.floor(diff / 60)} min`;
+            if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} horas`;
+            if (diff < 604800) return `Hace ${Math.floor(diff / 86400)} días`;
+            return date.toLocaleDateString();
+        }
+        
+        // Cerrar sesión remota
+        async function cerrarSesionRemota(sessionId) {
+            if (!confirm('¿Cerrar esta sesión?\n\nEl dispositivo será desconectado.')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/sessions/' + sessionId + '/close', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Sesión cerrada');
+                    cargarSesiones();
+                }
+            } catch (e) {
+                alert('Error al cerrar sesión');
+            }
+        }
+        
+        // Cerrar todas las sesiones excepto la actual
+        async function cerrarTodasSesiones() {
+            if (!confirm('¿Cerrar todas las demás sesiones?\n\nTodos los otros dispositivos serán desconectados.')) return;
+            
+            const currentSessionId = localStorage.getItem('finangest_session');
+            
+            try {
+                const res = await fetch(API_URL + '/api/sessions/' + currentUser.id + '/close-all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentSessionId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Todas las demás sesiones han sido cerradas');
+                    cargarSesiones();
+                }
+            } catch (e) {
+                alert('Error al cerrar sesiones');
+            }
         }
 
         // ============ CONFIGURACIÓN Y SEGURIDAD ============
@@ -2993,84 +3223,174 @@
             localStorage.setItem('finangest_security_log', JSON.stringify(logs));
         }
         
-        async function cerrarTodasSesiones() {
-            if (!confirm('⚠️ Esto cerrará la sesión de TODOS los usuarios (excepto tú). ¿Continuar?')) return;
+        // ============ ACCIONES DE EMERGENCIA (ADMIN) ============
+        
+        // Modal para confirmar con contraseña
+        function mostrarModalConfirmacion(titulo, mensaje, callback) {
+            // Crear modal si no existe
+            let modal = document.getElementById('modalConfirmPassword');
+            if (!modal) {
+                const modalHtml = `
+                    <div class="modal fade modal-dark" id="modalConfirmPassword" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmModalTitle"><i class="fas fa-shield-alt me-2"></i>Confirmar Acción</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="confirmModalMessage" class="mb-3"></p>
+                                    <div class="mb-3">
+                                        <label class="form-label">Ingresa tu contraseña para confirmar:</label>
+                                        <input type="password" class="form-control form-control-dark" id="confirmPassword" placeholder="Tu contraseña">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn" style="background: var(--accent-red); color: #fff;" id="btnConfirmAction">
+                                        <i class="fas fa-check me-2"></i>Confirmar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                modal = document.getElementById('modalConfirmPassword');
+            }
             
-            try {
-                const res = await fetch(API_URL + '/api/users');
-                const users = await res.json();
-                
-                for (const user of users) {
-                    if (user._id !== currentUser.id && user.id !== currentUser.id) {
-                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ forceLogout: true, lastSeen: null })
-                        });
-                    }
+            document.getElementById('confirmModalTitle').innerHTML = '<i class="fas fa-shield-alt me-2"></i>' + titulo;
+            document.getElementById('confirmModalMessage').textContent = mensaje;
+            document.getElementById('confirmPassword').value = '';
+            
+            const btnConfirm = document.getElementById('btnConfirmAction');
+            btnConfirm.onclick = async () => {
+                const password = document.getElementById('confirmPassword').value;
+                if (!password) {
+                    alert('Ingresa tu contraseña');
+                    return;
                 }
                 
-                registrarLogSeguridad('Cerró todas las sesiones');
-                alert('✅ Todas las sesiones han sido cerradas');
-                cargarEstadisticasSeguridad();
-            } catch (e) {
-                alert('Error al cerrar sesiones');
-            }
+                // Verificar contraseña
+                try {
+                    const res = await fetch(API_URL + '/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: currentUser.email, password })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(modal).hide();
+                        callback();
+                    } else {
+                        alert('❌ Contraseña incorrecta');
+                    }
+                } catch (e) {
+                    alert('Error al verificar contraseña');
+                }
+            };
+            
+            new bootstrap.Modal(modal).show();
+            document.getElementById('confirmPassword').focus();
+        }
+        
+        async function cerrarTodasSesionesAdmin() {
+            mostrarModalConfirmacion(
+                'Cerrar Todas las Sesiones',
+                '⚠️ Esto cerrará la sesión de TODOS los usuarios (excepto tú). Esta acción no se puede deshacer.',
+                async () => {
+                    try {
+                        const res = await fetch(API_URL + '/api/users');
+                        const users = await res.json();
+                        
+                        for (const user of users) {
+                            if (user._id !== currentUser.id && user.id !== currentUser.id) {
+                                await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ forceLogout: true, lastSeen: null })
+                                });
+                            }
+                        }
+                        
+                        // Cerrar sesiones en la colección sessions
+                        await fetch(API_URL + '/api/sessions/admin/close-all-users', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ exceptUserId: currentUser.id })
+                        }).catch(() => {});
+                        
+                        registrarLogSeguridad('Cerró todas las sesiones de usuarios');
+                        alert('✅ Todas las sesiones han sido cerradas');
+                        cargarEstadisticasSeguridad();
+                    } catch (e) {
+                        alert('Error al cerrar sesiones');
+                    }
+                }
+            );
         }
         
         async function bloquearTodosUsuarios() {
-            if (!confirm('⚠️ ATENCIÓN: Esto bloqueará a TODOS los usuarios (excepto admin). ¿Estás seguro?')) return;
-            if (!confirm('⚠️ ÚLTIMA CONFIRMACIÓN: Los usuarios no podrán acceder hasta que los desbloquees. ¿Continuar?')) return;
-            
-            try {
-                const res = await fetch(API_URL + '/api/users');
-                const users = await res.json();
-                
-                let bloqueados = 0;
-                for (const user of users) {
-                    if (user.role !== 'admin' && !user.isAdmin) {
-                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ blocked: true })
-                        });
-                        bloqueados++;
+            mostrarModalConfirmacion(
+                'Bloquear Todos los Usuarios',
+                '⚠️ ATENCIÓN: Esto bloqueará a TODOS los usuarios (excepto admin). Los usuarios no podrán acceder hasta que los desbloquees.',
+                async () => {
+                    try {
+                        const res = await fetch(API_URL + '/api/users');
+                        const users = await res.json();
+                        
+                        let bloqueados = 0;
+                        for (const user of users) {
+                            if (user.role !== 'admin' && !user.isAdmin) {
+                                await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ blocked: true })
+                                });
+                                bloqueados++;
+                            }
+                        }
+                        
+                        registrarLogSeguridad('Bloqueó ' + bloqueados + ' usuarios');
+                        alert('✅ ' + bloqueados + ' usuarios han sido bloqueados');
+                        cargarEstadisticasSeguridad();
+                    } catch (e) {
+                        alert('Error al bloquear usuarios');
                     }
                 }
-                
-                registrarLogSeguridad(`Bloqueó ${bloqueados} usuarios`);
-                alert(`✅ ${bloqueados} usuarios han sido bloqueados`);
-                cargarEstadisticasSeguridad();
-            } catch (e) {
-                alert('Error al bloquear usuarios');
-            }
+            );
         }
         
         async function desbloquearTodosUsuarios() {
-            if (!confirm('¿Desbloquear a todos los usuarios?')) return;
-            
-            try {
-                const res = await fetch(API_URL + '/api/users');
-                const users = await res.json();
-                
-                let desbloqueados = 0;
-                for (const user of users) {
-                    if (user.blocked) {
-                        await fetch(API_URL + '/api/users/' + (user._id || user.id), {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ blocked: false })
-                        });
-                        desbloqueados++;
+            mostrarModalConfirmacion(
+                'Desbloquear Todos los Usuarios',
+                '¿Desbloquear a todos los usuarios bloqueados?',
+                async () => {
+                    try {
+                        const res = await fetch(API_URL + '/api/users');
+                        const users = await res.json();
+                        
+                        let desbloqueados = 0;
+                        for (const user of users) {
+                            if (user.blocked) {
+                                await fetch(API_URL + '/api/users/' + (user._id || user.id), {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ blocked: false })
+                                });
+                                desbloqueados++;
+                            }
+                        }
+                        
+                        registrarLogSeguridad('Desbloqueó ' + desbloqueados + ' usuarios');
+                        alert('✅ ' + desbloqueados + ' usuarios han sido desbloqueados');
+                        cargarEstadisticasSeguridad();
+                    } catch (e) {
+                        alert('Error al desbloquear usuarios');
                     }
                 }
-                
-                registrarLogSeguridad(`Desbloqueó ${desbloqueados} usuarios`);
-                alert(`✅ ${desbloqueados} usuarios han sido desbloqueados`);
-                cargarEstadisticasSeguridad();
-            } catch (e) {
-                alert('Error al desbloquear usuarios');
-            }
+            );
         }
 
         // Tema claro/oscuro
@@ -3325,6 +3645,47 @@
             renderChart();
         }
         
+        // Función para establecer rango de fechas rápido
+        function setChartRange(range) {
+            const hoy = new Date();
+            let fechaInicio = new Date();
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.chart-range-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(range) {
+                case '1w': // 1 semana
+                    fechaInicio.setDate(hoy.getDate() - 7);
+                    break;
+                case '1m': // 1 mes
+                    fechaInicio.setMonth(hoy.getMonth() - 1);
+                    break;
+                case '3m': // 3 meses
+                    fechaInicio.setMonth(hoy.getMonth() - 3);
+                    break;
+                case '6m': // 6 meses
+                    fechaInicio.setMonth(hoy.getMonth() - 6);
+                    break;
+                case '1y': // 1 año
+                    fechaInicio.setFullYear(hoy.getFullYear() - 1);
+                    break;
+                case 'all': // Todo (desde el primer cliente)
+                    fechaInicio = new Date(2020, 0, 1); // Desde 2020
+                    if (clientes && clientes.length > 0) {
+                        const fechas = clientes.map(c => new Date(c.fechaCreacion || c.fechaInicio || c.fechaRegistro)).filter(f => !isNaN(f));
+                        if (fechas.length > 0) {
+                            fechaInicio = new Date(Math.min(...fechas));
+                        }
+                    }
+                    break;
+            }
+            
+            document.getElementById('chartFechaInicio').value = fechaInicio.toISOString().split('T')[0];
+            document.getElementById('chartFechaFin').value = hoy.toISOString().split('T')[0];
+            renderChart();
+        }
+        
         function renderChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
             if (mainChart) mainChart.destroy();
@@ -3366,14 +3727,25 @@
                     inputInicio.value = getFechaLocal();
                     inputFin.value = getFechaLocal();
                 }
+                
+                // Si es un solo día, expandir el rango para mejor visualización
+                const diffDays = Math.ceil((fechaFin - fechaInicio) / (1000 * 60 * 60 * 24));
+                if (diffDays <= 1) {
+                    // Agregar 2 días antes y 2 días después para contexto
+                    fechaInicio = new Date(fechaInicio);
+                    fechaInicio.setDate(fechaInicio.getDate() - 2);
+                    fechaFin = new Date(fechaFin);
+                    fechaFin.setDate(fechaFin.getDate() + 2);
+                }
             } else {
-                // Por defecto: desde 1 de enero del año actual hasta hoy
+                // Por defecto: últimos 10 días hasta hoy
                 const hoy = new Date();
                 fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
-                fechaInicio = new Date(hoy.getFullYear(), 0, 1, 0, 0, 0); // 1 de enero
+                fechaInicio = new Date(fechaFin);
+                fechaInicio.setDate(fechaInicio.getDate() - 9);
                 
-                inputInicio.value = getFechaLocal();
-                inputFin.value = getFechaLocal();
+                inputInicio.value = fechaInicio.toISOString().split('T')[0];
+                inputFin.value = hoy.toISOString().split('T')[0];
             }
             
             // Variables para acumular totales
@@ -3425,15 +3797,6 @@
                 current.setDate(current.getDate() + 1);
             }
             
-            // Crear gradientes para un look más profesional
-            const gradientCobrado = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientCobrado.addColorStop(0, 'rgba(0,212,255,0.4)');
-            gradientCobrado.addColorStop(1, 'rgba(0,212,255,0.02)');
-            
-            const gradientPrestado = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientPrestado.addColorStop(0, 'rgba(46,204,113,0.4)');
-            gradientPrestado.addColorStop(1, 'rgba(46,204,113,0.02)');
-            
             mainChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -3442,30 +3805,28 @@
                         label: 'Cobrado',
                         data: datosCobrado,
                         borderColor: '#00d4ff',
-                        backgroundColor: gradientCobrado,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#00d4ff',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        cubicInterpolationMode: 'monotone'
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        fill: false,
+                        stepped: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        pointHoverBackgroundColor: '#00d4ff',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
                     }, {
                         label: 'Prestado',
                         data: datosPrestado,
                         borderColor: '#2ecc71',
-                        backgroundColor: gradientPrestado,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#2ecc71',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        cubicInterpolationMode: 'monotone'
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        fill: false,
+                        stepped: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        pointHoverBackgroundColor: '#2ecc71',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
                     }]
                 },
                 options: {
@@ -3477,41 +3838,63 @@
                     },
                     plugins: { 
                         legend: { 
+                            position: 'top',
+                            align: 'center',
                             labels: { 
                                 color: '#8892b0',
                                 usePointStyle: true,
-                                padding: 20
+                                pointStyle: 'circle',
+                                padding: 20,
+                                font: { size: 12 }
                             } 
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(26,26,46,0.9)',
+                            backgroundColor: 'rgba(26,26,46,0.95)',
                             titleColor: '#fff',
                             bodyColor: '#8892b0',
                             borderColor: '#2d2d44',
                             borderWidth: 1,
                             cornerRadius: 8,
-                            padding: 12
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': R$ ' + context.parsed.y.toLocaleString('pt-BR');
+                                }
+                            }
                         }
                     },
                     scales: {
                         x: { 
-                            grid: { color: 'rgba(45,45,68,0.5)', drawBorder: false }, 
-                            ticks: { color: '#8892b0', maxRotation: 45, font: { size: 10 } } 
+                            grid: { 
+                                color: 'rgba(45,45,68,0.3)', 
+                                drawBorder: false,
+                                tickLength: 0
+                            }, 
+                            ticks: { 
+                                color: '#6b7280', 
+                                maxRotation: 0,
+                                font: { size: 10 },
+                                maxTicksLimit: 10
+                            } 
                         },
                         y: { 
-                            grid: { color: 'rgba(45,45,68,0.5)', drawBorder: false }, 
+                            position: 'left',
+                            grid: { 
+                                color: 'rgba(45,45,68,0.3)', 
+                                drawBorder: false 
+                            }, 
                             ticks: { 
-                                color: '#8892b0',
+                                color: '#6b7280',
+                                font: { size: 10 },
                                 callback: function(value) {
+                                    if (value >= 1000) {
+                                        return 'R$ ' + (value/1000).toFixed(0) + 'k';
+                                    }
                                     return 'R$ ' + value.toLocaleString('pt-BR');
                                 }
                             },
                             beginAtZero: true
-                        }
-                    },
-                    elements: {
-                        line: {
-                            capBezierPoints: true
                         }
                     }
                 }
@@ -3640,6 +4023,9 @@
                         ` : ''}
                         <button class="btn btn-sm me-1" style="background: var(--bg-hover); color: var(--text-secondary);" onclick="verDetalles('${c.id}')" title="Ver detalles">
                             <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm me-1" style="background: var(--accent-cyan); color: #000;" onclick="editarClienteTrabajador('${c.id}')" title="Editar cliente">
+                            <i class="fas fa-edit"></i>
                         </button>
                         <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="eliminarCliente('${c.id}')" title="Eliminar cliente">
                             <i class="fas fa-trash"></i>
@@ -5587,6 +5973,67 @@
             const comision = monto * (porcentaje / 100);
             const total = monto + comision;
             
+            // ========== MODO EDICIÓN (trabajador con llave activa) ==========
+            if (window.clienteEditandoId) {
+                const clienteExistente = clientes.find(c => c.id === window.clienteEditandoId);
+                if (!clienteExistente) {
+                    alert('Cliente no encontrado');
+                    window.clienteEditandoId = null;
+                    return;
+                }
+                
+                // Actualizar solo los campos editables (no recalcular pagos ni estado)
+                clienteExistente.nombre = nombre;
+                clienteExistente.telefono = telefono;
+                clienteExistente.ubicacion = ubicacion;
+                clienteExistente.lat = lat ? parseFloat(lat) : clienteExistente.lat;
+                clienteExistente.lng = lng ? parseFloat(lng) : clienteExistente.lng;
+                clienteExistente.tipoCliente = tipoCliente;
+                clienteExistente.tipoNegocio = tipoNegocio;
+                clienteExistente.nombreNegocio = nombreNegocio;
+                clienteExistente.notas = notas;
+                
+                // Solo actualizar montos si cambiaron (recalcular)
+                if (clienteExistente.montoTotal !== monto || clienteExistente.numeroParcelas !== parcelas || clienteExistente.comisionPorcentaje !== porcentaje) {
+                    clienteExistente.montoTotal = monto;
+                    clienteExistente.numeroParcelas = parcelas;
+                    clienteExistente.comisionPorcentaje = porcentaje;
+                    clienteExistente.comisionTotal = comision;
+                    clienteExistente.totalAPagar = total;
+                    clienteExistente.valorParcela = total / parcelas;
+                    // Recalcular parcelas pagas basado en monto pagado
+                    clienteExistente.parcelasPagas = Math.floor((clienteExistente.montoPagado || 0) / clienteExistente.valorParcela);
+                    // Verificar si ya está pagado
+                    if ((clienteExistente.montoPagado || 0) >= total) {
+                        clienteExistente.estado = 'finalizado';
+                        clienteExistente.parcelasPagas = parcelas;
+                    }
+                }
+                
+                try {
+                    const res = await fetch(API_URL + '/api/clientes/' + window.clienteEditandoId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(clienteExistente)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
+                        window.clienteEditandoId = null;
+                        document.getElementById('btnCrearCliente').innerHTML = '<i class="fas fa-plus me-2"></i>Crear Cliente';
+                        updateStats();
+                        renderClientes();
+                        alert('✅ Cliente actualizado correctamente');
+                    } else {
+                        alert('Error al actualizar: ' + (data.error || 'Error desconocido'));
+                    }
+                } catch (e) {
+                    alert('Error al actualizar cliente: ' + e.message);
+                }
+                return;
+            }
+            // ========== FIN MODO EDICIÓN ==========
+            
             // Contar renovaciones previas de este cliente (por teléfono)
             let renovacionesPrevias = 0;
             if (telefono) {
@@ -5733,6 +6180,54 @@
             const c = clientes.find(cl => cl.id === id);
             if (!c) return;
             alert(`${c.nombre}\nTeléfono: ${c.telefono || 'N/A'}\nPrestado: R$ ${c.montoTotal}\nTotal: R$ ${c.totalAPagar}\nPagado: R$ ${c.montoPagado}\nParcelas: ${c.parcelasPagas}/${c.numeroParcelas}`);
+        }
+        
+        // ========== EDITAR CLIENTE (TRABAJADOR) ==========
+        async function editarClienteTrabajador(id) {
+            // Verificar llave de edición para trabajadores
+            if (currentUser && currentUser.role !== 'admin' && !currentUser.isAdmin) {
+                const hasKey = await checkEditKey();
+                if (!hasKey) {
+                    alert('🔒 No tienes permiso para editar.\n\nTu llave de edición está DESACTIVADA.\nContacta al administrador para activarla.');
+                    return;
+                }
+            }
+            
+            const c = clientes.find(cl => cl.id === id);
+            if (!c) return alert('Cliente no encontrado');
+            
+            // Llenar el modal con los datos del cliente (usando campos correctos del modal)
+            document.getElementById('clienteNombre').value = c.nombre || '';
+            document.getElementById('clienteTelefono').value = c.telefono || '';
+            document.getElementById('clienteUbicacion').value = c.ubicacion || '';
+            document.getElementById('clienteLat').value = c.lat || '';
+            document.getElementById('clienteLng').value = c.lng || '';
+            document.getElementById('clienteTipo').value = c.tipoCliente || 'nuevo';
+            document.getElementById('clienteNegocio').value = c.tipoNegocio || '';
+            document.getElementById('clienteNombreNegocio').value = c.nombreNegocio || '';
+            document.getElementById('clienteNotas').value = c.notas || '';
+            document.getElementById('clienteMonto').value = c.montoTotal || '';
+            document.getElementById('clienteParcelas').value = c.numeroParcelas || '';
+            document.getElementById('clienteComision').value = c.comisionPorcentaje || 20;
+            
+            // Mostrar coordenadas si existen
+            if (c.lat && c.lng) {
+                document.getElementById('coordsInfo').style.display = 'block';
+            }
+            
+            // Calcular y mostrar totales
+            calcularTotal();
+            
+            // Guardar ID para actualizar en lugar de crear
+            window.clienteEditandoId = id;
+            document.getElementById('btnCrearCliente').innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
+            
+            // Cambiar título del modal
+            document.querySelector('#clienteModal .modal-title').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Cliente';
+            
+            // Abrir modal
+            const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
+            modal.show();
         }
         
         // ========== ELIMINAR Y RESTABLECER CLIENTES ==========
@@ -6309,7 +6804,10 @@
                 clienteModal.addEventListener('hidden.bs.modal', () => {
                     clienteRestableciendo = null;
                     clienteRenovandoId = null;
-                    document.getElementById('btnCrearCliente').textContent = 'Crear Cliente';
+                    window.clienteEditandoId = null;
+                    document.getElementById('btnCrearCliente').innerHTML = '<i class="fas fa-plus me-2"></i>Crear Cliente';
+                    document.querySelector('#clienteModal .modal-title').innerHTML = '<i class="fas fa-user-plus me-2"></i>Nuevo Cliente';
+                    document.getElementById('coordsInfo').style.display = 'none';
                 });
             }
         });

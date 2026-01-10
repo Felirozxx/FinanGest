@@ -70,11 +70,29 @@ exports.handler = async (event, context) => {
         if (path === '/health' || path === '') {
             return respond(200, { status: 'ok', timestamp: new Date().toISOString() });
         }
+        
+        // CONFIGURACIÓN GLOBAL (GET)
+        if (path === '/config' && method === 'GET') {
+            const config = await db.collection('config').findOne({ type: 'global' });
+            return respond(200, { success: true, config: config || { precioSuscripcion: 79.50, nombreEmpresa: 'FinanGest', moneda: 'BRL' } });
+        }
+        
+        // CONFIGURACIÓN GLOBAL (POST - solo admin)
+        if (path === '/config' && method === 'POST') {
+            const { config } = body;
+            await db.collection('config').updateOne(
+                { type: 'global' },
+                { $set: { ...config, type: 'global', updatedAt: new Date() } },
+                { upsert: true }
+            );
+            return respond(200, { success: true });
+        }
 
         // LOGIN
         if (path === '/login' && method === 'POST') {
-            const { email, password } = body;
+            const { email, password, deviceInfo } = body;
             const users = db.collection('users');
+            const sessions = db.collection('sessions');
             
             let user = await users.findOne({ email });
             if (!user && email === 'Felirozxx') {
@@ -105,10 +123,62 @@ exports.handler = async (event, context) => {
                 await users.updateOne({ _id: user._id }, { $set: { password: hashPassword(password) } });
             }
             
-            return respond(200, { success: true, user: {
+            // Crear sesión con info del dispositivo
+            const sessionId = crypto.randomBytes(32).toString('hex');
+            const sessionData = {
+                sessionId,
+                odId: user._id.toString(),
+                deviceName: deviceInfo?.deviceName || 'Dispositivo desconocido',
+                deviceType: deviceInfo?.deviceType || 'desktop',
+                browser: deviceInfo?.browser || 'Navegador',
+                os: deviceInfo?.os || 'Sistema',
+                ip: event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'IP desconocida',
+                createdAt: new Date(),
+                lastActivity: new Date(),
+                active: true
+            };
+            await sessions.insertOne(sessionData);
+            
+            return respond(200, { success: true, sessionId, user: {
                 id: user._id, nombre: user.nombre, username: user.username,
                 email: user.email, role: user.role || 'client', isAdmin: user.role === 'admin' || user.isAdmin
             }});
+        }
+        
+        // OBTENER SESIONES DEL USUARIO
+        if (path.match(/^\/sessions\/[^/]+$/) && method === 'GET') {
+            const odId = path.split('/')[2];
+            const sessions = db.collection('sessions');
+            const userSessions = await sessions.find({ odId, active: true }).sort({ lastActivity: -1 }).toArray();
+            return respond(200, { success: true, sessions: userSessions });
+        }
+        
+        // CERRAR UNA SESIÓN ESPECÍFICA
+        if (path.match(/^\/sessions\/[^/]+\/close$/) && method === 'POST') {
+            const sessionId = path.split('/')[2];
+            const sessions = db.collection('sessions');
+            await sessions.updateOne({ sessionId }, { $set: { active: false, closedAt: new Date() } });
+            return respond(200, { success: true });
+        }
+        
+        // CERRAR TODAS LAS SESIONES EXCEPTO LA ACTUAL
+        if (path.match(/^\/sessions\/[^/]+\/close-all$/) && method === 'POST') {
+            const odId = path.split('/')[2];
+            const { currentSessionId } = body;
+            const sessions = db.collection('sessions');
+            await sessions.updateMany(
+                { odId, active: true, sessionId: { $ne: currentSessionId } },
+                { $set: { active: false, closedAt: new Date() } }
+            );
+            return respond(200, { success: true });
+        }
+        
+        // ACTUALIZAR ACTIVIDAD DE SESIÓN
+        if (path.match(/^\/sessions\/[^/]+\/activity$/) && method === 'POST') {
+            const sessionId = path.split('/')[2];
+            const sessions = db.collection('sessions');
+            await sessions.updateOne({ sessionId }, { $set: { lastActivity: new Date() } });
+            return respond(200, { success: true });
         }
 
         // SEND CODE (registro)
@@ -413,16 +483,20 @@ exports.handler = async (event, context) => {
         if (path === '/crear-pago-pix' && method === 'POST') {
             const { userId, nombre, email } = body;
             
+            // Obtener precio de la configuración global
+            const config = await db.collection('config').findOne({ type: 'global' });
+            const precio = parseFloat(config?.precioSuscripcion) || 79.50;
+            
             if (!MP_ACCESS_TOKEN) {
                 return respond(200, { 
                     success: true, manual: true,
                     pixKey: 'e6203cd0-c840-4753-ab74-993b722f49b1',
-                    pixName: 'FinanGestPay', amount: 79.50
+                    pixName: 'FinanGestPay', amount: precio
                 });
             }
             
             const paymentData = {
-                transaction_amount: 79.50,
+                transaction_amount: precio,
                 description: `FINANGEST-${email || userId}`,
                 payment_method_id: 'pix',
                 payer: {
@@ -448,10 +522,10 @@ exports.handler = async (event, context) => {
                 const txData = mpData.point_of_interaction.transaction_data;
                 await db.collection('pending_payments').updateOne(
                     { oderId: mpData.id },
-                    { $set: { oderId: mpData.id, oderId: mpData.id, userId, email, amount: 79.50, status: 'pending', createdAt: new Date(), qr_code: txData.qr_code, qr_code_base64: txData.qr_code_base64 } },
+                    { $set: { oderId: mpData.id, oderId: mpData.id, oderId: oderId, oderId: oderId, userId, email, amount: precio, status: 'pending', createdAt: new Date(), qr_code: txData.qr_code, qr_code_base64: txData.qr_code_base64 } },
                     { upsert: true }
                 );
-                return respond(200, { success: true, paymentId: mpData.id, qr_code: txData.qr_code, qr_code_base64: txData.qr_code_base64, copy_paste: txData.qr_code });
+                return respond(200, { success: true, paymentId: mpData.id, qrCode: txData.qr_code, qrCodeBase64: txData.qr_code_base64, amount: precio });
             }
             
             return respond(200, { success: false, error: mpData.message || 'Error al crear pago' });
