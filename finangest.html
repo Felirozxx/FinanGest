@@ -2172,9 +2172,8 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Detectar si estamos en Netlify para usar el backend de Vercel
-        const isNetlify = window.location.hostname.includes('netlify.app');
-        const API_URL = isNetlify ? 'https://finan-gest.vercel.app' : '';
+        // API URL - vacío para usar rutas relativas (funciona en Netlify y local)
+        const API_URL = '';
         let currentUser = null;
         let clientes = [];
         let gastos = [];

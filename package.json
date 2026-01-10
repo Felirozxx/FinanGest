@@ -1,7 +1,7 @@
 {
-  "name": "app-cobranzas",
-  "version": "1.0.0",
-  "description": "Aplicación de cobranzas al 20%",
+  "name": "finangest",
+  "version": "2.5.0",
+  "description": "FinanGest - Sistema de Gestión Financiera",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
