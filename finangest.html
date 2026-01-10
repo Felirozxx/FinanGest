@@ -4022,14 +4022,23 @@
             // Recopilar pagos recientes (de ambos arrays: pagos y historialPagos)
             clientes.forEach(c => {
                 const todosPagos = [...(c.pagos || []), ...(c.historialPagos || [])];
+                let acumulado = 0;
+                const totalAPagar = c.totalAPagar || 0;
+                
                 todosPagos.forEach(p => {
+                    const montoPago = parseFloat(p.valor || p.monto || 0);
+                    acumulado += montoPago;
+                    
+                    // Verificar si este pago saldó la deuda
+                    const esPagoFinal = acumulado >= totalAPagar && (acumulado - montoPago) < totalAPagar;
+                    
                     actividades.push({
-                        tipo: 'pago',
+                        tipo: esPagoFinal ? 'deuda_saldada' : 'pago',
                         cliente: c.nombre,
-                        monto: p.valor || p.monto || 0,
+                        monto: montoPago,
                         fecha: new Date(p.fecha),
-                        icon: 'fa-money-bill-wave',
-                        color: 'var(--accent-green)'
+                        icon: esPagoFinal ? 'fa-check-circle' : 'fa-money-bill-wave',
+                        color: esPagoFinal ? 'var(--accent-purple)' : 'var(--accent-green)'
                     });
                 });
                 // Agregar creación de cliente
@@ -4056,13 +4065,17 @@
             
             container.innerHTML = recientes.map(a => {
                 const fechaStr = a.fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                let tipoTexto = 'Pago recibido';
+                if (a.tipo === 'deuda_saldada') tipoTexto = '✅ Deuda saldada';
+                else if (a.tipo === 'nuevo') tipoTexto = 'Nuevo préstamo';
+                
                 return `
                     <div class="d-flex align-items-center mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
                         <div style="width: 35px; height: 35px; border-radius: 50%; background: ${a.color}20; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
                             <i class="fas ${a.icon}" style="color: ${a.color};"></i>
                         </div>
                         <div style="flex: 1;">
-                            <div style="font-size: 0.9rem;">${a.tipo === 'pago' ? 'Pago recibido' : 'Nuevo préstamo'} - <strong>${a.cliente}</strong></div>
+                            <div style="font-size: 0.9rem;">${tipoTexto} - <strong>${a.cliente}</strong></div>
                             <small class="text-secondary">${fechaStr}</small>
                         </div>
                         <span style="color: ${a.color}; font-weight: bold;">R$ ${(a.monto || 0).toFixed(2)}</span>
