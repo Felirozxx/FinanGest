@@ -3626,20 +3626,29 @@
 
         async function verTodoTrabajador(userId, nombre) {
             verTodoUserId = userId;
-            verTodoUserData = allUsers.find(u => u.id === userId);
             
-            document.getElementById('verTodoNombre').textContent = nombre;
+            // Buscar usuario en allUsers por id o _id
+            verTodoUserData = allUsers.find(u => u.id === userId || u._id === userId || u.id?.toString() === userId || u._id?.toString() === userId);
+            
+            document.getElementById('verTodoNombre').textContent = nombre || verTodoUserData?.nombre || 'Trabajador';
             document.getElementById('verTodoEmail').textContent = verTodoUserData?.email || '-';
-            document.getElementById('verTodoFechaReg').textContent = verTodoUserData?.fechaRegistro ? 
-                new Date(verTodoUserData.fechaRegistro).toLocaleDateString('es-ES') : '-';
-            document.getElementById('verTodoEstado').innerHTML = verTodoUserData?.activo !== false ? 
-                '<span class="badge-status badge-active">Activo</span>' : 
-                '<span class="badge-status badge-late">Bloqueado</span>';
+            document.getElementById('verTodoFechaReg').textContent = verTodoUserData?.createdAt ? 
+                new Date(verTodoUserData.createdAt).toLocaleDateString('es-ES') : 
+                (verTodoUserData?.fechaRegistro ? new Date(verTodoUserData.fechaRegistro).toLocaleDateString('es-ES') : '-');
+            document.getElementById('verTodoEstado').innerHTML = (verTodoUserData?.blocked || verTodoUserData?.bloqueado) ? 
+                '<span class="badge-status badge-late">Bloqueado</span>' :
+                '<span class="badge-status badge-active">Activo</span>';
             
             try {
                 const clientsRes = await fetch(API_URL + '/api/clientes?userId=admin');
                 const allClients = await clientsRes.json();
-                verTodoClientes = allClients.filter(c => c.creadoPor === userId);
+                // Filtrar por creadoPor comparando como string
+                verTodoClientes = Array.isArray(allClients) ? allClients.filter(c => 
+                    c.creadoPor === userId || 
+                    c.creadoPor?.toString() === userId?.toString() ||
+                    c.userId === userId ||
+                    c.userId?.toString() === userId?.toString()
+                ) : [];
                 
                 const gastosRes = await fetch(API_URL + '/api/gastos?userId=' + userId);
                 const gastosData = await gastosRes.json();
