@@ -2715,9 +2715,9 @@
                 const allClients = await clientsRes.json();
                 adminAllClients = allClients;
                 
-                // Separar usuarios activos y pendientes
-                const usuariosPendientes = allUsers.filter(u => !u.paid && !u.pagado && !u.activo && u.role !== 'admin');
-                const usuariosActivos = allUsers.filter(u => u.paid || u.pagado || u.activo || u.role === 'admin');
+                // Separar usuarios activos y pendientes (excluir admin de ambas listas)
+                const usuariosPendientes = allUsers.filter(u => !u.paid && !u.pagado && !u.activo && u.role !== 'admin' && !u.isAdmin);
+                const usuariosActivos = allUsers.filter(u => (u.paid || u.pagado || u.activo) && u.role !== 'admin' && !u.isAdmin);
                 
                 // Calcular online/offline (activo si lastSeen < 5 minutos)
                 const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
