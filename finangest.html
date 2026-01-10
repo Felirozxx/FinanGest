@@ -674,29 +674,49 @@
             </div>
             <!-- Dashboard Section -->
             <div id="dashboard" class="section active">
+                <!-- Filtro de fecha para stats -->
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <input type="date" id="dashboardFecha" class="form-control form-control-dark" style="width: 160px;" onchange="filtrarDashboardPorFecha()">
+                    <button class="btn btn-sm" style="background: var(--accent-cyan); color: #000; font-weight: 600;" onclick="mostrarTodosTiempos()">
+                        <i class="fas fa-infinity me-1"></i>Todos los tiempos
+                    </button>
+                    <span id="dashboardFechaLabel" class="text-secondary" style="font-size: 0.85rem;"></span>
+                </div>
                 <div class="row g-4 mb-4">
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-2 col-6">
                         <div class="stat-card">
                             <div class="stat-value" id="statClientes">0</div>
                             <div class="stat-label"><i class="fas fa-users me-2"></i>Clientes Activos</div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-2 col-6">
                         <div class="stat-card green">
                             <div class="stat-value" id="statPrestado">R$ 0</div>
                             <div class="stat-label"><i class="fas fa-hand-holding-usd me-2"></i>Total Prestado</div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-2 col-6">
                         <div class="stat-card yellow">
                             <div class="stat-value" id="statCobrado">R$ 0</div>
                             <div class="stat-label"><i class="fas fa-coins me-2"></i>Total Cobrado</div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-2 col-6">
                         <div class="stat-card red">
                             <div class="stat-value" id="statPendiente">R$ 0</div>
                             <div class="stat-label"><i class="fas fa-clock me-2"></i>Pendiente</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="stat-card" style="border-left-color: #a855f7;">
+                            <div class="stat-value" id="statGastos">R$ 0</div>
+                            <div class="stat-label"><i class="fas fa-receipt me-2"></i>Gastos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="stat-card" style="border-left-color: #f97316;">
+                            <div class="stat-value" id="statMicroseguros">R$ 0</div>
+                            <div class="stat-label"><i class="fas fa-shield-alt me-2"></i>Microseguros</div>
                         </div>
                     </div>
                 </div>
@@ -3761,15 +3781,105 @@
             }
         }
 
+        let dashboardFechaFiltro = null; // null = todos los tiempos
+        
+        function filtrarDashboardPorFecha() {
+            const fecha = document.getElementById('dashboardFecha').value;
+            if (fecha) {
+                dashboardFechaFiltro = fecha;
+                document.getElementById('dashboardFechaLabel').textContent = 'Mostrando: ' + new Date(fecha + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+            } else {
+                dashboardFechaFiltro = null;
+                document.getElementById('dashboardFechaLabel').textContent = '';
+            }
+            updateStats();
+        }
+        
+        function mostrarTodosTiempos() {
+            dashboardFechaFiltro = null;
+            document.getElementById('dashboardFecha').value = '';
+            document.getElementById('dashboardFechaLabel').textContent = 'Mostrando: Todos los tiempos';
+            updateStats();
+        }
+        
         function updateStats() {
-            const activos = clientes.filter(c => c.estado === 'ativo');
-            const totalPrestado = clientes.reduce((s, c) => s + (c.montoTotal || 0), 0);
-            const totalCobrado = clientes.reduce((s, c) => s + (c.montoPagado || 0), 0);
-            const totalPendiente = clientes.reduce((s, c) => s + ((c.totalAPagar || 0) - (c.montoPagado || 0)), 0);
+            let clientesFiltrados = clientes;
+            let gastosFiltrados = gastos;
+            
+            // Filtrar por fecha si hay filtro activo
+            if (dashboardFechaFiltro) {
+                const fechaFiltro = dashboardFechaFiltro;
+                
+                // Clientes creados en esa fecha
+                clientesFiltrados = clientes.filter(c => {
+                    const fechaCliente = (c.fechaCreacion || c.fechaInicio || c.fechaRegistro || '').substring(0, 10);
+                    return fechaCliente === fechaFiltro;
+                });
+                
+                // Gastos de esa fecha
+                gastosFiltrados = gastos.filter(g => {
+                    const fechaGasto = (g.fecha || '').substring(0, 10);
+                    return fechaGasto === fechaFiltro;
+                });
+            }
+            
+            const activos = clientesFiltrados.filter(c => c.estado === 'ativo');
+            const totalPrestado = clientesFiltrados.reduce((s, c) => s + (c.montoTotal || 0), 0);
+            
+            // Calcular cobrado según filtro
+            let totalCobrado = 0;
+            if (dashboardFechaFiltro) {
+                // Solo pagos de esa fecha
+                clientesFiltrados.forEach(c => {
+                    if (c.pagos && Array.isArray(c.pagos)) {
+                        c.pagos.forEach(p => {
+                            const fechaPago = (p.fecha || '').substring(0, 10);
+                            if (fechaPago === dashboardFechaFiltro) {
+                                totalCobrado += parseFloat(p.valor || p.monto || 0);
+                            }
+                        });
+                    }
+                    if (c.historialPagos && Array.isArray(c.historialPagos)) {
+                        c.historialPagos.forEach(p => {
+                            const fechaPago = (p.fecha || '').substring(0, 10);
+                            if (fechaPago === dashboardFechaFiltro) {
+                                totalCobrado += parseFloat(p.monto || p.valor || 0);
+                            }
+                        });
+                    }
+                });
+            } else {
+                totalCobrado = clientes.reduce((s, c) => s + (c.montoPagado || 0), 0);
+            }
+            
+            const totalPendiente = clientesFiltrados.reduce((s, c) => s + ((c.totalAPagar || 0) - (c.montoPagado || 0)), 0);
+            
+            // Calcular gastos
+            const totalGastos = gastosFiltrados.reduce((s, g) => s + (parseFloat(g.monto) || 0), 0);
+            
+            // Calcular microseguros
+            let totalMicroseguros = 0;
+            if (dashboardFechaFiltro) {
+                clientesFiltrados.forEach(c => {
+                    if (c.microseguro && parseFloat(c.microseguro) > 0) {
+                        totalMicroseguros += parseFloat(c.microseguro);
+                    }
+                });
+            } else {
+                clientes.forEach(c => {
+                    if (c.microseguro && parseFloat(c.microseguro) > 0) {
+                        totalMicroseguros += parseFloat(c.microseguro);
+                    }
+                });
+            }
+            
             document.getElementById('statClientes').textContent = activos.length;
             document.getElementById('statPrestado').textContent = 'R$ ' + totalPrestado.toFixed(2);
             document.getElementById('statCobrado').textContent = 'R$ ' + totalCobrado.toFixed(2);
             document.getElementById('statPendiente').textContent = 'R$ ' + totalPendiente.toFixed(2);
+            document.getElementById('statGastos').textContent = 'R$ ' + totalGastos.toFixed(2);
+            document.getElementById('statMicroseguros').textContent = 'R$ ' + totalMicroseguros.toFixed(2);
+            
             renderCobrosPreview();
             renderClientesAtrasados();
             renderMejoresClientes();
