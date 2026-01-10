@@ -1,4 +1,3 @@
-// Deploy: 2026-01-09 22:51:32
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const cors = require('cors');
@@ -445,11 +444,24 @@ app.post('/api/clientes', async (req, res) => {
 app.put('/api/clients/:id', async (req, res) => {
     try {
         const database = await connectDB();
-        await database.collection('clients').updateOne(
-            { _id: new ObjectId(req.params.id) },
+        const searchId = req.params.id;
+        
+        // Buscar por múltiples campos posibles
+        let result = await database.collection('clients').updateOne(
+            { $or: [{ id: searchId }, { id: parseInt(searchId) }] },
             { $set: req.body }
         );
-        res.json({ success: true });
+        
+        if (result.matchedCount === 0) {
+            try {
+                result = await database.collection('clients').updateOne(
+                    { _id: new ObjectId(searchId) },
+                    { $set: req.body }
+                );
+            } catch (e) {}
+        }
+        
+        res.json({ success: result.matchedCount > 0 });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -459,11 +471,24 @@ app.put('/api/clients/:id', async (req, res) => {
 app.put('/api/clientes/:id', async (req, res) => {
     try {
         const database = await connectDB();
-        await database.collection('clients').updateOne(
-            { _id: new ObjectId(req.params.id) },
+        const searchId = req.params.id;
+        
+        // Buscar por múltiples campos posibles
+        let result = await database.collection('clients').updateOne(
+            { $or: [{ id: searchId }, { id: parseInt(searchId) }] },
             { $set: req.body }
         );
-        res.json({ success: true });
+        
+        if (result.matchedCount === 0) {
+            try {
+                result = await database.collection('clients').updateOne(
+                    { _id: new ObjectId(searchId) },
+                    { $set: req.body }
+                );
+            } catch (e) {}
+        }
+        
+        res.json({ success: result.matchedCount > 0 });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -473,8 +498,21 @@ app.put('/api/clientes/:id', async (req, res) => {
 app.delete('/api/clients/:id', async (req, res) => {
     try {
         const database = await connectDB();
-        await database.collection('clients').deleteOne({ _id: new ObjectId(req.params.id) });
-        res.json({ success: true });
+        const searchId = req.params.id;
+        
+        let result = await database.collection('clients').deleteOne(
+            { $or: [{ id: searchId }, { id: parseInt(searchId) }] }
+        );
+        
+        if (result.deletedCount === 0) {
+            try {
+                result = await database.collection('clients').deleteOne(
+                    { _id: new ObjectId(searchId) }
+                );
+            } catch (e) {}
+        }
+        
+        res.json({ success: result.deletedCount > 0 });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
