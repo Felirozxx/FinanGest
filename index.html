@@ -1635,7 +1635,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary-custom" onclick="crearCliente()">Crear Cliente</button>
+                    <button type="button" class="btn btn-primary-custom" id="btnCrearCliente" onclick="crearCliente()">Crear Cliente</button>
                 </div>
             </div>
         </div>
@@ -4221,6 +4221,10 @@
 
         // Client Functions
         function openNewClientModal() {
+            // Resetear variables de restablecimiento/renovación
+            clienteRestableciendo = null;
+            clienteRenovandoId = null;
+            
             document.getElementById('clienteNombre').value = '';
             document.getElementById('clienteTelefono').value = '';
             document.getElementById('clienteUbicacion').value = '';
@@ -4237,6 +4241,10 @@
             document.getElementById('clienteParcelas').value = '';
             document.getElementById('clienteComision').value = '20';
             calcularTotal();
+            
+            // Resetear texto del botón
+            document.getElementById('btnCrearCliente').textContent = 'Crear Cliente';
+            
             new bootstrap.Modal(document.getElementById('clienteModal')).show();
         }
 
@@ -4332,14 +4340,17 @@
                 clienteRenovandoId = null;
             }
             
-            // Si es un restablecimiento, eliminar de la papelera
-            if (clienteRestableciendo) {
-                await fetch(API_URL + '/api/clientes-eliminados/' + clienteRestableciendo.id, { method: 'DELETE' });
-                clienteRestableciendo = null;
-                cargarClientesEliminados();
-            }
+            // Guardar si es restablecimiento antes de resetear la variable
+            const esRestablecimiento = clienteRestableciendo !== null;
+            const idClienteEliminado = clienteRestableciendo ? clienteRestableciendo.id : null;
             
             try {
+                // Si es un restablecimiento, eliminar de la papelera primero
+                if (esRestablecimiento && idClienteEliminado) {
+                    const deleteRes = await fetch(API_URL + '/api/clientes-eliminados/' + idClienteEliminado, { method: 'DELETE' });
+                    console.log('Eliminado de papelera:', await deleteRes.json());
+                }
+                
                 await fetch(API_URL + '/api/clientes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -4349,8 +4360,18 @@
                 bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
                 updateStats();
                 renderClientes();
-                alert('Cliente creado exitosamente');
-            } catch (e) { alert('Error al crear cliente'); }
+                
+                // Resetear variable y recargar lista de eliminados
+                if (esRestablecimiento) {
+                    clienteRestableciendo = null;
+                    cargarClientesEliminados();
+                    alert('✅ Cliente restablecido exitosamente');
+                } else {
+                    alert('✅ Cliente creado exitosamente');
+                }
+            } catch (e) { 
+                alert('Error al ' + (esRestablecimiento ? 'restablecer' : 'crear') + ' cliente: ' + e.message); 
+            }
         }
 
         let clienteParaPago = null;
@@ -4523,6 +4544,9 @@
             
             // Calcular valores
             calcularTotal();
+            
+            // Cambiar texto del botón a "Restablecer Cliente"
+            document.getElementById('btnCrearCliente').textContent = 'Restablecer Cliente';
             
             new bootstrap.Modal(document.getElementById('clienteModal')).show();
         }
