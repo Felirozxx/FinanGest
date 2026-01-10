@@ -466,6 +466,19 @@ exports.handler = async (event, context) => {
             return respond(200, { success: result.deletedCount > 0 });
         }
 
+        // RESET ALL CLIENTS (Admin only)
+        if (path === '/admin/reset-clientes' && method === 'POST') {
+            const result1 = await db.collection('clients').deleteMany({});
+            const result2 = await db.collection('clientes_eliminados').deleteMany({});
+            return respond(200, { 
+                success: true, 
+                deleted: {
+                    clientes: result1.deletedCount,
+                    eliminados: result2.deletedCount
+                }
+            });
+        }
+
         // HEARTBEAT
         if (path === '/heartbeat' && method === 'POST') {
             const { userId } = body;
