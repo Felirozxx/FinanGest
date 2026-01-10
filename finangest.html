@@ -5628,7 +5628,42 @@
                 return;
             }
             
-            const clientesOrdenados = [...clientesFiltrados].sort((a, b) => {
+            // Agrupar clientes por nombre+teléfono para detectar renovados
+            const clientesAgrupados = {};
+            clientesFiltrados.forEach(c => {
+                const key = (c.nombre || '').toLowerCase() + '_' + (c.telefono || '');
+                if (!clientesAgrupados[key]) {
+                    clientesAgrupados[key] = [];
+                }
+                clientesAgrupados[key].push(c);
+            });
+            
+            // Crear lista de clientes únicos con info de renovaciones
+            const clientesUnicos = [];
+            Object.values(clientesAgrupados).forEach(grupo => {
+                // Ordenar por fecha (más reciente primero)
+                grupo.sort((a, b) => new Date(b.fechaCreacion || 0) - new Date(a.fechaCreacion || 0));
+                
+                // El más reciente es el principal
+                const principal = grupo[0];
+                const renovaciones = grupo.length - 1;
+                
+                // Sumar totales de todos los préstamos
+                const totalPrestado = grupo.reduce((s, c) => s + (parseFloat(c.montoTotal) || 0), 0);
+                const totalCobrado = grupo.reduce((s, c) => s + (parseFloat(c.montoPagado) || 0), 0);
+                const totalAPagar = grupo.reduce((s, c) => s + (parseFloat(c.totalAPagar) || 0), 0);
+                
+                clientesUnicos.push({
+                    ...principal,
+                    renovaciones,
+                    totalPrestadoGrupo: totalPrestado,
+                    totalCobradoGrupo: totalCobrado,
+                    totalAPagarGrupo: totalAPagar,
+                    todosIds: grupo.map(c => c.id)
+                });
+            });
+            
+            const clientesOrdenados = [...clientesUnicos].sort((a, b) => {
                 return new Date(b.fechaCreacion || 0) - new Date(a.fechaCreacion || 0);
             });
             
@@ -5653,16 +5688,17 @@
                             ${clientesOrdenados.map(c => {
                                 const fecha = c.fechaCreacion || c.fechaInicio;
                                 const fechaStr = fecha ? new Date(fecha).toLocaleDateString('es-ES') : '-';
-                                const prestado = parseFloat(c.montoTotal) || 0;
-                                const cobrado = parseFloat(c.montoPagado) || 0;
-                                const pendiente = (parseFloat(c.totalAPagar) || 0) - cobrado;
+                                const prestado = c.totalPrestadoGrupo || parseFloat(c.montoTotal) || 0;
+                                const cobrado = c.totalCobradoGrupo || parseFloat(c.montoPagado) || 0;
+                                const pendiente = (c.totalAPagarGrupo || parseFloat(c.totalAPagar) || 0) - cobrado;
                                 const statusClass = c.estado === 'ativo' ? 'active' : c.estado === 'finalizado' ? 'finished' : 'late';
                                 const statusText = c.estado === 'ativo' ? 'Activo' : c.estado === 'finalizado' ? 'Finalizado' : 'Atrasado';
+                                const renovadoLabel = c.renovaciones > 0 ? `<span style="background: var(--accent-purple); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px;">🔄 ${c.renovaciones}x Renovado</span>` : '';
                                 
                                 return `
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td>${fechaStr}</td>
-                                    <td><strong>${c.nombre}</strong></td>
+                                    <td><strong>${c.nombre}</strong>${renovadoLabel}</td>
                                     <td style="font-size: 1.2rem;">${tipoLabels[c.tipoCliente] || '🆕'}</td>
                                     <td>${c.telefono || '-'}</td>
                                     <td style="color: var(--accent-green);">R$ ${prestado.toFixed(2)}</td>
