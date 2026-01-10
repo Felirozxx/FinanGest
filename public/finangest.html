@@ -855,6 +855,23 @@
                         <input type="date" class="form-control form-control-dark" id="fechaCobros" style="width: auto;" onchange="renderCobros()">
                     </div>
                 </div>
+                <!-- Buscador de cobros -->
+                <div class="card-dark mb-4">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-8">
+                            <label class="form-label"><i class="fas fa-search me-2"></i>Buscar Cliente</label>
+                            <input type="text" class="form-control form-control-dark" id="cobrosBuscar" placeholder="Nombre o teléfono..." oninput="renderCobros()">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="fas fa-filter me-2"></i>Estado</label>
+                            <select class="form-control form-control-dark" id="cobrosFiltroEstado" onchange="renderCobros()">
+                                <option value="">Todos</option>
+                                <option value="pendiente">Pendientes</option>
+                                <option value="pagado">Pagados Hoy</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div id="cobrosResumen" class="row g-3 mb-4">
                     <!-- Resumen de cobros -->
                 </div>
@@ -2151,6 +2168,14 @@
             }
         }
 
+        // Helper para obtener fecha local en formato YYYY-MM-DD
+        function getFechaLocal() {
+            const hoy = new Date();
+            return hoy.getFullYear() + '-' + 
+                String(hoy.getMonth() + 1).padStart(2, '0') + '-' + 
+                String(hoy.getDate()).padStart(2, '0');
+        }
+
         function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -2172,11 +2197,11 @@
             };
             document.getElementById('pageTitle').textContent = titles[id] || 'Dashboard';
             if (id === 'cobros') {
-                document.getElementById('fechaCobros').value = new Date().toISOString().split('T')[0];
+                document.getElementById('fechaCobros').value = getFechaLocal();
                 renderCobros();
             }
             if (id === 'gastos') {
-                document.getElementById('gastoFechaFiltro').value = new Date().toISOString().split('T')[0];
+                document.getElementById('gastoFechaFiltro').value = getFechaLocal();
                 renderGastos();
             }
             if (id === 'historial') {
@@ -2186,7 +2211,7 @@
             if (id === 'mapa') initMapa();
             if (id === 'adminUsuarios') renderAdminUsuarios();
             if (id === 'adminCalendario') {
-                document.getElementById('calendarioFecha').value = new Date().toISOString().split('T')[0];
+                document.getElementById('calendarioFecha').value = getFechaLocal();
                 renderCalendarioClientes();
             }
             if (id === 'adminHistorial') renderAdminHistorialTrabajador();
@@ -2604,7 +2629,11 @@
             }).join('');
         }
         function setFechaHoy() {
-            document.getElementById('fechaCobros').value = new Date().toISOString().split('T')[0];
+            const hoy = new Date();
+            const fecha = hoy.getFullYear() + '-' + 
+                String(hoy.getMonth() + 1).padStart(2, '0') + '-' + 
+                String(hoy.getDate()).padStart(2, '0');
+            document.getElementById('fechaCobros').value = fecha;
             renderCobros();
         }
 
@@ -2612,12 +2641,22 @@
             const container = document.getElementById('cobrosLista');
             const resumenContainer = document.getElementById('cobrosResumen');
             const fechaSeleccionada = document.getElementById('fechaCobros').value;
+            const busqueda = (document.getElementById('cobrosBuscar')?.value || '').toLowerCase().trim();
+            const filtroEstado = document.getElementById('cobrosFiltroEstado')?.value || '';
             
             // Filtrar clientes activos
-            const activos = clientes.filter(c => c.estado === 'ativo');
+            let activos = clientes.filter(c => c.estado === 'ativo');
+            
+            // Aplicar búsqueda a clientes activos
+            if (busqueda) {
+                activos = activos.filter(c => 
+                    (c.nombre || '').toLowerCase().includes(busqueda) ||
+                    (c.telefono || '').toLowerCase().includes(busqueda)
+                );
+            }
             
             // Filtrar pagos realizados en la fecha seleccionada
-            const pagosDelDia = [];
+            let pagosDelDia = [];
             clientes.forEach(c => {
                 if (c.pagos && c.pagos.length > 0) {
                     c.pagos.forEach(p => {
@@ -2641,6 +2680,23 @@
                     });
                 }
             });
+            
+            // Aplicar búsqueda a pagos del día
+            if (busqueda) {
+                pagosDelDia = pagosDelDia.filter(p => 
+                    (p.cliente || '').toLowerCase().includes(busqueda) ||
+                    (p.telefono || '').toLowerCase().includes(busqueda)
+                );
+            }
+            
+            // Aplicar filtro de estado
+            let mostrarPagados = true;
+            let mostrarPendientes = true;
+            if (filtroEstado === 'pendiente') {
+                mostrarPagados = false;
+            } else if (filtroEstado === 'pagado') {
+                mostrarPendientes = false;
+            }
             
             // Calcular totales del día
             const totalCobradoHoy = pagosDelDia.reduce((s, p) => s + p.valor, 0);
@@ -4383,7 +4439,7 @@
                 <small class="text-secondary">Restante: R$ ${((clienteParaPago.totalAPagar || 0) - (clienteParaPago.montoPagado || 0)).toFixed(2)}</small>
             `;
             document.getElementById('pagoValor').value = clienteParaPago.valorParcela.toFixed(2);
-            document.getElementById('pagoFecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('pagoFecha').value = getFechaLocal();
             new bootstrap.Modal(document.getElementById('pagoModal')).show();
         }
 
@@ -4583,13 +4639,13 @@
         function openGastoModal() {
             document.getElementById('gastoDescripcion').value = '';
             document.getElementById('gastoValor').value = '';
-            document.getElementById('gastoFecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('gastoFecha').value = getFechaLocal();
             document.getElementById('gastoCategoria').value = '';
             new bootstrap.Modal(document.getElementById('gastoModal')).show();
         }
 
         function setGastoHoy() {
-            document.getElementById('gastoFechaFiltro').value = new Date().toISOString().split('T')[0];
+            document.getElementById('gastoFechaFiltro').value = getFechaLocal();
             renderGastos();
         }
 
