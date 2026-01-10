@@ -464,7 +464,7 @@
                         </div>
                         <div style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">Plan Mensual</p>
-                            <h2 style="color: var(--accent-green); font-size: 2.5rem; margin: 0;">R$ 99,00</h2>
+                            <h2 style="color: var(--accent-green); font-size: 2.5rem; margin: 0;">R$ 79,50</h2>
                             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 5px;">Acceso completo a FinanGest</p>
                         </div>
                         <div id="pixQrContainer" style="background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
@@ -1983,23 +1983,26 @@
                 pixLoading.style.display = 'none';
                 pixContainer.style.display = 'block';
                 
-                if (data.success && data.qrCode && !data.manual) {
-                    // PIX Automático con QR Code de Asaas
+                if (data.success && data.qrCodeBase64 && !data.manual) {
+                    // PIX Automático con QR Code de Mercado Pago
                     pendingPaymentId = data.paymentId;
                     pixContainer.innerHTML = `
                         <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">
                             <i class="fas fa-qrcode me-2"></i>Escanea con tu app de banco
                         </p>
-                        <img src="data:image/png;base64,${data.qrCode}" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 200px;">
+                        <img src="data:image/png;base64,${data.qrCodeBase64}" alt="PIX QR Code" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 200px;">
                         <div style="margin-top: 15px; padding: 15px; background: var(--bg-card); border-radius: 8px;">
                             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">PIX Copia e Cola</p>
                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                <input type="text" id="pixCopyPaste" value="${data.qrCodeText}" readonly style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.7rem; width: 180px; text-overflow: ellipsis;">
+                                <input type="text" id="pixCopyPaste" value="${data.qrCode}" readonly style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.6rem; width: 200px; text-overflow: ellipsis;">
                                 <button onclick="copyPixCode()" style="background: var(--accent-cyan); border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
                         </div>
+                        <p style="color: var(--accent-green); font-size: 0.85rem; margin-top: 15px;">
+                            <i class="fas fa-check-circle me-1"></i>Descripción: FINANGEST-${email}
+                        </p>
                     `;
                     iniciarVerificacionAutomatica();
                 } else {
@@ -2019,7 +2022,7 @@
                                 <i class="fas fa-user me-1"></i>FinanGestPay
                             </p>
                             <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold;">
-                                R$ 99,00
+                                R$ 79,50
                             </p>
                             <button onclick="copyPixKey('86992035517')" class="btn btn-primary-custom mt-3">
                                 <i class="fas fa-copy me-2"></i>Copiar Chave PIX
@@ -2027,7 +2030,7 @@
                             <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
                                 <i class="fas fa-info-circle me-1"></i>Após pagar, envie o comprovante por WhatsApp
                             </p>
-                            <a href="https://wa.me/79998555813?text=Olá! Acabei de pagar R$ 99,00 para FinanGest. Meu email: ${userEmail}" 
+                            <a href="https://wa.me/79998555813?text=Olá! Acabei de pagar R$ 79,50 para FinanGest. Meu email: ${userEmail}" 
                                target="_blank" class="btn btn-success-custom mt-2" style="background: #25D366;">
                                 <i class="fab fa-whatsapp me-2"></i>Enviar Comprovante
                             </a>
@@ -2052,7 +2055,7 @@
                             <i class="fas fa-user me-1"></i>FinanGestPay
                         </p>
                         <p style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold;">
-                            R$ 99,00
+                            R$ 79,50
                         </p>
                         <button onclick="copyPixKey('86992035517')" class="btn btn-primary-custom mt-3">
                             <i class="fas fa-copy me-2"></i>Copiar Chave PIX
@@ -2060,7 +2063,7 @@
                         <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 15px;">
                             <i class="fas fa-info-circle me-1"></i>Após pagar, envie o comprovante por WhatsApp
                         </p>
-                        <a href="https://wa.me/79998555813?text=Olá! Acabei de pagar R$ 99,00 para FinanGest. Meu email: ${email}" 
+                        <a href="https://wa.me/79998555813?text=Olá! Acabei de pagar R$ 79,50 para FinanGest. Meu email: ${email}" 
                            target="_blank" class="btn btn-success-custom mt-2" style="background: #25D366;">
                             <i class="fab fa-whatsapp me-2"></i>Enviar Comprovante
                         </a>
@@ -2096,9 +2099,13 @@
 
         async function verificarPagoSilencioso() {
             try {
-                const res = await fetch(API_URL + '/api/verificar-pago/' + pendingPaymentId);
+                const res = await fetch(API_URL + '/api/verificar-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: pendingUser.id, paymentId: pendingPaymentId })
+                });
                 const data = await res.json();
-                if (data.status === 'PAID') {
+                if (data.paid || data.status === 'approved') {
                     alert('🎉 ¡Pago confirmado! Bienvenido a FinanGest');
                     currentUser = pendingUser;
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));
@@ -2122,9 +2129,13 @@
             btn.disabled = true;
             
             try {
-                const res = await fetch(API_URL + '/api/verificar-pago/' + pendingPaymentId);
+                const res = await fetch(API_URL + '/api/verificar-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: pendingUser.id, paymentId: pendingPaymentId })
+                });
                 const data = await res.json();
-                if (data.status === 'PAID') {
+                if (data.paid || data.status === 'approved') {
                     alert('🎉 ¡Pago confirmado! Bienvenido a FinanGest');
                     currentUser = pendingUser;
                     localStorage.setItem('finangest_user', JSON.stringify(currentUser));

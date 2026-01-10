@@ -15,6 +15,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'finangest-admin-2026';
+const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
 let db;
 
@@ -767,26 +768,135 @@ app.post('/api/expenses', async (req, res) => {
     }
 });
 
-// PIX Payment (manual)
+// PIX Payment con Mercado Pago
 app.post('/api/crear-pago-pix', async (req, res) => {
     try {
+        const { userId, nombre, email } = req.body;
+        
+        if (!MP_ACCESS_TOKEN) {
+            // Fallback manual si no hay token
+            return res.json({ 
+                success: true, 
+                manual: true,
+                pixKey: '86992035517',
+                pixName: 'FinanGestPay',
+                amount: 79.50
+            });
+        }
+        
+        // Crear pago PIX con Mercado Pago
+        const paymentData = {
+            transaction_amount: 79.50,
+            description: `FINANGEST-${email || userId}`,
+            payment_method_id: 'pix',
+            payer: {
+                email: email || 'cliente@finangest.app',
+                first_name: nombre || 'Cliente',
+                identification: {
+                    type: 'CPF',
+                    number: '00000000000'
+                }
+            }
+        };
+        
+        const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+                'X-Idempotency-Key': `${userId}-${Date.now()}`
+            },
+            body: JSON.stringify(paymentData)
+        });
+        
+        const mpData = await mpResponse.json();
+        
+        if (mpData.id && mpData.point_of_interaction?.transaction_data) {
+            const txData = mpData.point_of_interaction.transaction_data;
+            
+            // Guardar el pago pendiente en la base de datos
+            const database = await connectDB();
+            await database.collection('pending_payments').updateOne(
+                { oderId: mpData.id },
+                { 
+                    $set: {
+                        oderId: mpData.id,
+                        userId: userId,
+                        email: email,
+                        amount: 79.50,
+                        status: 'pending',
+                        createdAt: new Date(),
+                        qrCode: txData.qr_code,
+                        qrCodeBase64: txData.qr_code_base64
+                    }
+                },
+                { upsert: true }
+            );
+            
+            res.json({
+                success: true,
+                paymentId: mpData.id,
+                qrCode: txData.qr_code,
+                qrCodeBase64: txData.qr_code_base64,
+                ticketUrl: txData.ticket_url
+            });
+        } else {
+            console.log('MP Error:', mpData);
+            // Fallback manual
+            res.json({ 
+                success: true, 
+                manual: true,
+                pixKey: '86992035517',
+                pixName: 'FinanGestPay',
+                amount: 79.50,
+                error: mpData.message || 'Error al generar PIX'
+            });
+        }
+    } catch (e) {
+        console.log('Error PIX:', e.message);
         res.json({ 
             success: true, 
             manual: true,
             pixKey: '86992035517',
             pixName: 'FinanGestPay',
-            amount: 99.00
+            amount: 79.50
         });
-    } catch (e) {
-        res.json({ success: false, error: e.message });
     }
 });
 
-// Verify payment
+// Verificar pago en Mercado Pago
 app.post('/api/verificar-pago', async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, paymentId } = req.body;
         const database = await connectDB();
+        
+        if (paymentId && MP_ACCESS_TOKEN) {
+            // Verificar en Mercado Pago
+            const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                headers: {
+                    'Authorization': `Bearer ${MP_ACCESS_TOKEN}`
+                }
+            });
+            
+            const mpData = await mpResponse.json();
+            
+            if (mpData.status === 'approved') {
+                // Pago aprobado - activar usuario
+                await database.collection('users').updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $set: { paid: true, paidAt: new Date(), paymentId: paymentId } }
+                );
+                
+                // Eliminar pago pendiente
+                await database.collection('pending_payments').deleteOne({ oderId: parseInt(paymentId) });
+                
+                return res.json({ success: true, paid: true, status: 'approved' });
+            } else {
+                return res.json({ success: true, paid: false, status: mpData.status });
+            }
+        }
+        
+        // Fallback: activar manualmente (para pagos manuales)
         await database.collection('users').updateOne(
             { _id: new ObjectId(userId) },
             { $set: { paid: true, paidAt: new Date() } }
@@ -794,6 +904,51 @@ app.post('/api/verificar-pago', async (req, res) => {
         res.json({ success: true, paid: true });
     } catch (e) {
         res.json({ success: false, error: e.message });
+    }
+});
+
+// Webhook de Mercado Pago para notificaciones de pago
+app.post('/api/mp-webhook', async (req, res) => {
+    try {
+        const { type, data } = req.body;
+        
+        if (type === 'payment' && data?.id) {
+            const paymentId = data.id;
+            
+            // Verificar el pago en MP
+            const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                headers: {
+                    'Authorization': `Bearer ${MP_ACCESS_TOKEN}`
+                }
+            });
+            
+            const mpData = await mpResponse.json();
+            
+            if (mpData.status === 'approved') {
+                const database = await connectDB();
+                
+                // Buscar el pago pendiente
+                const pendingPayment = await database.collection('pending_payments').findOne({ oderId: paymentId });
+                
+                if (pendingPayment) {
+                    // Activar el usuario
+                    await database.collection('users').updateOne(
+                        { _id: new ObjectId(pendingPayment.userId) },
+                        { $set: { paid: true, paidAt: new Date(), paymentId: paymentId } }
+                    );
+                    
+                    // Eliminar pago pendiente
+                    await database.collection('pending_payments').deleteOne({ oderId: paymentId });
+                    
+                    console.log('Usuario activado por webhook:', pendingPayment.email);
+                }
+            }
+        }
+        
+        res.status(200).send('OK');
+    } catch (e) {
+        console.log('Webhook error:', e.message);
+        res.status(200).send('OK');
     }
 });
 
