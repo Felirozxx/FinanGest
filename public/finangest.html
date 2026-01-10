@@ -4497,11 +4497,12 @@
                 const clientsRes = await fetch(API_URL + '/api/clientes?userId=admin');
                 const allClients = await clientsRes.json();
                 
-                // Llenar select de trabajadores
+                // Llenar select de trabajadores (solo activos, no admin)
                 const selectTrabajador = document.getElementById('calendarioTrabajador');
                 const currentValue = selectTrabajador.value;
+                const trabajadoresActivos = users.filter(u => (u.paid || u.pagado || u.activo) && u.role !== 'admin' && !u.isAdmin);
                 selectTrabajador.innerHTML = '<option value="">Todos los trabajadores</option>' + 
-                    users.map(u => `<option value="${u.id}" ${currentValue === u.id ? 'selected' : ''}>${u.nombre}</option>`).join('');
+                    trabajadoresActivos.map(u => `<option value="${u.id || u._id}" ${currentValue === (u.id || u._id) ? 'selected' : ''}>${u.nombre}</option>`).join('');
                 
                 // Obtener filtros
                 const trabajadorId = document.getElementById('calendarioTrabajador').value;
@@ -4517,10 +4518,14 @@
                 }
                 
                 // Filtrar por fecha
-                const fechaBase = new Date(fechaSeleccionada);
+                const fechaBase = new Date(fechaSeleccionada + 'T12:00:00');
                 if (vista !== 'todos') {
                     clientesFiltrados = clientesFiltrados.filter(c => {
-                        const fechaCliente = new Date(c.fechaInicio || c.fechaRegistro || c.id.split('-')[1]);
+                        const fechaStr = c.fechaCreacion || c.fechaInicio || c.fechaRegistro || c.createdAt;
+                        if (!fechaStr) return false;
+                        const fechaCliente = new Date(fechaStr);
+                        if (isNaN(fechaCliente.getTime())) return false;
+                        
                         if (vista === 'dia') {
                             return fechaCliente.toDateString() === fechaBase.toDateString();
                         } else if (vista === 'semana') {
@@ -4539,13 +4544,13 @@
                 
                 // Ordenar por fecha (más reciente primero)
                 clientesFiltrados.sort((a, b) => {
-                    const fechaA = new Date(a.fechaInicio || a.fechaRegistro || 0);
-                    const fechaB = new Date(b.fechaInicio || b.fechaRegistro || 0);
+                    const fechaA = new Date(a.fechaCreacion || a.fechaInicio || a.fechaRegistro || 0);
+                    const fechaB = new Date(b.fechaCreacion || b.fechaInicio || b.fechaRegistro || 0);
                     return fechaB - fechaA;
                 });
                 
                 // Calcular totales
-                const totalPrestado = clientesFiltrados.reduce((s, c) => s + (parseFloat(c.montoPrestado) || parseFloat(c.montoTotal) || 0), 0);
+                const totalPrestado = clientesFiltrados.reduce((s, c) => s + (parseFloat(c.montoTotal) || 0), 0);
                 const totalCobrado = clientesFiltrados.reduce((s, c) => s + (parseFloat(c.montoPagado) || 0), 0);
                 
                 document.getElementById('calTotalClientes').textContent = clientesFiltrados.length;
@@ -4560,15 +4565,15 @@
                 }
                 
                 tbody.innerHTML = clientesFiltrados.map(c => {
-                    const fechaRegistro = c.fechaInicio || c.fechaRegistro;
+                    const fechaRegistro = c.fechaCreacion || c.fechaInicio || c.fechaRegistro;
                     const fechaFormateada = fechaRegistro ? new Date(fechaRegistro).toLocaleDateString('es-ES', {
                         day: '2-digit', month: '2-digit', year: 'numeric'
                     }) : 'Sin fecha';
                     
-                    const trabajador = users.find(u => u.id === c.creadoPor);
+                    const trabajador = users.find(u => (u.id || u._id) === c.creadoPor);
                     const nombreTrabajador = trabajador ? trabajador.nombre : 'Desconocido';
                     
-                    const prestado = parseFloat(c.montoPrestado) || parseFloat(c.montoTotal) || 0;
+                    const prestado = parseFloat(c.montoTotal) || 0;
                     const cobrado = parseFloat(c.montoPagado) || 0;
                     
                     const statusClass = c.estado === 'ativo' ? 'active' : c.estado === 'finalizado' ? 'finished' : 'late';
