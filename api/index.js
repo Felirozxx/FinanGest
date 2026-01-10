@@ -897,12 +897,39 @@ app.post('/api/admin/backup', async (req, res) => {
 app.post('/api/admin/restore/:id', async (req, res) => {
     try {
         const database = await connectDB();
-        const backup = await database.collection('backups').findOne({ id: req.params.id });
+        const searchId = req.params.id;
+        
+        // Buscar por id o _id
+        let backup = await database.collection('backups').findOne({ id: searchId });
+        if (!backup) {
+            try {
+                backup = await database.collection('backups').findOne({ _id: new ObjectId(searchId) });
+            } catch (e) {}
+        }
+        
         if (!backup || !backup.data) {
             return res.json({ success: false, error: 'Backup no encontrado' });
         }
-        // Restaurar datos (opcional: limpiar colecciones primero)
-        res.json({ success: true, message: 'Backup restaurado' });
+        
+        // Restaurar datos - reemplazar colecciones
+        const { users, clients, gastos } = backup.data;
+        
+        if (users && users.length > 0) {
+            await database.collection('users').deleteMany({});
+            await database.collection('users').insertMany(users);
+        }
+        
+        if (clients && clients.length > 0) {
+            await database.collection('clients').deleteMany({});
+            await database.collection('clients').insertMany(clients);
+        }
+        
+        if (gastos && gastos.length > 0) {
+            await database.collection('gastos').deleteMany({});
+            await database.collection('gastos').insertMany(gastos);
+        }
+        
+        res.json({ success: true, message: 'Backup restaurado correctamente' });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -1061,6 +1088,50 @@ app.post('/api/admin/backup-trabajador/:userId', async (req, res) => {
 // Admin - restaurar backup de trabajador
 app.post('/api/admin/restore-trabajador/:backupId', async (req, res) => {
     try {
+        const database = await connectDB();
+        const searchId = req.params.backupId;
+        
+        // Buscar backup
+        let backup = await database.collection('backups_trabajador').findOne({ id: searchId });
+        if (!backup) {
+            try {
+                backup = await database.collection('backups_trabajador').findOne({ _id: new ObjectId(searchId) });
+            } catch (e) {}
+        }
+        
+        if (!backup || !backup.data) {
+            return res.json({ success: false, error: 'Backup no encontrado' });
+        }
+        
+        const userId = backup.userId;
+        const { clients, gastos } = backup.data;
+        
+        // Eliminar datos actuales del trabajador
+        await database.collection('clients').deleteMany({ 
+            $or: [{ creadoPor: userId }, { creadoPor: userId.toString() }] 
+        });
+        await database.collection('gastos').deleteMany({ 
+            $or: [{ creadoPor: userId }, { creadoPor: userId.toString() }] 
+        });
+        
+        // Restaurar datos del backup
+        if (clients && clients.length > 0) {
+            // Limpiar _id para evitar duplicados
+            const cleanClients = clients.map(c => {
+                const { _id, ...rest } = c;
+                return rest;
+            });
+            await database.collection('clients').insertMany(cleanClients);
+        }
+        
+        if (gastos && gastos.length > 0) {
+            const cleanGastos = gastos.map(g => {
+                const { _id, ...rest } = g;
+                return rest;
+            });
+            await database.collection('gastos').insertMany(cleanGastos);
+        }
+        
         res.json({ success: true, message: 'Backup restaurado' });
     } catch (e) {
         res.json({ success: false, error: e.message });
