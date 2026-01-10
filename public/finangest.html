@@ -5282,7 +5282,8 @@
             const selectAnio = document.getElementById('estAnio');
             const anioActual = hoy.getFullYear();
             let opciones = '';
-            for (let a = anioActual; a >= anioActual - 5; a--) {
+            // Incluir años desde actual+1 hasta actual-5
+            for (let a = anioActual + 1; a >= anioActual - 5; a--) {
                 opciones += `<option value="${a}" ${a === anioActual ? 'selected' : ''}>${a}</option>`;
             }
             selectAnio.innerHTML = opciones;
@@ -5296,6 +5297,19 @@
             
             const hoy = new Date();
             let fechaInicio, fechaFin;
+            
+            // Sincronizar selectores según la vista
+            if (vista === 'dia' && fecha) {
+                const fechaSel = new Date(fecha + 'T12:00:00');
+                document.getElementById('estMes').value = fechaSel.getMonth();
+                // Verificar si el año existe en el selector
+                const selectAnio = document.getElementById('estAnio');
+                const anioFecha = fechaSel.getFullYear();
+                if (!Array.from(selectAnio.options).some(opt => parseInt(opt.value) === anioFecha)) {
+                    selectAnio.innerHTML += `<option value="${anioFecha}">${anioFecha}</option>`;
+                }
+                selectAnio.value = anioFecha;
+            }
             
             if (vista === 'dia') {
                 const fechaSel = fecha ? new Date(fecha + 'T00:00:00') : hoy;
