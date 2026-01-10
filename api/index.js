@@ -441,6 +441,79 @@ app.get('/api/clientes', async (req, res) => {
     }
 });
 
+// ============ GASTOS ============
+// Get gastos
+app.get('/api/gastos', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const { userId } = req.query;
+        let query = {};
+        if (userId && userId !== 'admin') {
+            query = { $or: [{ creadoPor: userId }, { userId: userId }] };
+        }
+        const gastos = await database.collection('gastos').find(query).toArray();
+        const safeGastos = gastos.map(g => ({ ...g, id: g._id.toString() }));
+        res.json(safeGastos);
+    } catch (e) {
+        res.json([]);
+    }
+});
+
+// Create gasto
+app.post('/api/gastos', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const result = await database.collection('gastos').insertOne(req.body);
+        res.json({ success: true, id: result.insertedId });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Update gasto
+app.put('/api/gastos/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let result;
+        try {
+            result = await database.collection('gastos').updateOne(
+                { _id: new ObjectId(searchId) },
+                { $set: req.body }
+            );
+        } catch (e) {
+            result = await database.collection('gastos').updateOne(
+                { id: searchId },
+                { $set: req.body }
+            );
+        }
+        res.json({ success: result.matchedCount > 0 });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
+// Delete gasto
+app.delete('/api/gastos/:id', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let result;
+        try {
+            result = await database.collection('gastos').deleteOne(
+                { _id: new ObjectId(searchId) }
+            );
+        } catch (e) {
+            result = await database.collection('gastos').deleteOne(
+                { id: searchId }
+            );
+        }
+        res.json({ success: result.deletedCount > 0 });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Create client
 app.post('/api/clients', async (req, res) => {
     try {
