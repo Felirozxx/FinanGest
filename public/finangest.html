@@ -4106,7 +4106,13 @@
         }
 
         async function restaurarBackupTrabajador(backupId) {
-            if (!confirm('⚠️ ¿RESTAURAR este backup?\n\nEsto reemplazará TODOS los datos de ' + backupTrabajadorNombre + ' con los del backup.\n\nLos datos de otros trabajadores NO se afectarán.\n\n¿Continuar?')) return;
+            const password = prompt('🔐 RESTAURAR BACKUP DE ' + backupTrabajadorNombre.toUpperCase() + '\n\n⚠️ Esto reemplazará TODOS los datos de este trabajador con los del backup.\n\nIngresa la contraseña para continuar:');
+            
+            if (!password) return;
+            if (password !== 'Pipe16137356') {
+                alert('❌ Contraseña incorrecta');
+                return;
+            }
             
             try {
                 const res = await fetch(API_URL + '/api/admin/restore-trabajador/' + backupId, { method: 'POST' });
@@ -4254,8 +4260,15 @@
         }
 
         async function restaurarBackupGeneral(backupId) {
-            if (!confirm('⚠️ ¿RESTAURAR este backup?\n\nEsto reemplazará los datos del trabajador con los del backup.\n\n¿Estás seguro?')) return;
-            if (!confirm('⚠️ ÚLTIMA CONFIRMACIÓN\n\n¿Continuar?')) return;
+            const password = prompt('🔐 RESTAURACIÓN DE BACKUP DEL SISTEMA\n\n⚠️ ADVERTENCIA: Esto restaurará TODOS los datos de TODOS los trabajadores a la fecha del backup.\n\nIngresa la contraseña de administrador para continuar:');
+            
+            if (!password) return;
+            if (password !== 'Pipe16137356') {
+                alert('❌ Contraseña incorrecta');
+                return;
+            }
+            
+            if (!confirm('⚠️ ÚLTIMA CONFIRMACIÓN\n\nSe restaurarán TODOS los usuarios, clientes y gastos del sistema.\n\n¿Continuar?')) return;
             
             try {
                 const res = await fetch(API_URL + '/api/admin/restore/' + backupId, { method: 'POST' });
