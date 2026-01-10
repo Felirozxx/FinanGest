@@ -418,7 +418,13 @@ app.get('/api/clientes', async (req, res) => {
         const { userId } = req.query;
         let query = {};
         if (userId && userId !== 'admin') {
-            query = { $or: [{ creadoPor: userId }, { 'cliente.creadoPor': userId }] };
+            query = { 
+                $or: [
+                    { creadoPor: userId }, 
+                    { 'cliente.creadoPor': userId },
+                    { userId: userId }
+                ] 
+            };
         }
         const clients = await database.collection('clients').find(query).toArray();
         // Mapear _id a id y aplanar estructura si está anidada
