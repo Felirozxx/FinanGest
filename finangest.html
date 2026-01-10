@@ -2504,7 +2504,15 @@
                     
                     // Backup automático al iniciar sesión
                     const userId = currentUser.id || currentUser._id;
-                    if (userId) {
+                    if (currentUser.isAdmin || currentUser.role === 'admin') {
+                        // Admin: backup del sistema completo
+                        fetch(API_URL + '/api/admin/backup', { 
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ auto: true })
+                        }).catch(err => console.error('Error backup sistema:', err));
+                    } else if (userId) {
+                        // Trabajador: backup de sus datos
                         fetch(API_URL + '/api/admin/backup-trabajador/' + userId, { 
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
