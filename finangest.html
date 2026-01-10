@@ -7593,7 +7593,7 @@
                                     <button class="btn btn-primary-custom" type="button" onclick="obtenerUbicacionAdmin()" title="Usar ubicación actual">
                                         <i class="fas fa-crosshairs"></i>
                                     </button>
-                                    ${cliente.lat && cliente.lng ? \`<button class="btn btn-success-custom" type="button" onclick="verMapaAdmin(${cliente.lat}, ${cliente.lng})" title="Ver en mapa"><i class="fas fa-map-marker-alt"></i></button>\` : ''}
+                                    ${cliente.lat && cliente.lng ? '<button class="btn btn-success-custom" type="button" onclick="verMapaAdmin(' + cliente.lat + ', ' + cliente.lng + ')" title="Ver en mapa"><i class="fas fa-map-marker-alt"></i></button>' : ''}
                                 </div>
                                 <input type="hidden" id="adminEditLat" value="${cliente.lat || ''}">
                                 <input type="hidden" id="adminEditLng" value="${cliente.lng || ''}">
@@ -7643,13 +7643,13 @@
                     
                     // Intentar obtener dirección
                     try {
-                        const res = await fetch(\`https://nominatim.openstreetmap.org/reverse?format=json&lat=\${lat}&lon=\${lng}\`);
+                        const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng);
                         const data = await res.json();
                         if (data.display_name) {
                             document.getElementById('adminEditUbicacion').value = data.display_name;
                         }
                     } catch (e) {
-                        document.getElementById('adminEditUbicacion').value = \`Lat: \${lat.toFixed(6)}, Lng: \${lng.toFixed(6)}\`;
+                        document.getElementById('adminEditUbicacion').value = 'Lat: ' + lat.toFixed(6) + ', Lng: ' + lng.toFixed(6);
                     }
                     
                     btn.innerHTML = originalHtml;
@@ -7665,7 +7665,7 @@
         }
         
         function verMapaAdmin(lat, lng) {
-            window.open(\`https://www.google.com/maps?q=\${lat},\${lng}\`, '_blank');
+            window.open('https://www.google.com/maps?q=' + lat + ',' + lng, '_blank');
         }
         
         async function guardarAdminEditCliente(clienteId) {
