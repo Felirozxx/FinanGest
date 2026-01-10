@@ -1790,10 +1790,10 @@
                         <div class="card-dark">
                             <label class="form-label"><i class="fas fa-filter me-2"></i>Ver</label>
                             <select class="form-control form-control-dark" id="calendarioVista" onchange="renderCalendarioClientes()">
+                                <option value="todos" selected>Todos</option>
                                 <option value="dia">Este día</option>
                                 <option value="semana">Esta semana</option>
-                                <option value="mes" selected>Este mes</option>
-                                <option value="todos">Todos</option>
+                                <option value="mes">Este mes</option>
                             </select>
                         </div>
                     </div>
@@ -3122,18 +3122,27 @@
         // Cargar configuración del usuario
         function cargarMiConfig() {
             if (!currentUser) return;
-            document.getElementById('configNombre').value = currentUser.nombre || '';
-            document.getElementById('configEmail').value = currentUser.email || '';
-            document.getElementById('configUsername').value = currentUser.username || '';
             
-            // Calcular días restantes de suscripción
-            const prefs = JSON.parse(localStorage.getItem('finangest_prefs_' + currentUser.id) || '{}');
-            document.getElementById('configSuscripcion').value = currentUser.role === 'admin' ? 'Administrador (Ilimitado)' : 'Plan Mensual Activo';
+            // Solo cargar si los elementos existen
+            const configNombre = document.getElementById('configNombre');
+            const configEmail = document.getElementById('configEmail');
+            const configUsername = document.getElementById('configUsername');
+            const configSuscripcion = document.getElementById('configSuscripcion');
+            
+            if (configNombre) configNombre.value = currentUser.nombre || '';
+            if (configEmail) configEmail.value = currentUser.email || '';
+            if (configUsername) configUsername.value = currentUser.username || '';
+            if (configSuscripcion) configSuscripcion.value = currentUser.role === 'admin' ? 'Administrador (Ilimitado)' : 'Plan Mensual Activo';
             
             // Cargar preferencias
-            document.getElementById('notifCobros').checked = prefs.notifCobros !== false;
-            document.getElementById('notifVencimientos').checked = prefs.notifVencimientos !== false;
-            document.getElementById('notifSonido').checked = prefs.notifSonido !== false;
+            const prefs = JSON.parse(localStorage.getItem('finangest_prefs_' + currentUser.id) || '{}');
+            const notifCobros = document.getElementById('notifCobros');
+            const notifVencimientos = document.getElementById('notifVencimientos');
+            const notifSonido = document.getElementById('notifSonido');
+            
+            if (notifCobros) notifCobros.checked = prefs.notifCobros !== false;
+            if (notifVencimientos) notifVencimientos.checked = prefs.notifVencimientos !== false;
+            if (notifSonido) notifSonido.checked = prefs.notifSonido !== false;
         }
         
         // Guardar preferencias del usuario
@@ -4542,35 +4551,33 @@
                 const vista = document.getElementById('calendarioVista').value;
                 
                 // Filtrar clientes
-                let clientesFiltrados = allClients;
+                let clientesFiltrados = [...allClients];
                 
                 // Filtrar por trabajador
                 if (trabajadorId) {
                     clientesFiltrados = clientesFiltrados.filter(c => c.creadoPor === trabajadorId);
                 }
                 
-                // Filtrar por fecha
-                const fechaBase = new Date(fechaSeleccionada + 'T12:00:00');
-                console.log('Fecha base:', fechaBase, 'Vista:', vista);
-                console.log('Total clientes antes de filtro:', clientesFiltrados.length);
-                
+                // Filtrar por fecha solo si no es "todos"
                 if (vista !== 'todos') {
+                    const fechaBase = new Date(fechaSeleccionada + 'T12:00:00');
                     clientesFiltrados = clientesFiltrados.filter(c => {
-                        const fechaStr = c.fechaCreacion || c.fechaInicio || c.fechaRegistro || c.createdAt;
-                        console.log('Cliente:', c.nombre, 'Fecha:', fechaStr);
-                        if (!fechaStr) return vista === 'todos'; // Si no tiene fecha, solo mostrar en "todos"
+                        // Buscar cualquier campo de fecha disponible
+                        const fechaStr = c.fechaCreacion || c.fechaInicio || c.fechaRegistro || c.createdAt || c.fecha;
+                        if (!fechaStr) return false;
+                        
                         const fechaCliente = new Date(fechaStr);
                         if (isNaN(fechaCliente.getTime())) return false;
                         
                         if (vista === 'dia') {
-                            const match = fechaCliente.toDateString() === fechaBase.toDateString();
-                            console.log('Comparando día:', fechaCliente.toDateString(), '===', fechaBase.toDateString(), '=', match);
-                            return match;
+                            return fechaCliente.toDateString() === fechaBase.toDateString();
                         } else if (vista === 'semana') {
                             const inicioSemana = new Date(fechaBase);
                             inicioSemana.setDate(fechaBase.getDate() - fechaBase.getDay());
+                            inicioSemana.setHours(0, 0, 0, 0);
                             const finSemana = new Date(inicioSemana);
                             finSemana.setDate(inicioSemana.getDate() + 6);
+                            finSemana.setHours(23, 59, 59, 999);
                             return fechaCliente >= inicioSemana && fechaCliente <= finSemana;
                         } else if (vista === 'mes') {
                             return fechaCliente.getMonth() === fechaBase.getMonth() && 
@@ -4580,12 +4587,10 @@
                     });
                 }
                 
-                console.log('Total clientes después de filtro:', clientesFiltrados.length);
-                
                 // Ordenar por fecha (más reciente primero)
                 clientesFiltrados.sort((a, b) => {
-                    const fechaA = new Date(a.fechaCreacion || a.fechaInicio || a.fechaRegistro || 0);
-                    const fechaB = new Date(b.fechaCreacion || b.fechaInicio || b.fechaRegistro || 0);
+                    const fechaA = new Date(a.fechaCreacion || a.fechaInicio || a.fechaRegistro || a.createdAt || 0);
+                    const fechaB = new Date(b.fechaCreacion || b.fechaInicio || b.fechaRegistro || b.createdAt || 0);
                     return fechaB - fechaA;
                 });
                 
