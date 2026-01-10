@@ -462,23 +462,36 @@ app.put('/api/clients/:id', async (req, res) => {
     try {
         const database = await connectDB();
         const searchId = req.params.id;
+        const updateData = req.body;
         
-        // Buscar por múltiples campos posibles
-        let result = await database.collection('clients').updateOne(
-            { $or: [{ id: searchId }, { id: parseInt(searchId) }] },
-            { $set: req.body }
-        );
-        
-        if (result.matchedCount === 0) {
-            try {
+        // Primero intentar con ObjectId (estructura nueva)
+        let result;
+        try {
+            const objectId = new ObjectId(searchId);
+            // Verificar si el documento tiene estructura anidada
+            const doc = await database.collection('clients').findOne({ _id: objectId });
+            if (doc && doc.cliente) {
+                // Estructura anidada - actualizar dentro de cliente
                 result = await database.collection('clients').updateOne(
-                    { _id: new ObjectId(searchId) },
-                    { $set: req.body }
+                    { _id: objectId },
+                    { $set: { cliente: updateData } }
                 );
-            } catch (e) {}
+            } else {
+                // Estructura plana
+                result = await database.collection('clients').updateOne(
+                    { _id: objectId },
+                    { $set: updateData }
+                );
+            }
+        } catch (e) {
+            // Si no es ObjectId válido, buscar por campo id
+            result = await database.collection('clients').updateOne(
+                { $or: [{ id: searchId }, { 'cliente.id': searchId }] },
+                { $set: { cliente: updateData } }
+            );
         }
         
-        res.json({ success: result.matchedCount > 0 });
+        res.json({ success: result && result.matchedCount > 0 });
     } catch (e) {
         res.json({ success: false, error: e.message });
     }
@@ -489,25 +502,40 @@ app.put('/api/clientes/:id', async (req, res) => {
     try {
         const database = await connectDB();
         const searchId = req.params.id;
+        const updateData = req.body;
         
-        // Buscar por múltiples campos posibles
-        let result = await database.collection('clients').updateOne(
-            { $or: [{ id: searchId }, { id: parseInt(searchId) }] },
-            { $set: req.body }
-        );
-        
-        if (result.matchedCount === 0) {
-            try {
+        // Primero intentar con ObjectId (estructura nueva)
+        let result;
+        try {
+            const objectId = new ObjectId(searchId);
+            // Verificar si el documento tiene estructura anidada
+            const doc = await database.collection('clients').findOne({ _id: objectId });
+            if (doc && doc.cliente) {
+                // Estructura anidada - actualizar dentro de cliente
                 result = await database.collection('clients').updateOne(
-                    { _id: new ObjectId(searchId) },
-                    { $set: req.body }
+                    { _id: objectId },
+                    { $set: { cliente: updateData } }
                 );
-            } catch (e) {}
+            } else {
+                // Estructura plana
+                result = await database.collection('clients').updateOne(
+                    { _id: objectId },
+                    { $set: updateData }
+                );
+            }
+        } catch (e) {
+            // Si no es ObjectId válido, buscar por campo id
+            result = await database.collection('clients').updateOne(
+                { $or: [{ id: searchId }, { 'cliente.id': searchId }] },
+                { $set: { cliente: updateData } }
+            );
         }
         
-        res.json({ success: result.matchedCount > 0 });
+        res.json({ success: result && result.matchedCount > 0 });
     } catch (e) {
         res.json({ success: false, error: e.message });
+    }
+});
     }
 });
 
