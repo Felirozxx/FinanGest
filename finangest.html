@@ -7537,25 +7537,21 @@
                                     <input type="number" class="form-control form-control-dark" id="adminEditMonto" value="${cliente.montoTotal || 0}" step="0.01">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">💵 Monto Cobrado (R$)</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditCobrado" value="${cliente.montoPagado || 0}" step="0.01">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">📋 Total a Pagar (R$)</label>
+                                    <label class="form-label">� Tootal a Pagar (R$)</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalPagar" value="${cliente.totalAPagar || 0}" step="0.01">
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">📈 Comisión (%)</label>
-                                    <input type="number" class="form-control form-control-dark" id="adminEditComision" value="${cliente.comisionPorcentaje || 20}" step="1">
-                                </div>
                             </div>
                             <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">� Comisión a(%)</label>
+                                    <input type="number" class="form-control form-control-dark" id="adminEditComision" value="${cliente.comisionPorcentaje || 20}" step="1">
+                                </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">✔️ Parcelas Pagas</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditParcelasPagas" value="${cliente.parcelasPagas || 0}">
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">🗓️ Total Parcelas</label>
                                     <input type="number" class="form-control form-control-dark" id="adminEditTotalParcelas" value="${cliente.numeroParcelas || 0}">
@@ -7674,7 +7670,6 @@
                 telefono: document.getElementById('adminEditTelefono').value,
                 tipoCliente: document.getElementById('adminEditTipo').value,
                 montoTotal: parseFloat(document.getElementById('adminEditMonto').value) || 0,
-                montoPagado: parseFloat(document.getElementById('adminEditCobrado').value) || 0,
                 totalAPagar: parseFloat(document.getElementById('adminEditTotalPagar').value) || 0,
                 comisionPorcentaje: parseFloat(document.getElementById('adminEditComision').value) || 20,
                 parcelasPagas: parseInt(document.getElementById('adminEditParcelasPagas').value) || 0,
