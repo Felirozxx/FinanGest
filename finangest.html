@@ -6282,11 +6282,25 @@
                 showMainApp();
             }
             
-            // Registrar Service Worker para PWA
+            // Limpiar Service Worker viejo y forzar actualización
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('Service Worker registrado'))
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(reg => reg.unregister());
+                });
+                // Registrar nuevo Service Worker
+                navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+                    .then(reg => {
+                        reg.update();
+                        console.log('Service Worker actualizado');
+                    })
                     .catch(err => console.log('Error SW:', err));
+            }
+            
+            // Limpiar caché viejo
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
             }
             
             // Listener para resetear variables cuando se cierra el modal de cliente
