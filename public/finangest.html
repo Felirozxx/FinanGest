@@ -2322,6 +2322,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
+                
+                // Verificar si la respuesta es JSON
+                const contentType = res.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Respuesta no es JSON:', await res.text());
+                    return alert('Error del servidor. Intenta de nuevo.');
+                }
+                
                 const data = await res.json();
                 if (data.success) {
                     currentUser = data.user;
