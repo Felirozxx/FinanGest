@@ -2467,6 +2467,8 @@
                 // Secciones
                 gastosPersonales: 'Gastos Personales',
                 gastosHoy: 'Gastos de Hoy',
+                sinGastosFecha: 'No hay gastos para esta fecha',
+                totalDia: 'Total del día',
                 filtrarFecha: 'Filtrar por fecha',
                 conUbicacion: 'Con ubicación',
                 sinUbicacion: 'Sin ubicación',
@@ -2641,6 +2643,8 @@
                 // Seções
                 gastosPersonales: 'Despesas Pessoais',
                 gastosHoy: 'Despesas de Hoje',
+                sinGastosFecha: 'Não há despesas para esta data',
+                totalDia: 'Total do dia',
                 filtrarFecha: 'Filtrar por data',
                 conUbicacion: 'Com localização',
                 sinUbicacion: 'Sem localização',
@@ -7469,16 +7473,16 @@
             const fechaFiltro = document.getElementById('gastoFechaFiltro').value;
             const hoy = new Date().toISOString().split('T')[0];
             
-            // Calcular totales
-            const gastosHoy = gastos.filter(g => g.fecha === hoy).reduce((s, g) => s + g.valor, 0);
+            // Calcular totales (asegurar que valor sea número)
+            const gastosHoy = gastos.filter(g => g.fecha === hoy).reduce((s, g) => s + (parseFloat(g.valor) || 0), 0);
             
             const inicioSemana = new Date();
             inicioSemana.setDate(inicioSemana.getDate() - inicioSemana.getDay());
-            const gastosSemana = gastos.filter(g => new Date(g.fecha) >= inicioSemana).reduce((s, g) => s + g.valor, 0);
+            const gastosSemana = gastos.filter(g => new Date(g.fecha) >= inicioSemana).reduce((s, g) => s + (parseFloat(g.valor) || 0), 0);
             
             const inicioMes = new Date();
             inicioMes.setDate(1);
-            const gastosMes = gastos.filter(g => new Date(g.fecha) >= inicioMes).reduce((s, g) => s + g.valor, 0);
+            const gastosMes = gastos.filter(g => new Date(g.fecha) >= inicioMes).reduce((s, g) => s + (parseFloat(g.valor) || 0), 0);
             
             document.getElementById('gastoHoy').textContent = 'R$ ' + gastosHoy.toFixed(2);
             document.getElementById('gastoSemana').textContent = 'R$ ' + gastosSemana.toFixed(2);
@@ -7486,12 +7490,12 @@
             
             // Filtrar por fecha seleccionada
             const gastosFiltrados = gastos.filter(g => g.fecha === fechaFiltro);
-            const totalDia = gastosFiltrados.reduce((s, g) => s + g.valor, 0);
+            const totalDia = gastosFiltrados.reduce((s, g) => s + (parseFloat(g.valor) || 0), 0);
             
             const container = document.getElementById('gastosLista');
             
             if (gastosFiltrados.length === 0) {
-                container.innerHTML = '<p class="text-center text-secondary py-4">No hay gastos para esta fecha</p>';
+                container.innerHTML = `<p class="text-center text-secondary py-4">${t('sinGastosFecha')}</p>`;
                 return;
             }
             
@@ -7502,7 +7506,7 @@
             
             container.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-color: var(--border-color) !important;">
-                    <strong>Total del día:</strong>
+                    <strong>${t('totalDia')}:</strong>
                     <span style="color: var(--accent-red); font-size: 1.3rem;">R$ ${totalDia.toFixed(2)}</span>
                 </div>
                 ${gastosFiltrados.map(g => `
@@ -7513,7 +7517,7 @@
                             <br><small class="text-secondary">${g.categoria}</small>
                         </div>
                         <div class="d-flex align-items-center gap-3">
-                            <span style="color: var(--accent-red);">R$ ${g.valor.toFixed(2)}</span>
+                            <span style="color: var(--accent-red);">R$ ${(parseFloat(g.valor) || 0).toFixed(2)}</span>
                             <button class="btn btn-sm" style="background: var(--accent-red); color: white;" onclick="eliminarGasto('${g.id}')">
                                 <i class="fas fa-trash"></i>
                             </button>
