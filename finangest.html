@@ -4080,47 +4080,36 @@
         // Función para establecer rango de fechas rápido
         function setChartRange(range) {
             const hoy = new Date();
-            let fechaInicio = new Date();
+            let fechaFin = new Date();
+            let fechaInicio = new Date(hoy);
             
             // Actualizar botones activos
             document.querySelectorAll('.chart-range-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
             switch(range) {
-                case '1w': // 1 semana
-                    fechaInicio.setDate(hoy.getDate() - 7);
+                case '1w': // 1 semana hacia adelante
+                    fechaFin.setDate(hoy.getDate() + 7);
                     break;
-                case '1m': // 1 mes
-                    fechaInicio.setMonth(hoy.getMonth() - 1);
+                case '1m': // 1 mes hacia adelante
+                    fechaFin.setMonth(hoy.getMonth() + 1);
                     break;
-                case '3m': // 3 meses
-                    fechaInicio.setMonth(hoy.getMonth() - 3);
+                case '3m': // 3 meses hacia adelante
+                    fechaFin.setMonth(hoy.getMonth() + 3);
                     break;
-                case '6m': // 6 meses
-                    fechaInicio.setMonth(hoy.getMonth() - 6);
+                case '6m': // 6 meses hacia adelante
+                    fechaFin.setMonth(hoy.getMonth() + 6);
                     break;
-                case '1y': // 1 año
-                    fechaInicio.setFullYear(hoy.getFullYear() - 1);
+                case '1y': // 1 año hacia adelante
+                    fechaFin.setFullYear(hoy.getFullYear() + 1);
                     break;
-                case 'all': // Todo (desde el primer cliente)
-                    // Mostrar últimos 7 días hasta hoy por defecto
-                    fechaInicio = new Date(hoy);
-                    fechaInicio.setDate(fechaInicio.getDate() - 7);
-                    if (clientes && clientes.length > 0) {
-                        const fechas = clientes.map(c => new Date(c.fechaCreacion || c.fechaInicio || c.fechaRegistro)).filter(f => !isNaN(f.getTime()));
-                        if (fechas.length > 0) {
-                            const fechaMasAntigua = new Date(Math.min(...fechas.map(f => f.getTime())));
-                            // Si hay datos más antiguos, mostrar desde ahí
-                            if (fechaMasAntigua < fechaInicio) {
-                                fechaInicio = fechaMasAntigua;
-                            }
-                        }
-                    }
+                case 'all': // Todo - desde hoy hasta 30 días
+                    fechaFin.setDate(hoy.getDate() + 30);
                     break;
             }
             
             document.getElementById('chartFechaInicio').value = fechaInicio.toISOString().split('T')[0];
-            document.getElementById('chartFechaFin').value = hoy.toISOString().split('T')[0];
+            document.getElementById('chartFechaFin').value = fechaFin.toISOString().split('T')[0];
             renderChart();
         }
         
@@ -4166,23 +4155,24 @@
                     inputFin.value = fechaFin.toISOString().split('T')[0];
                 }
             } else {
-                // Por defecto: últimos 7 días hasta hoy
+                // Por defecto: desde hoy hacia 7 días en el futuro
                 const hoy = new Date();
-                fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
-                fechaInicio = new Date(fechaFin);
-                fechaInicio.setDate(fechaInicio.getDate() - 6);
+                fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+                fechaFin = new Date(fechaInicio);
+                fechaFin.setDate(fechaFin.getDate() + 6);
+                fechaFin.setHours(23, 59, 59);
                 
                 inputInicio.value = fechaInicio.toISOString().split('T')[0];
-                inputFin.value = hoy.toISOString().split('T')[0];
+                inputFin.value = fechaFin.toISOString().split('T')[0];
             }
             
             // Variables para acumular totales
             let cobradoAcumulado = 0;
             let prestadoAcumulado = 0;
             
-            // Generar días entre las fechas (de más reciente a más antiguo)
-            let current = new Date(fechaFin);
-            while (current >= fechaInicio) {
+            // Generar días entre las fechas (de fecha inicio a fecha fin)
+            let current = new Date(fechaInicio);
+            while (current <= fechaFin) {
                 const dia = current.getDate();
                 const mes = current.getMonth();
                 const anio = current.getFullYear();
@@ -4222,13 +4212,8 @@
                 datosCobrado.push(cobradoAcumulado);
                 datosPrestado.push(prestadoAcumulado);
                 
-                current.setDate(current.getDate() - 1);
+                current.setDate(current.getDate() + 1);
             }
-            
-            // Invertir arrays para que el gráfico vaya de antiguo a reciente pero con datos acumulados correctos
-            labels.reverse();
-            datosCobrado.reverse();
-            datosPrestado.reverse();
             
             mainChart = new Chart(ctx, {
                 type: 'line',
