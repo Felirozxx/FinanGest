@@ -831,10 +831,10 @@
                             <label class="form-label"><i class="fas fa-star me-2"></i><span data-translate="tipoCliente">Tipo de Cliente</span></label>
                             <select class="form-control form-control-dark" id="clientesFiltroTipo" onchange="renderClientes()">
                                 <option value="" data-translate="todos">Todos</option>
-                                <option value="nuevo">🆕 Nuevo</option>
-                                <option value="bueno">✅ Buen Cliente</option>
-                                <option value="regular">⚠️ Regular</option>
-                                <option value="malo">❌ Mala Paga</option>
+                                <option value="nuevo" data-translate-opt="tipoNuevo">🆕 Novo</option>
+                                <option value="bueno" data-translate-opt="tipoBueno">✅ Bom Cliente</option>
+                                <option value="regular" data-translate-opt="tipoRegular">⚠️ Regular</option>
+                                <option value="malo" data-translate-opt="tipoMalo">❌ Mau Pagador</option>
                             </select>
                         </div>
                     </div>
@@ -1224,27 +1224,27 @@
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar me-2"></i><span data-translate="mes">Mes</span></label>
+                            <label class="form-label"><i class="fas fa-calendar me-2"></i><span data-translate="mes">Mês</span></label>
                             <select class="form-control form-control-dark" id="historialMes" onchange="renderHistorial()">
-                                <option value="" data-translate="todosMeses">Todos los meses</option>
-                                <option value="0">Enero</option>
-                                <option value="1">Febrero</option>
-                                <option value="2">Marzo</option>
-                                <option value="3">Abril</option>
-                                <option value="4">Mayo</option>
-                                <option value="5">Junio</option>
-                                <option value="6">Julio</option>
-                                <option value="7">Agosto</option>
-                                <option value="8">Septiembre</option>
-                                <option value="9">Octubre</option>
-                                <option value="10">Noviembre</option>
-                                <option value="11">Diciembre</option>
+                                <option value="" data-translate="todosMeses">Todos os meses</option>
+                                <option value="0" data-translate-opt="enero">Janeiro</option>
+                                <option value="1" data-translate-opt="febrero">Fevereiro</option>
+                                <option value="2" data-translate-opt="marzo">Março</option>
+                                <option value="3" data-translate-opt="abril">Abril</option>
+                                <option value="4" data-translate-opt="mayo">Maio</option>
+                                <option value="5" data-translate-opt="junio">Junho</option>
+                                <option value="6" data-translate-opt="julio">Julho</option>
+                                <option value="7" data-translate-opt="agosto">Agosto</option>
+                                <option value="8" data-translate-opt="septiembre">Setembro</option>
+                                <option value="9" data-translate-opt="octubre">Outubro</option>
+                                <option value="10" data-translate-opt="noviembre">Novembro</option>
+                                <option value="11" data-translate-opt="diciembre">Dezembro</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-day me-2"></i><span data-translate="diaEspecifico">Día específico</span></label>
+                            <label class="form-label"><i class="fas fa-calendar-day me-2"></i><span data-translate="diaEspecifico">Dia específico</span></label>
                             <input type="date" class="form-control form-control-dark" id="historialDia" onchange="renderHistorial()">
                         </div>
                     </div>
@@ -1266,10 +1266,10 @@
                             <label class="form-label"><i class="fas fa-star me-2"></i><span data-translate="tipoCliente">Tipo de Cliente</span></label>
                             <select class="form-control form-control-dark" id="historialTipo" onchange="renderHistorial()">
                                 <option value="" data-translate="todos">Todos</option>
-                                <option value="nuevo">🆕 Nuevo</option>
-                                <option value="bueno">✅ Buen Cliente</option>
-                                <option value="regular">⚠️ Regular</option>
-                                <option value="malo">❌ Mala Paga</option>
+                                <option value="nuevo" data-translate-opt="tipoNuevo">🆕 Novo</option>
+                                <option value="bueno" data-translate-opt="tipoBueno">✅ Bom Cliente</option>
+                                <option value="regular" data-translate-opt="tipoRegular">⚠️ Regular</option>
+                                <option value="malo" data-translate-opt="tipoMalo">❌ Mau Pagador</option>
                             </select>
                         </div>
                     </div>
@@ -1281,19 +1281,19 @@
                     <div class="row text-center">
                         <div class="col-3">
                             <div style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold;" id="histNuevos">0</div>
-                            <small class="text-secondary">🆕 Nuevos</small>
+                            <small class="text-secondary">🆕 <span data-translate="nuevos">Novos</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-green); font-size: 1.3rem; font-weight: bold;" id="histBuenos">0</div>
-                            <small class="text-secondary">✅ Buenos</small>
+                            <small class="text-secondary">✅ <span data-translate="buenos">Bons</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-yellow); font-size: 1.3rem; font-weight: bold;" id="histRegulares">0</div>
-                            <small class="text-secondary">⚠️ Regulares</small>
+                            <small class="text-secondary">⚠️ <span data-translate="regulares">Regulares</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-red); font-size: 1.3rem; font-weight: bold;" id="histMalos">0</div>
-                            <small class="text-secondary">❌ Mala Paga</small>
+                            <small class="text-secondary">❌ <span data-translate="malaPaga">Mau Pagador</span></small>
                         </div>
                     </div>
                 </div>
@@ -1848,13 +1848,13 @@
                         <div class="card-dark">
                             <label class="form-label"><i class="fas fa-user-tie me-2"></i>Filtrar por Trabajador</label>
                             <select class="form-control form-control-dark" id="calendarioTrabajador" onchange="renderCalendarioClientes()">
-                                <option value="">Todos los trabajadores</option>
+                                <option value="" data-translate="todos">Todos</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar me-2"></i>Seleccionar Fecha</label>
+                            <label class="form-label"><i class="fas fa-calendar me-2"></i><span data-translate="seleccionarFecha">Selecionar Data</span></label>
                             <input type="date" class="form-control form-control-dark" id="calendarioFecha" onchange="renderCalendarioClientes()">
                         </div>
                     </div>
@@ -1957,11 +1957,11 @@
                         <div class="card-dark">
                             <label class="form-label"><i class="fas fa-star me-2"></i>Tipo de Cliente</label>
                             <select class="form-control form-control-dark" id="adminHistTipo" onchange="renderAdminHistorialTrabajador()">
-                                <option value="">Todos</option>
-                                <option value="nuevo">🆕 Nuevo</option>
-                                <option value="bueno">✅ Buen Cliente</option>
-                                <option value="regular">⚠️ Regular</option>
-                                <option value="malo">❌ Mala Paga</option>
+                                <option value="" data-translate="todos">Todos</option>
+                                <option value="nuevo" data-translate-opt="tipoNuevo">🆕 Novo</option>
+                                <option value="bueno" data-translate-opt="tipoBueno">✅ Bom Cliente</option>
+                                <option value="regular" data-translate-opt="tipoRegular">⚠️ Regular</option>
+                                <option value="malo" data-translate-opt="tipoMalo">❌ Mau Pagador</option>
                             </select>
                         </div>
                     </div>
@@ -1969,23 +1969,23 @@
                 
                 <!-- Resumen por tipo -->
                 <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-star me-2" style="color: var(--accent-yellow);"></i>Por Tipo de Cliente</h6>
+                    <h6 class="mb-3"><i class="fas fa-star me-2" style="color: var(--accent-yellow);"></i><span data-translate="porTipoCliente">Por Tipo de Cliente</span></h6>
                     <div class="row text-center">
                         <div class="col-3">
                             <div style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold;" id="adminHistNuevos">0</div>
-                            <small class="text-secondary">🆕 Nuevos</small>
+                            <small class="text-secondary">🆕 <span data-translate="nuevos">Novos</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-green); font-size: 1.3rem; font-weight: bold;" id="adminHistBuenos">0</div>
-                            <small class="text-secondary">✅ Buenos</small>
+                            <small class="text-secondary">✅ <span data-translate="buenos">Bons</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-yellow); font-size: 1.3rem; font-weight: bold;" id="adminHistRegulares">0</div>
-                            <small class="text-secondary">⚠️ Regulares</small>
+                            <small class="text-secondary">⚠️ <span data-translate="regulares">Regulares</span></small>
                         </div>
                         <div class="col-3">
                             <div style="color: var(--accent-red); font-size: 1.3rem; font-weight: bold;" id="adminHistMalos">0</div>
-                            <small class="text-secondary">❌ Mala Paga</small>
+                            <small class="text-secondary">❌ <span data-translate="malaPaga">Mau Pagador</span></small>
                         </div>
                     </div>
                 </div>
@@ -2208,39 +2208,39 @@
                             </small>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label"><i class="fas fa-star me-1"></i>Tipo de Cliente</label>
+                            <label class="form-label"><i class="fas fa-star me-1"></i><span data-translate="tipoCliente">Tipo de Cliente</span></label>
                             <select class="form-control form-control-dark" id="clienteTipo">
-                                <option value="nuevo">🆕 Nuevo</option>
-                                <option value="bueno">✅ Buen Cliente</option>
-                                <option value="regular">⚠️ Regular</option>
-                                <option value="malo">❌ Mala Paga</option>
+                                <option value="nuevo" data-translate-opt="tipoNuevo">🆕 Novo</option>
+                                <option value="bueno" data-translate-opt="tipoBueno">✅ Bom Cliente</option>
+                                <option value="regular" data-translate-opt="tipoRegular">⚠️ Regular</option>
+                                <option value="malo" data-translate-opt="tipoMalo">❌ Mau Pagador</option>
                             </select>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label"><i class="fas fa-store me-1"></i>Tipo de Negocio</label>
+                            <label class="form-label"><i class="fas fa-store me-1"></i><span data-translate="tipoNegocio">Tipo de Negócio</span></label>
                             <select class="form-control form-control-dark" id="clienteNegocio" onchange="toggleOtroNegocio()">
-                                <option value="">-- Seleccionar --</option>
-                                <option value="tienda">🏪 Tienda</option>
-                                <option value="restaurante">🍽️ Restaurante</option>
-                                <option value="taxista">🚕 Taxista</option>
-                                <option value="vendedor">🛒 Vendedor Ambulante</option>
-                                <option value="peluqueria">💇 Peluquería/Barbería</option>
-                                <option value="taller">🔧 Taller Mecánico</option>
-                                <option value="farmacia">💊 Farmacia</option>
-                                <option value="panaderia">🥖 Panadería</option>
-                                <option value="carniceria">🥩 Carnicería</option>
-                                <option value="ferreteria">🔨 Ferretería</option>
-                                <option value="ropa">👕 Tienda de Ropa</option>
-                                <option value="celulares">📱 Celulares/Tecnología</option>
-                                <option value="otro">📦 Otro</option>
+                                <option value="" data-translate-opt="seleccionar">-- Selecionar --</option>
+                                <option value="tienda" data-translate-opt="negTienda">🏪 Loja</option>
+                                <option value="restaurante" data-translate-opt="negRestaurante">🍽️ Restaurante</option>
+                                <option value="taxista" data-translate-opt="negTaxista">🚕 Taxista</option>
+                                <option value="vendedor" data-translate-opt="negVendedor">🛒 Vendedor Ambulante</option>
+                                <option value="peluqueria" data-translate-opt="negPeluqueria">💇 Salão/Barbearia</option>
+                                <option value="taller" data-translate-opt="negTaller">🔧 Oficina Mecânica</option>
+                                <option value="farmacia" data-translate-opt="negFarmacia">💊 Farmácia</option>
+                                <option value="panaderia" data-translate-opt="negPanaderia">🥖 Padaria</option>
+                                <option value="carniceria" data-translate-opt="negCarniceria">🥩 Açougue</option>
+                                <option value="ferreteria" data-translate-opt="negFerreteria">🔨 Ferragem</option>
+                                <option value="ropa" data-translate-opt="negRopa">👕 Loja de Roupas</option>
+                                <option value="celulares" data-translate-opt="negCelulares">📱 Celulares/Tecnologia</option>
+                                <option value="otro" data-translate-opt="negOtro">📦 Outro</option>
                             </select>
                             <input type="text" class="form-control form-control-dark mt-2" id="clienteNegocioOtro" placeholder="Escribe el tipo de negocio..." style="display: none;">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label"><i class="fas fa-building me-1"></i>Nombre del Negocio (opcional)</label>
-                            <input type="text" class="form-control form-control-dark" id="clienteNombreNegocio" placeholder="Ej: Tienda Don José">
+                            <label class="form-label"><i class="fas fa-building me-1"></i><span data-translate="nombreNegocio">Nome do Negócio (opcional)</span></label>
+                            <input type="text" class="form-control form-control-dark" id="clienteNombreNegocio" data-translate-placeholder="ejTienda" placeholder="Ex: Loja do José">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -2575,7 +2575,32 @@
                 renovarPrestamo: 'Renovar Préstamo',
                 // Parcelas
                 parcelas: 'parcelas',
-                de: 'de'
+                de: 'de',
+                // Tipos de cliente (para selects)
+                tipoNuevo: '🆕 Nuevo',
+                tipoBueno: '✅ Buen Cliente',
+                tipoRegular: '⚠️ Regular',
+                tipoMalo: '❌ Mala Paga',
+                todosAnios: 'Todos los años',
+                todosMeses: 'Todos los meses',
+                // Tipos de negocio
+                seleccionar: '-- Seleccionar --',
+                negTienda: '🏪 Tienda',
+                negRestaurante: '🍽️ Restaurante',
+                negTaxista: '🚕 Taxista',
+                negVendedor: '🛒 Vendedor Ambulante',
+                negPeluqueria: '💇 Peluquería/Barbería',
+                negTaller: '🔧 Taller Mecánico',
+                negFarmacia: '💊 Farmacia',
+                negPanaderia: '🥖 Panadería',
+                negCarniceria: '🥩 Carnicería',
+                negFerreteria: '🔨 Ferretería',
+                negRopa: '👕 Tienda de Ropa',
+                negCelulares: '📱 Celulares/Tecnología',
+                negOtro: '📦 Otro',
+                seleccionarFecha: 'Seleccionar Fecha',
+                nombreNegocio: 'Nombre del Negocio (opcional)',
+                ejTienda: 'Ej: Tienda Don José'
             },
             pt: {
                 // Navegação
@@ -2774,7 +2799,30 @@
                 renovarPrestamo: 'Renovar Empréstimo',
                 // Parcelas
                 parcelas: 'parcelas',
-                de: 'de'
+                de: 'de',
+                // Tipos de cliente (para selects)
+                tipoNuevo: '🆕 Novo',
+                tipoBueno: '✅ Bom Cliente',
+                tipoRegular: '⚠️ Regular',
+                tipoMalo: '❌ Mau Pagador',
+                // Tipos de negócio
+                seleccionar: '-- Selecionar --',
+                negTienda: '🏪 Loja',
+                negRestaurante: '🍽️ Restaurante',
+                negTaxista: '🚕 Taxista',
+                negVendedor: '🛒 Vendedor Ambulante',
+                negPeluqueria: '💇 Salão/Barbearia',
+                negTaller: '🔧 Oficina Mecânica',
+                negFarmacia: '💊 Farmácia',
+                negPanaderia: '🥖 Padaria',
+                negCarniceria: '🥩 Açougue',
+                negFerreteria: '🔨 Ferragem',
+                negRopa: '👕 Loja de Roupas',
+                negCelulares: '📱 Celulares/Tecnologia',
+                negOtro: '📦 Outro',
+                seleccionarFecha: 'Selecionar Data',
+                nombreNegocio: 'Nome do Negócio (opcional)',
+                ejTienda: 'Ex: Loja do José'
             }
         };
         
@@ -2813,6 +2861,14 @@
             document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-translate-placeholder');
                 el.placeholder = t(key);
+            });
+            // Actualizar opciones de select con data-translate-opt
+            document.querySelectorAll('[data-translate-opt]').forEach(el => {
+                const key = el.getAttribute('data-translate-opt');
+                const translated = t(key);
+                if (translated && translated !== key) {
+                    el.textContent = translated;
+                }
             });
             // Recargar secciones dinámicas
             if (typeof renderClientes === 'function') renderClientes();
