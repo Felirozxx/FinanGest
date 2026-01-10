@@ -2464,6 +2464,16 @@
                 pagado: 'Pagado',
                 pendientes: 'Pendientes',
                 pagadosHoy: 'Pagados Hoy',
+                // Cobros
+                cobradoEsteDia: 'Cobrado este día',
+                pagosRegistrados: 'Pagos registrados',
+                clientesPendientes: 'Clientes pendientes',
+                pagosDel: 'Pagos del',
+                pagoRealizado: 'Pago realizado',
+                aLas: 'a las',
+                sinTelefono: 'Sin teléfono',
+                pendientesCobro: 'Pendientes de cobro',
+                parcela: 'Parcela',
                 // Secciones
                 gastosPersonales: 'Gastos Personales',
                 gastosHoy: 'Gastos de Hoy',
@@ -2640,6 +2650,16 @@
                 pagado: 'Pago',
                 pendientes: 'Pendentes',
                 pagadosHoy: 'Pagos Hoje',
+                // Cobranças
+                cobradoEsteDia: 'Cobrado neste dia',
+                pagosRegistrados: 'Pagamentos registrados',
+                clientesPendientes: 'Clientes pendentes',
+                pagosDel: 'Pagamentos de',
+                pagoRealizado: 'Pagamento realizado',
+                aLas: 'às',
+                sinTelefono: 'Sem telefone',
+                pendientesCobro: 'Pendentes de cobrança',
+                parcela: 'Parcela',
                 // Seções
                 gastosPersonales: 'Despesas Pessoais',
                 gastosHoy: 'Despesas de Hoje',
@@ -5068,19 +5088,19 @@
                 <div class="col-md-4">
                     <div class="stat-card green">
                         <div class="stat-value">R$ ${totalCobradoHoy.toFixed(2)}</div>
-                        <div class="stat-label"><i class="fas fa-check-circle me-2"></i>Cobrado este día</div>
+                        <div class="stat-label"><i class="fas fa-check-circle me-2"></i>${t('cobradoEsteDia')}</div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="stat-card yellow">
                         <div class="stat-value">${pagosDelDia.length}</div>
-                        <div class="stat-label"><i class="fas fa-receipt me-2"></i>Pagos registrados</div>
+                        <div class="stat-label"><i class="fas fa-receipt me-2"></i>${t('pagosRegistrados')}</div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="stat-card">
                         <div class="stat-value">${activos.length}</div>
-                        <div class="stat-label"><i class="fas fa-users me-2"></i>Clientes pendientes</div>
+                        <div class="stat-label"><i class="fas fa-users me-2"></i>${t('clientesPendientes')}</div>
                     </div>
                 </div>
             `;
@@ -5089,20 +5109,20 @@
             let html = '';
             
             if (pagosDelDia.length > 0) {
-                html += `<h6 class="mb-3" style="color: var(--accent-green);"><i class="fas fa-check-circle me-2"></i>Pagos del ${fechaSeleccionada}</h6>`;
+                html += `<h6 class="mb-3" style="color: var(--accent-green);"><i class="fas fa-check-circle me-2"></i>${t('pagosDel')} ${fechaSeleccionada}</h6>`;
                 html += pagosDelDia.map(p => `
                     <div class="client-card" style="border-left: 3px solid var(--accent-green);">
                         <div class="row align-items-center">
                             <div class="col-md-4">
                                 <strong>${p.cliente}</strong><br>
-                                <small class="text-secondary">${p.telefono || 'Sin teléfono'}</small>
+                                <small class="text-secondary">${p.telefono || t('sinTelefono')}</small>
                             </div>
                             <div class="col-md-4">
-                                <small class="text-secondary">Pago realizado${p.hora ? ' a las ' + p.hora : ''}</small><br>
+                                <small class="text-secondary">${t('pagoRealizado')}${p.hora ? ' ' + t('aLas') + ' ' + p.hora : ''}</small><br>
                                 <span style="color: var(--accent-green); font-size: 1.2rem;">R$ ${p.valor.toFixed(2)}</span>
                             </div>
                             <div class="col-md-4 text-end">
-                                <span class="badge-status badge-active"><i class="fas fa-check me-1"></i>Pagado</span>
+                                <span class="badge-status badge-active"><i class="fas fa-check me-1"></i>${t('pagado')}</span>
                             </div>
                         </div>
                     </div>
@@ -5111,20 +5131,20 @@
             
             // Mostrar clientes pendientes
             if (activos.length > 0) {
-                html += `<h6 class="mb-3 mt-4" style="color: var(--accent-yellow);"><i class="fas fa-clock me-2"></i>Pendientes de cobro</h6>`;
+                html += `<h6 class="mb-3 mt-4" style="color: var(--accent-yellow);"><i class="fas fa-clock me-2"></i>${t('pendientesCobro')}</h6>`;
                 html += activos.map(c => `
                     <div class="client-card">
                         <div class="row align-items-center">
                             <div class="col-md-3">
                                 <strong>${c.nombre}</strong><br>
-                                <small class="text-secondary">${c.telefono || 'Sin teléfono'}</small>
+                                <small class="text-secondary">${c.telefono || t('sinTelefono')}</small>
                             </div>
                             <div class="col-md-2">
-                                <small class="text-secondary">Parcela</small><br>
+                                <small class="text-secondary">${t('parcela')}</small><br>
                                 <span style="color: var(--accent-cyan);">R$ ${(c.valorParcela || 0).toFixed(2)}</span>
                             </div>
                             <div class="col-md-2">
-                                <small class="text-secondary">Restante</small><br>
+                                <small class="text-secondary">${t('restante')}</small><br>
                                 <span style="color: var(--accent-red);">R$ ${((c.totalAPagar || 0) - (c.montoPagado || 0)).toFixed(2)}</span>
                             </div>
                             <div class="col-md-3">
