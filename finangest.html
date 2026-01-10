@@ -3390,7 +3390,7 @@
                             <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
                                 <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
                             </p>
-                            <canvas id="renewalQrCanvas" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;"></canvas>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixKey)}" alt="QR Code PIX" style="border-radius: 12px; border: 3px solid var(--accent-cyan); width: 180px; height: 180px; background: white;">
                             <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
                                 <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
                                 <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
@@ -3409,8 +3409,6 @@
                             </p>
                         </div>
                     `;
-                    // Generar QR Code
-                    QRCode.toCanvas(document.getElementById('renewalQrCanvas'), pixKey, { width: 180, margin: 2 });
                 }
             } catch (e) {
                 alert('Erro de conexão ao gerar PIX');
@@ -3579,7 +3577,7 @@
                             <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
                                 <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
                             </p>
-                            <canvas id="pixQrCanvas" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;"></canvas>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixKey)}" alt="QR Code PIX" style="border-radius: 12px; border: 3px solid var(--accent-cyan); width: 180px; height: 180px; background: white;">
                             <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
                                 <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
                                 <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
@@ -3602,8 +3600,6 @@
                             </a>
                         </div>
                     `;
-                    // Generar QR Code
-                    QRCode.toCanvas(document.getElementById('pixQrCanvas'), pixKey, { width: 180, margin: 2 });
                 }
             } catch (e) {
                 // Error de conexión - mostrar PIX manual con QR
@@ -3616,7 +3612,7 @@
                         <p style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;">
                             <i class="fas fa-qrcode me-2"></i>Escanea o copia la chave
                         </p>
-                        <canvas id="pixQrCanvasError" style="border-radius: 12px; border: 3px solid var(--accent-cyan); max-width: 180px;"></canvas>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixKey)}" alt="QR Code PIX" style="border-radius: 12px; border: 3px solid var(--accent-cyan); width: 180px; height: 180px; background: white;">
                         <div style="background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin: 15px 0;">
                             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">Chave Aleatória</p>
                             <p style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: bold; margin: 0; word-break: break-all;">${pixKey}</p>
@@ -3639,8 +3635,6 @@
                         </a>
                     </div>
                 `;
-                // Generar QR Code
-                QRCode.toCanvas(document.getElementById('pixQrCanvasError'), pixKey, { width: 180, margin: 2 });
             }
         }
 
