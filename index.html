@@ -2742,6 +2742,8 @@
                     pendientesBadge.textContent = usuariosPendientes.length;
                     pendientesList.innerHTML = usuariosPendientes.map(u => {
                         const fechaReg = u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleString('es-BR') : 'Desconocida';
+                        const odId = u.id || u._id; // Usar id o _id
+                        console.log('Usuario pendiente:', u.nombre, 'ID:', odId);
                         return `
                         <div class="d-flex justify-content-between align-items-center py-3 border-bottom" style="border-color: var(--border-color) !important;">
                             <div>
@@ -2752,10 +2754,10 @@
                                 <br><small class="text-secondary"><i class="fas fa-clock me-1"></i>Registrado: ${fechaReg}</small>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-success-custom" onclick="activarUsuario('${u.id}')">
+                                <button class="btn btn-sm btn-success-custom" onclick="activarUsuario('${odId}')">
                                     <i class="fas fa-check me-1"></i>Activar
                                 </button>
-                                <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="rechazarUsuario('${u.id}')">
+                                <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="rechazarUsuario('${odId}')">
                                     <i class="fas fa-times me-1"></i>Rechazar
                                 </button>
                             </div>
