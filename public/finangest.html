@@ -651,7 +651,7 @@
             </div>
             <div style="position: absolute; bottom: 20px; left: 20px; right: 20px;">
                 <div class="nav-item" onclick="logout()" style="border-radius: 8px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                    <i class="fas fa-sign-out-alt"></i><span data-translate="cerrarSesion">Cerrar Sesión</span>
                 </div>
             </div>
         </nav>
@@ -683,37 +683,37 @@
                     <div class="col-md-2 col-6">
                         <div class="stat-card">
                             <div class="stat-value" id="statClientes">0</div>
-                            <div class="stat-label"><i class="fas fa-users me-2"></i>Clientes Activos</div>
+                            <div class="stat-label"><i class="fas fa-users me-2"></i><span data-translate="clientesActivos">Clientes Activos</span></div>
                         </div>
                     </div>
                     <div class="col-md-2 col-6">
                         <div class="stat-card green">
                             <div class="stat-value" id="statPrestado">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-hand-holding-usd me-2"></i>Total Prestado</div>
+                            <div class="stat-label"><i class="fas fa-hand-holding-usd me-2"></i><span data-translate="totalPrestado">Total Prestado</span></div>
                         </div>
                     </div>
                     <div class="col-md-2 col-6">
                         <div class="stat-card yellow">
                             <div class="stat-value" id="statCobrado">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-coins me-2"></i>Total Cobrado</div>
+                            <div class="stat-label"><i class="fas fa-coins me-2"></i><span data-translate="totalCobrado">Total Cobrado</span></div>
                         </div>
                     </div>
                     <div class="col-md-2 col-6">
                         <div class="stat-card red">
                             <div class="stat-value" id="statPendiente">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-clock me-2"></i>Pendiente</div>
+                            <div class="stat-label"><i class="fas fa-clock me-2"></i><span data-translate="pendiente">Pendiente</span></div>
                         </div>
                     </div>
                     <div class="col-md-2 col-6">
                         <div class="stat-card" style="border-left-color: #a855f7;">
                             <div class="stat-value" id="statGastos">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-receipt me-2"></i>Gastos</div>
+                            <div class="stat-label"><i class="fas fa-receipt me-2"></i><span data-translate="gastos">Gastos</span></div>
                         </div>
                     </div>
                     <div class="col-md-2 col-6">
                         <div class="stat-card" style="border-left-color: #f97316;">
                             <div class="stat-value" id="statMicroseguros">R$ 0</div>
-                            <div class="stat-label"><i class="fas fa-shield-alt me-2"></i>Microseguros</div>
+                            <div class="stat-label"><i class="fas fa-shield-alt me-2"></i><span data-translate="microseguros">Microseguros</span></div>
                         </div>
                     </div>
                 </div>
@@ -721,7 +721,7 @@
                     <div class="col-lg-8">
                         <div class="card-dark">
                             <div class="d-flex justify-content-between align-items-start mb-3">
-                                <h5 class="mb-0"><i class="fas fa-chart-area me-2" style="color: var(--accent-cyan);"></i>Resumen</h5>
+                                <h5 class="mb-0"><i class="fas fa-chart-area me-2" style="color: var(--accent-cyan);"></i><span data-translate="resumen">Resumen</span></h5>
                                 <div class="text-end">
                                     <!-- Botones de filtro rápido -->
                                     <div class="btn-group btn-group-sm mb-2" role="group">
@@ -744,7 +744,7 @@
                     </div>
                     <div class="col-lg-4">
                         <div class="card-dark h-100">
-                            <h5 class="mb-4"><i class="fas fa-tasks me-2" style="color: var(--accent-green);"></i>Cobros de Hoy</h5>
+                            <h5 class="mb-4"><i class="fas fa-tasks me-2" style="color: var(--accent-green);"></i><span data-translate="cobrosHoy">Cobros de Hoy</span></h5>
                             <div id="cobrosHoyPreview" style="max-height: 250px; overflow-y: auto;"><!-- Se llena dinámicamente --></div>
                         </div>
                     </div>
@@ -754,38 +754,38 @@
                 <div class="row g-4 mt-2">
                     <div class="col-lg-4">
                         <div class="card-dark h-100">
-                            <h5 class="mb-4"><i class="fas fa-exclamation-triangle me-2" style="color: var(--accent-yellow);"></i>Clientes Atrasados</h5>
+                            <h5 class="mb-4"><i class="fas fa-exclamation-triangle me-2" style="color: var(--accent-yellow);"></i><span data-translate="clientesAtrasados">Clientes Atrasados</span></h5>
                             <div id="clientesAtrasadosPreview" style="max-height: 200px; overflow-y: auto;">
-                                <p class="text-secondary text-center">Cargando...</p>
+                                <p class="text-secondary text-center" data-translate="cargando">Cargando...</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="card-dark h-100">
-                            <h5 class="mb-4"><i class="fas fa-trophy me-2" style="color: var(--accent-green);"></i>Mejores Clientes</h5>
+                            <h5 class="mb-4"><i class="fas fa-trophy me-2" style="color: var(--accent-green);"></i><span data-translate="mejoresClientes">Mejores Clientes</span></h5>
                             <div id="mejoresClientesPreview" style="max-height: 200px; overflow-y: auto;">
-                                <p class="text-secondary text-center">Cargando...</p>
+                                <p class="text-secondary text-center" data-translate="cargando">Cargando...</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="card-dark h-100">
-                            <h5 class="mb-4"><i class="fas fa-calendar-check me-2" style="color: var(--accent-cyan);"></i>Resumen del Mes</h5>
+                            <h5 class="mb-4"><i class="fas fa-calendar-check me-2" style="color: var(--accent-cyan);"></i><span data-translate="resumenMes">Resumen del Mes</span></h5>
                             <div id="resumenMesPreview">
                                 <div class="d-flex justify-content-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-color);">
-                                    <span class="text-secondary">Nuevos clientes</span>
+                                    <span class="text-secondary" data-translate="nuevosClientes">Nuevos clientes</span>
                                     <span id="mesNuevosClientes" style="color: var(--accent-cyan); font-weight: bold;">0</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-color);">
-                                    <span class="text-secondary">Préstamos realizados</span>
+                                    <span class="text-secondary" data-translate="prestamosRealizados">Préstamos realizados</span>
                                     <span id="mesPrestamos" style="color: var(--accent-green); font-weight: bold;">R$ 0</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-color);">
-                                    <span class="text-secondary">Cobros recibidos</span>
+                                    <span class="text-secondary" data-translate="cobrosRecibidos">Cobros recibidos</span>
                                     <span id="mesCobros" style="color: var(--accent-yellow); font-weight: bold;">R$ 0</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-secondary">Ganancia estimada</span>
+                                    <span class="text-secondary" data-translate="gananciaEstimada">Ganancia estimada</span>
                                     <span id="mesGanancia" style="color: var(--accent-purple); font-weight: bold;">R$ 0</span>
                                 </div>
                             </div>
@@ -797,9 +797,9 @@
                 <div class="row g-4 mt-2">
                     <div class="col-12">
                         <div class="card-dark">
-                            <h5 class="mb-4"><i class="fas fa-history me-2" style="color: var(--accent-purple);"></i>Actividad Reciente</h5>
+                            <h5 class="mb-4"><i class="fas fa-history me-2" style="color: var(--accent-purple);"></i><span data-translate="actividadReciente">Actividad Reciente</span></h5>
                             <div id="actividadReciente" style="min-height: 300px; max-height: 400px; overflow-y: auto;">
-                                <p class="text-secondary text-center">Cargando actividad...</p>
+                                <p class="text-secondary text-center" data-translate="cargando">Cargando actividad...</p>
                             </div>
                         </div>
                     </div>
@@ -808,9 +808,9 @@
             <!-- Clientes Section -->
             <div id="clientes" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5><i class="fas fa-users me-2" style="color: var(--accent-cyan);"></i>Gestión de Clientes</h5>
+                    <h5><i class="fas fa-users me-2" style="color: var(--accent-cyan);"></i><span data-translate="gestionClientes">Gestión de Clientes</span></h5>
                     <button class="btn btn-primary-custom" onclick="openNewClientModal()">
-                        <i class="fas fa-plus me-2"></i>Nuevo Cliente
+                        <i class="fas fa-plus me-2"></i><span data-translate="nuevoCliente">Nuevo Cliente</span>
                     </button>
                 </div>
                 
@@ -818,9 +818,9 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-star me-2"></i>Tipo de Cliente</label>
+                            <label class="form-label"><i class="fas fa-star me-2"></i><span data-translate="tipoCliente">Tipo de Cliente</span></label>
                             <select class="form-control form-control-dark" id="clientesFiltroTipo" onchange="renderClientes()">
-                                <option value="">Todos</option>
+                                <option value="" data-translate="todos">Todos</option>
                                 <option value="nuevo">🆕 Nuevo</option>
                                 <option value="bueno">✅ Buen Cliente</option>
                                 <option value="regular">⚠️ Regular</option>
@@ -1092,37 +1092,37 @@
             <!-- Gastos Section -->
             <div id="gastos" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5><i class="fas fa-wallet me-2" style="color: var(--accent-yellow);"></i>Gastos Personales</h5>
+                    <h5><i class="fas fa-wallet me-2" style="color: var(--accent-yellow);"></i><span data-translate="gastosPersonales">Gastos Personales</span></h5>
                     <button class="btn btn-primary-custom" onclick="openGastoModal()">
-                        <i class="fas fa-plus me-2"></i>Nuevo Gasto
+                        <i class="fas fa-plus me-2"></i><span data-translate="nuevoGasto">Nuevo Gasto</span>
                     </button>
                 </div>
                 <div class="row g-4 mb-4">
                     <div class="col-md-4">
                         <div class="stat-card red">
                             <div class="stat-value" id="gastoHoy">R$ 0.00</div>
-                            <div class="stat-label"><i class="fas fa-calendar-day me-2"></i>Gastos de Hoy</div>
+                            <div class="stat-label"><i class="fas fa-calendar-day me-2"></i><span data-translate="gastosHoy">Gastos de Hoy</span></div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card yellow">
                             <div class="stat-value" id="gastoSemana">R$ 0.00</div>
-                            <div class="stat-label"><i class="fas fa-calendar-week me-2"></i>Esta Semana</div>
+                            <div class="stat-label"><i class="fas fa-calendar-week me-2"></i><span data-translate="estaSemana">Esta Semana</span></div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card purple">
                             <div class="stat-value" id="gastoMes">R$ 0.00</div>
-                            <div class="stat-label"><i class="fas fa-calendar-alt me-2"></i>Este Mes</div>
+                            <div class="stat-label"><i class="fas fa-calendar-alt me-2"></i><span data-translate="esteMes">Este Mes</span></div>
                         </div>
                     </div>
                 </div>
                 <div class="card-dark mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0"><i class="fas fa-filter me-2"></i>Filtrar por fecha</h6>
+                        <h6 class="mb-0"><i class="fas fa-filter me-2"></i><span data-translate="filtrarFecha">Filtrar por fecha</span></h6>
                         <div class="d-flex gap-2">
                             <input type="date" class="form-control form-control-dark" id="gastoFechaFiltro" style="width: auto;" onchange="renderGastos()">
-                            <button class="btn btn-sm btn-primary-custom" onclick="setGastoHoy()">Hoy</button>
+                            <button class="btn btn-sm btn-primary-custom" onclick="setGastoHoy()" data-translate="hoy">Hoy</button>
                         </div>
                     </div>
                 </div>
@@ -1132,32 +1132,32 @@
             </div>
             <!-- Microseguros Section -->
             <div id="microseguros" class="section">
-                <h5 class="mb-4"><i class="fas fa-shield-alt me-2" style="color: var(--accent-purple);"></i>Microseguros</h5>
+                <h5 class="mb-4"><i class="fas fa-shield-alt me-2" style="color: var(--accent-purple);"></i><span data-translate="microseguros">Microseguros</span></h5>
                 
                 <!-- Estadísticas -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-3">
                         <div class="stat-card cyan">
                             <div class="stat-value" id="microseguroHoy">R$ 0.00</div>
-                            <div class="stat-label"><i class="fas fa-calendar-day me-2"></i>Hoy</div>
+                            <div class="stat-label"><i class="fas fa-calendar-day me-2"></i><span data-translate="hoy">Hoy</span></div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card green">
                             <div class="stat-value" id="microseguroSemana">R$ 0.00</div>
-                            <div class="stat-label"><i class="fas fa-calendar-week me-2"></i>Últimos 7 días</div>
+                            <div class="stat-label"><i class="fas fa-calendar-week me-2"></i><span data-translate="ultimos7dias">Últimos 7 días</span></div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card purple">
                             <div class="stat-value" id="microseguroMes">R$ 0.00</div>
-                            <div class="stat-label"><i class="fas fa-calendar-alt me-2"></i>Este Mes</div>
+                            <div class="stat-label"><i class="fas fa-calendar-alt me-2"></i><span data-translate="esteMes">Este Mes</span></div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card yellow">
                             <div class="stat-value" id="microseguroAnio">R$ 0.00</div>
-                            <div class="stat-label"><i class="fas fa-calendar me-2"></i>Este Año</div>
+                            <div class="stat-label"><i class="fas fa-calendar me-2"></i><span data-translate="esteAnio">Este Año</span></div>
                         </div>
                     </div>
                 </div>
@@ -1167,13 +1167,13 @@
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="d-flex gap-2 align-items-center">
                             <i class="fas fa-search text-secondary"></i>
-                            <input type="text" class="form-control form-control-dark" id="microseguroBusqueda" placeholder="Buscar por nombre..." style="width: 200px;" oninput="renderMicroseguros()">
+                            <input type="text" class="form-control form-control-dark" id="microseguroBusqueda" data-translate-placeholder="buscarNombre" placeholder="Buscar por nombre..." style="width: 200px;" oninput="renderMicroseguros()">
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <input type="date" class="form-control form-control-dark" id="microseguroFechaInicio" style="width: auto;" onchange="renderMicroseguros()">
                             <span class="text-secondary">a</span>
                             <input type="date" class="form-control form-control-dark" id="microseguroFechaFin" style="width: auto;" onchange="renderMicroseguros()">
-                            <button class="btn btn-sm btn-primary-custom" onclick="setMicroseguroHoy()">Hoy</button>
+                            <button class="btn btn-sm btn-primary-custom" onclick="setMicroseguroHoy()" data-translate="hoy">Hoy</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="resetMicroseguroFiltro()"><i class="fas fa-undo"></i></button>
                         </div>
                     </div>
@@ -1185,14 +1185,14 @@
                         <table class="table table-dark-custom">
                             <thead>
                                 <tr>
-                                    <th>Cliente</th>
-                                    <th>Fecha</th>
-                                    <th>Microseguro</th>
-                                    <th>Monto Préstamo</th>
+                                    <th data-translate="cliente">Cliente</th>
+                                    <th data-translate="fecha">Fecha</th>
+                                    <th data-translate="microseguro">Microseguro</th>
+                                    <th data-translate="montoPrestamo">Monto Préstamo</th>
                                 </tr>
                             </thead>
                             <tbody id="microsegurosLista">
-                                <tr><td colspan="4" class="text-center text-secondary">Cargando...</td></tr>
+                                <tr><td colspan="4" class="text-center text-secondary" data-translate="cargando">Cargando...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1200,13 +1200,13 @@
             </div>
             <!-- Historial Section (Trabajadores) -->
             <div id="historial" class="section">
-                <h5 class="mb-4"><i class="fas fa-history me-2" style="color: var(--accent-purple);"></i>Mi Historial Completo</h5>
+                <h5 class="mb-4"><i class="fas fa-history me-2" style="color: var(--accent-purple);"></i><span data-translate="miHistorialCompleto">Mi Historial Completo</span></h5>
                 
                 <!-- Filtros -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Año</label>
+                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i><span data-translate="anio">Año</span></label>
                             <select class="form-control form-control-dark" id="historialAnio" onchange="renderHistorial()">
                                 <!-- Se llena dinámicamente -->
                             </select>
@@ -1214,9 +1214,9 @@
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar me-2"></i>Mes</label>
+                            <label class="form-label"><i class="fas fa-calendar me-2"></i><span data-translate="mes">Mes</span></label>
                             <select class="form-control form-control-dark" id="historialMes" onchange="renderHistorial()">
-                                <option value="">Todos los meses</option>
+                                <option value="" data-translate="todosMeses">Todos los meses</option>
                                 <option value="0">Enero</option>
                                 <option value="1">Febrero</option>
                                 <option value="2">Marzo</option>
@@ -1234,7 +1234,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-calendar-day me-2"></i>Día específico</label>
+                            <label class="form-label"><i class="fas fa-calendar-day me-2"></i><span data-translate="diaEspecifico">Día específico</span></label>
                             <input type="date" class="form-control form-control-dark" id="historialDia" onchange="renderHistorial()">
                         </div>
                     </div>
@@ -1242,20 +1242,20 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-filter me-2"></i>Estado</label>
+                            <label class="form-label"><i class="fas fa-filter me-2"></i><span data-translate="estado">Estado</span></label>
                             <select class="form-control form-control-dark" id="historialEstado" onchange="renderHistorial()">
-                                <option value="">Todos</option>
-                                <option value="ativo">Activos</option>
-                                <option value="finalizado">Finalizados</option>
-                                <option value="atrasado">Atrasados</option>
+                                <option value="" data-translate="todos">Todos</option>
+                                <option value="ativo" data-translate="activos">Activos</option>
+                                <option value="finalizado" data-translate="finalizados">Finalizados</option>
+                                <option value="atrasado" data-translate="atrasados">Atrasados</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card-dark">
-                            <label class="form-label"><i class="fas fa-star me-2"></i>Tipo de Cliente</label>
+                            <label class="form-label"><i class="fas fa-star me-2"></i><span data-translate="tipoCliente">Tipo de Cliente</span></label>
                             <select class="form-control form-control-dark" id="historialTipo" onchange="renderHistorial()">
-                                <option value="">Todos</option>
+                                <option value="" data-translate="todos">Todos</option>
                                 <option value="nuevo">🆕 Nuevo</option>
                                 <option value="bueno">✅ Buen Cliente</option>
                                 <option value="regular">⚠️ Regular</option>
@@ -1267,7 +1267,7 @@
                 
                 <!-- Resumen por tipo de cliente -->
                 <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-star me-2" style="color: var(--accent-yellow);"></i>Por Tipo de Cliente</h6>
+                    <h6 class="mb-3"><i class="fas fa-star me-2" style="color: var(--accent-yellow);"></i><span data-translate="porTipoCliente">Por Tipo de Cliente</span></h6>
                     <div class="row text-center">
                         <div class="col-3">
                             <div style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold;" id="histNuevos">0</div>
@@ -1402,24 +1402,24 @@
             </div>
             <!-- Mi Configuración Section (Trabajadores) -->
             <div id="miConfig" class="section">
-                <h5 class="mb-4"><i class="fas fa-cog me-2" style="color: var(--accent-cyan);"></i>Mi Configuración</h5>
+                <h5 class="mb-4"><i class="fas fa-cog me-2" style="color: var(--accent-cyan);"></i><span data-translate="miConfiguracion">Mi Configuración</span></h5>
                 
                 <!-- Apariencia -->
                 <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-palette me-2" style="color: var(--accent-purple);"></i>Apariencia</h6>
+                    <h6 class="mb-3"><i class="fas fa-palette me-2" style="color: var(--accent-purple);"></i><span data-translate="apariencia">Apariencia</span></h6>
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-sm" id="btnTemaOscuro" style="background: var(--accent-cyan); color: #000;" onclick="setTheme('dark')">
-                            <i class="fas fa-moon me-1"></i>Oscuro
+                            <i class="fas fa-moon me-1"></i><span data-translate="oscuro">Oscuro</span>
                         </button>
                         <button class="btn btn-sm" id="btnTemaClaro" style="background: var(--bg-hover); color: var(--text-primary);" onclick="setTheme('light')">
-                            <i class="fas fa-sun me-1"></i>Claro
+                            <i class="fas fa-sun me-1"></i><span data-translate="claro">Claro</span>
                         </button>
                     </div>
                 </div>
                 
                 <!-- Idioma -->
                 <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-language me-2" style="color: var(--accent-cyan);"></i>Idioma / Língua</h6>
+                    <h6 class="mb-3"><i class="fas fa-language me-2" style="color: var(--accent-cyan);"></i><span data-translate="idioma">Idioma</span> / Língua</h6>
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-sm" id="btnLangEs" style="background: var(--accent-cyan); color: #000;" onclick="cambiarIdioma('es')">
                             🇪🇸 Español
@@ -1432,32 +1432,32 @@
                 
                 <!-- Notificaciones -->
                 <div class="card-dark mb-4">
-                    <h6 class="mb-3"><i class="fas fa-bell me-2" style="color: var(--accent-green);"></i>Notificaciones</h6>
+                    <h6 class="mb-3"><i class="fas fa-bell me-2" style="color: var(--accent-green);"></i><span data-translate="notificaciones">Notificaciones</span></h6>
                     <div class="form-check form-switch mb-2">
                         <input class="form-check-input" type="checkbox" id="notifCobros" checked onchange="guardarPreferencias()">
-                        <label class="form-check-label text-secondary" for="notifCobros">Recordatorio de cobros del día</label>
+                        <label class="form-check-label text-secondary" for="notifCobros" data-translate="recordatorioCobros">Recordatorio de cobros del día</label>
                     </div>
                     <div class="form-check form-switch mb-2">
                         <input class="form-check-input" type="checkbox" id="notifVencimientos" checked onchange="guardarPreferencias()">
-                        <label class="form-check-label text-secondary" for="notifVencimientos">Alertas de vencimientos</label>
+                        <label class="form-check-label text-secondary" for="notifVencimientos" data-translate="alertasVencimientos">Alertas de vencimientos</label>
                     </div>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="notifSonido" checked onchange="guardarPreferencias()">
-                        <label class="form-check-label text-secondary" for="notifSonido">Sonidos de notificación</label>
+                        <label class="form-check-label text-secondary" for="notifSonido" data-translate="sonidosNotificacion">Sonidos de notificación</label>
                     </div>
                 </div>
                 
                 <!-- Sesiones Activas -->
                 <div class="card-dark">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0"><i class="fas fa-desktop me-2" style="color: var(--accent-red);"></i>Sesiones Activas</h6>
+                        <h6 class="mb-0"><i class="fas fa-desktop me-2" style="color: var(--accent-red);"></i><span data-translate="sesionesActivas">Sesiones Activas</span></h6>
                         <button class="btn btn-sm" style="background: var(--accent-red); color: #fff;" onclick="cerrarTodasSesiones()">
-                            <i class="fas fa-sign-out-alt me-1"></i>Cerrar Todas
+                            <i class="fas fa-sign-out-alt me-1"></i><span data-translate="cerrarTodas">Cerrar Todas</span>
                         </button>
                     </div>
                     <div id="listaSesiones">
                         <div class="text-center py-3">
-                            <i class="fas fa-spinner fa-spin"></i> Cargando sesiones...
+                            <i class="fas fa-spinner fa-spin"></i> <span data-translate="cargandoSesiones">Cargando sesiones...</span>
                         </div>
                     </div>
                 </div>
@@ -1465,28 +1465,28 @@
             <!-- Mapa Section -->
             <div id="mapa" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5><i class="fas fa-map-marked-alt me-2" style="color: var(--accent-purple);"></i>Mapa de Clientes</h5>
+                    <h5><i class="fas fa-map-marked-alt me-2" style="color: var(--accent-purple);"></i><span data-translate="mapaClientes">Mapa de Clientes</span></h5>
                     <button class="btn btn-primary-custom" onclick="obtenerMiUbicacion()">
-                        <i class="fas fa-crosshairs me-2"></i>Mi Ubicación
+                        <i class="fas fa-crosshairs me-2"></i><span data-translate="miUbicacion">Mi Ubicación</span>
                     </button>
                 </div>
                 <div class="row g-4 mb-4">
                     <div class="col-md-4">
                         <div class="stat-card purple">
                             <div class="stat-value" id="clientesConUbicacion">0</div>
-                            <div class="stat-label"><i class="fas fa-map-pin me-2"></i>Con ubicación</div>
+                            <div class="stat-label"><i class="fas fa-map-pin me-2"></i><span data-translate="conUbicacion">Con ubicación</span></div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="stat-value" id="clientesSinUbicacion">0</div>
-                            <div class="stat-label"><i class="fas fa-question-circle me-2"></i>Sin ubicación</div>
+                            <div class="stat-label"><i class="fas fa-question-circle me-2"></i><span data-translate="sinUbicacion">Sin ubicación</span></div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card green" id="miUbicacionCard" style="display: none;">
                             <div class="stat-value"><i class="fas fa-check-circle"></i></div>
-                            <div class="stat-label">Ubicación activa</div>
+                            <div class="stat-label" data-translate="ubicacionActiva">Ubicación activa</div>
                         </div>
                     </div>
                 </div>
@@ -1494,18 +1494,18 @@
                     <div id="mapContainer"></div>
                 </div>
                 <div class="card-dark mt-3">
-                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i>Clientes con ubicación</h6>
+                    <h6 class="mb-3"><i class="fas fa-list me-2" style="color: var(--accent-cyan);"></i><span data-translate="clientesConUbicacionTitulo">Clientes con ubicación</span></h6>
                     <div id="listaClientesMapa"><!-- Se llena dinámicamente --></div>
                 </div>
             </div>
             <!-- Admin: Usuarios Section -->
             <div id="adminUsuarios" class="section">
-                <h5 class="mb-4"><i class="fas fa-users-cog me-2" style="color: var(--accent-yellow);"></i>Usuarios Registrados</h5>
+                <h5 class="mb-4"><i class="fas fa-users-cog me-2" style="color: var(--accent-yellow);"></i><span data-translate="usuariosRegistrados">Usuarios Registrados</span></h5>
                 <div class="row g-4 mb-4">
                     <div class="col-md-2">
                         <div class="stat-card purple">
                             <div class="stat-value" id="adminTotalUsers">0</div>
-                            <div class="stat-label">Total Usuarios</div>
+                            <div class="stat-label" data-translate="totalUsuarios">Total Usuarios</div>
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -2383,6 +2383,26 @@
                 usuarios: 'Usuarios',
                 calendario: 'Calendario',
                 seguridad: 'Seguridad',
+                // Dashboard stats
+                clientesActivos: 'Clientes Activos',
+                gestionClientes: 'Gestión de Clientes',
+                totalPrestado: 'Total Prestado',
+                totalCobrado: 'Total Cobrado',
+                pendiente: 'Pendiente',
+                resumen: 'Resumen',
+                cobrosHoy: 'Cobros de Hoy',
+                clientesAtrasados: 'Clientes Atrasados',
+                sinClientesAtrasados: 'Sin clientes atrasados',
+                mejoresClientes: 'Mejores Clientes',
+                resumenMes: 'Resumen del Mes',
+                nuevosClientes: 'Nuevos clientes',
+                prestamosRealizados: 'Préstamos realizados',
+                cobrosRecibidos: 'Cobros recibidos',
+                gananciaEstimada: 'Ganancia estimada',
+                actividadReciente: 'Actividad Reciente',
+                pagoRecibido: 'Pago recibido',
+                clienteCreado: 'Cliente creado',
+                prestamoRenovado: 'Préstamo renovado',
                 // Botones
                 nuevoCliente: '+ Nuevo Cliente',
                 guardar: 'Guardar',
@@ -2390,6 +2410,25 @@
                 eliminar: 'Eliminar',
                 editar: 'Editar',
                 buscar: 'Buscar',
+                buscarCliente: 'Buscar cliente...',
+                todos: 'Todos',
+                hoy: 'Hoy',
+                estaSemana: 'Esta Semana',
+                esteMes: 'Este Mes',
+                esteAnio: 'Este Año',
+                ultimos7dias: 'Últimos 7 días',
+                buscarNombre: 'Buscar por nombre...',
+                montoPrestamo: 'Monto Préstamo',
+                todosTiempos: 'Todos los tiempos',
+                nuevoGasto: 'Nuevo Gasto',
+                miUbicacion: 'Mi Ubicación',
+                cerrarTodas: 'Cerrar Todas',
+                guardarCambios: 'Guardar Cambios',
+                registrarPago: 'Registrar Pago',
+                renovar: 'Renovar',
+                verMapa: 'Ver en Mapa',
+                llamar: 'Llamar',
+                whatsapp: 'WhatsApp',
                 // Campos
                 nombre: 'Nombre',
                 telefono: 'Teléfono',
@@ -2404,6 +2443,16 @@
                 notas: 'Notas',
                 tipoCliente: 'Tipo de Cliente',
                 tipoNegocio: 'Tipo de Negocio',
+                fecha: 'Fecha',
+                fechaInicio: 'Fecha Inicio',
+                fechaFin: 'Fecha Fin',
+                valor: 'Valor',
+                cliente: 'Cliente',
+                estado: 'Estado',
+                acciones: 'Acciones',
+                descripcion: 'Descripción',
+                categoria: 'Categoría',
+                monto: 'Monto',
                 // Estados
                 nuevo: 'Nuevo',
                 bueno: 'Buen Cliente',
@@ -2411,23 +2460,68 @@
                 malo: 'Mala Paga',
                 activo: 'Activo',
                 pagado: 'Pagado',
-                pendiente: 'Pendiente',
-                // Stats
+                pendientes: 'Pendientes',
+                pagadosHoy: 'Pagados Hoy',
+                // Secciones
+                gastosPersonales: 'Gastos Personales',
+                gastosHoy: 'Gastos de Hoy',
+                filtrarFecha: 'Filtrar por fecha',
+                conUbicacion: 'Con ubicación',
+                sinUbicacion: 'Sin ubicación',
+                ubicacionActiva: 'Ubicación activa',
+                backupsDisponibles: 'Backups Disponibles',
+                sesionesActivas: 'Sesiones Activas',
+                notificaciones: 'Notificaciones',
+                recordatorioCobros: 'Recordatorio de cobros del día',
+                alertasVencimientos: 'Alertas de vencimientos',
+                sonidosNotificacion: 'Sonidos de notificación',
+                apariencia: 'Apariencia',
+                miConfiguracion: 'Mi Configuración',
+                oscuro: 'Oscuro',
+                claro: 'Claro',
+                idioma: 'Idioma',
+                // Historial
+                historialPrestamos: 'Historial de Préstamos',
+                miHistorialCompleto: 'Mi Historial Completo',
+                anio: 'Año',
+                mes: 'Mes',
+                todosMeses: 'Todos los meses',
+                diaEspecifico: 'Día específico',
+                activos: 'Activos',
+                finalizados: 'Finalizados',
+                atrasados: 'Atrasados',
+                porTipoCliente: 'Por Tipo de Cliente',
                 totalClientes: 'Total Clientes',
                 prestado: 'Prestado',
                 cobrado: 'Cobrado',
                 restante: 'Restante',
+                // Estadísticas
+                rendimiento: 'Rendimiento',
+                balance: 'Balance',
+                cobradoMenosGastos: 'Cobrado - Gastos',
+                cantidad: 'Cantidad',
+                total: 'Total',
+                // Mapa
+                mapaClientes: 'Mapa de Clientes',
+                clientesConUbicacionTitulo: 'Clientes con ubicación',
+                cargandoSesiones: 'Cargando sesiones...',
+                usuariosRegistrados: 'Usuarios Registrados',
+                totalUsuarios: 'Total Usuarios',
                 // Mensajes
-                clienteCreado: 'Cliente creado exitosamente',
-                clienteActualizado: 'Cliente actualizado correctamente',
-                clienteEliminado: 'Cliente eliminado',
                 errorConexion: 'Error de conexión',
                 confirmarEliminar: '¿Estás seguro de eliminar?',
-                // Config
-                idioma: 'Idioma',
-                tema: 'Tema',
-                temaOscuro: 'Tema Oscuro',
-                temaClaro: 'Tema Claro'
+                cargando: 'Cargando...',
+                sinResultados: 'Sin resultados',
+                cerrarSesion: 'Cerrar Sesión',
+                // Modales
+                editarCliente: 'Editar Cliente',
+                nuevoClienteModal: 'Nuevo Cliente',
+                detallesCliente: 'Detalles del Cliente',
+                registrarPagoModal: 'Registrar Pago',
+                renovarPrestamo: 'Renovar Préstamo',
+                // Parcelas
+                parcelas: 'parcelas',
+                de: 'de'
             },
             pt: {
                 // Navegação
@@ -2444,6 +2538,26 @@
                 usuarios: 'Usuários',
                 calendario: 'Calendário',
                 seguridad: 'Segurança',
+                // Dashboard stats
+                clientesActivos: 'Clientes Ativos',
+                gestionClientes: 'Gestão de Clientes',
+                totalPrestado: 'Total Emprestado',
+                totalCobrado: 'Total Recebido',
+                pendiente: 'Pendente',
+                resumen: 'Resumo',
+                cobrosHoy: 'Cobranças de Hoje',
+                clientesAtrasados: 'Clientes Atrasados',
+                sinClientesAtrasados: 'Sem clientes atrasados',
+                mejoresClientes: 'Melhores Clientes',
+                resumenMes: 'Resumo do Mês',
+                nuevosClientes: 'Novos clientes',
+                prestamosRealizados: 'Empréstimos realizados',
+                cobrosRecibidos: 'Cobranças recebidas',
+                gananciaEstimada: 'Lucro estimado',
+                actividadReciente: 'Atividade Recente',
+                pagoRecibido: 'Pagamento recebido',
+                clienteCreado: 'Cliente criado',
+                prestamoRenovado: 'Empréstimo renovado',
                 // Botões
                 nuevoCliente: '+ Novo Cliente',
                 guardar: 'Salvar',
@@ -2451,6 +2565,25 @@
                 eliminar: 'Excluir',
                 editar: 'Editar',
                 buscar: 'Buscar',
+                buscarCliente: 'Buscar cliente...',
+                todos: 'Todos',
+                hoy: 'Hoje',
+                estaSemana: 'Esta Semana',
+                esteMes: 'Este Mês',
+                esteAnio: 'Este Ano',
+                ultimos7dias: 'Últimos 7 dias',
+                buscarNombre: 'Buscar por nome...',
+                montoPrestamo: 'Valor do Empréstimo',
+                todosTiempos: 'Todo o período',
+                nuevoGasto: 'Nova Despesa',
+                miUbicacion: 'Minha Localização',
+                cerrarTodas: 'Fechar Todas',
+                guardarCambios: 'Salvar Alterações',
+                registrarPago: 'Registrar Pagamento',
+                renovar: 'Renovar',
+                verMapa: 'Ver no Mapa',
+                llamar: 'Ligar',
+                whatsapp: 'WhatsApp',
                 // Campos
                 nombre: 'Nome',
                 telefono: 'Telefone',
@@ -2465,6 +2598,16 @@
                 notas: 'Notas',
                 tipoCliente: 'Tipo de Cliente',
                 tipoNegocio: 'Tipo de Negócio',
+                fecha: 'Data',
+                fechaInicio: 'Data Início',
+                fechaFin: 'Data Fim',
+                valor: 'Valor',
+                cliente: 'Cliente',
+                estado: 'Estado',
+                acciones: 'Ações',
+                descripcion: 'Descrição',
+                categoria: 'Categoria',
+                monto: 'Valor',
                 // Estados
                 nuevo: 'Novo',
                 bueno: 'Bom Cliente',
@@ -2472,23 +2615,68 @@
                 malo: 'Mau Pagador',
                 activo: 'Ativo',
                 pagado: 'Pago',
-                pendiente: 'Pendente',
-                // Stats
+                pendientes: 'Pendentes',
+                pagadosHoy: 'Pagos Hoje',
+                // Seções
+                gastosPersonales: 'Despesas Pessoais',
+                gastosHoy: 'Despesas de Hoje',
+                filtrarFecha: 'Filtrar por data',
+                conUbicacion: 'Com localização',
+                sinUbicacion: 'Sem localização',
+                ubicacionActiva: 'Localização ativa',
+                backupsDisponibles: 'Backups Disponíveis',
+                sesionesActivas: 'Sessões Ativas',
+                notificaciones: 'Notificações',
+                recordatorioCobros: 'Lembrete de cobranças do dia',
+                alertasVencimientos: 'Alertas de vencimentos',
+                sonidosNotificacion: 'Sons de notificação',
+                apariencia: 'Aparência',
+                miConfiguracion: 'Minha Configuração',
+                oscuro: 'Escuro',
+                claro: 'Claro',
+                idioma: 'Idioma',
+                // Histórico
+                historialPrestamos: 'Histórico de Empréstimos',
+                miHistorialCompleto: 'Meu Histórico Completo',
+                anio: 'Ano',
+                mes: 'Mês',
+                todosMeses: 'Todos os meses',
+                diaEspecifico: 'Dia específico',
+                activos: 'Ativos',
+                finalizados: 'Finalizados',
+                atrasados: 'Atrasados',
+                porTipoCliente: 'Por Tipo de Cliente',
                 totalClientes: 'Total Clientes',
                 prestado: 'Emprestado',
                 cobrado: 'Recebido',
                 restante: 'Restante',
+                // Estatísticas
+                rendimiento: 'Desempenho',
+                balance: 'Balanço',
+                cobradoMenosGastos: 'Recebido - Despesas',
+                cantidad: 'Quantidade',
+                total: 'Total',
+                // Mapa
+                mapaClientes: 'Mapa de Clientes',
+                clientesConUbicacionTitulo: 'Clientes com localização',
+                cargandoSesiones: 'Carregando sessões...',
+                usuariosRegistrados: 'Usuários Registrados',
+                totalUsuarios: 'Total Usuários',
                 // Mensagens
-                clienteCreado: 'Cliente criado com sucesso',
-                clienteActualizado: 'Cliente atualizado corretamente',
-                clienteEliminado: 'Cliente excluído',
                 errorConexion: 'Erro de conexão',
                 confirmarEliminar: 'Tem certeza que deseja excluir?',
-                // Config
-                idioma: 'Idioma',
-                tema: 'Tema',
-                temaOscuro: 'Tema Escuro',
-                temaClaro: 'Tema Claro'
+                cargando: 'Carregando...',
+                sinResultados: 'Sem resultados',
+                cerrarSesion: 'Encerrar Sessão',
+                // Modais
+                editarCliente: 'Editar Cliente',
+                nuevoClienteModal: 'Novo Cliente',
+                detallesCliente: 'Detalhes do Cliente',
+                registrarPagoModal: 'Registrar Pagamento',
+                renovarPrestamo: 'Renovar Empréstimo',
+                // Parcelas
+                parcelas: 'parcelas',
+                de: 'de'
             }
         };
         
