@@ -1046,6 +1046,48 @@ app.delete('/api/admin/delete-backup-trabajador/:backupId', async (req, res) => 
     }
 });
 
+// Toggle block/unblock user
+app.post('/api/users/:id/toggle-block', async (req, res) => {
+    try {
+        const database = await connectDB();
+        const searchId = req.params.id;
+        let user;
+        
+        // Buscar usuario
+        try {
+            user = await database.collection('users').findOne({ _id: new ObjectId(searchId) });
+        } catch (e) {
+            user = await database.collection('users').findOne({ id: searchId });
+        }
+        
+        if (!user) {
+            return res.json({ success: false, error: 'Usuario no encontrado' });
+        }
+        
+        const newBlockedStatus = !user.blocked;
+        
+        try {
+            await database.collection('users').updateOne(
+                { _id: new ObjectId(searchId) },
+                { $set: { blocked: newBlockedStatus } }
+            );
+        } catch (e) {
+            await database.collection('users').updateOne(
+                { id: searchId },
+                { $set: { blocked: newBlockedStatus } }
+            );
+        }
+        
+        res.json({ 
+            success: true, 
+            message: newBlockedStatus ? 'Usuario bloqueado' : 'Usuario desbloqueado',
+            blocked: newBlockedStatus
+        });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
+});
+
 // Servir archivos HTML
 app.get('/', (req, res) => {
     const htmlPath = path.join(__dirname, '..', 'index.html');
