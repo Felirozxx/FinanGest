@@ -3485,10 +3485,22 @@
             if (!container) return;
             
             const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
             const atrasados = clientes.filter(c => {
                 if (c.estado !== 'ativo') return false;
-                const fechaCobro = new Date(c.proximoPago || c.fechaInicio);
-                return fechaCobro < hoy && (c.totalAPagar - c.montoPagado) > 0;
+                if ((c.montoPagado || 0) >= (c.totalAPagar || 0)) return false;
+                
+                // Calcular días desde el inicio del préstamo
+                const fechaInicio = new Date(c.fechaInicio || c.fechaCreacion || c.fechaRegistro);
+                if (isNaN(fechaInicio)) return false;
+                
+                const diasTranscurridos = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24));
+                const parcelasQueDeberianEstarPagas = Math.min(diasTranscurridos, c.numeroParcelas || 1);
+                const parcelasPagas = c.parcelasPagas || 0;
+                
+                // Está atrasado si debería tener más parcelas pagas de las que tiene
+                return parcelasQueDeberianEstarPagas > parcelasPagas;
             }).slice(0, 5);
             
             if (atrasados.length === 0) {
@@ -3496,15 +3508,17 @@
                 return;
             }
             
-            container.innerHTML = atrasados.map(c => `
+            container.innerHTML = atrasados.map(c => {
+                const diasAtraso = Math.floor((hoy - new Date(c.fechaInicio || c.fechaCreacion)) / (1000 * 60 * 60 * 24)) - (c.parcelasPagas || 0);
+                return `
                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
                     <div>
                         <div style="font-weight: 500;">${c.nombre}</div>
-                        <small class="text-secondary">${c.telefono || ''}</small>
+                        <small style="color: var(--accent-red);">${diasAtraso} día${diasAtraso !== 1 ? 's' : ''} de atraso</small>
                     </div>
                     <span style="color: var(--accent-red); font-weight: bold;">R$ ${((c.totalAPagar || 0) - (c.montoPagado || 0)).toFixed(2)}</span>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
         function renderMejoresClientes() {
