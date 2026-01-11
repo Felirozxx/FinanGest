@@ -5179,25 +5179,49 @@
                 let cobradoDia = 0;
                 let prestadoDia = 0;
                 
-                // Contar clientes activos con cuotas pendientes para este día
+                // Proyección de cobros esperados por día (clientes activos)
                 clientes.forEach(c => {
                     if (c.estado === 'ativo' && c.valorParcela) {
-                        // Proyección de cobros esperados
-                        cobradoDia += parseFloat(c.valorParcela) || 0;
+                        const freq = c.frecuencia || 'diario';
+                        let esDiaCobro = false;
+                        
+                        if (freq === 'diario') {
+                            esDiaCobro = true;
+                        } else if (freq === 'semanal') {
+                            const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                            esDiaCobro = current.getDay() === fechaIni.getDay();
+                        } else if (freq === 'quincenal') {
+                            const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                            const diffDias = Math.floor((current - fechaIni) / (1000*60*60*24));
+                            esDiaCobro = diffDias >= 0 && diffDias % 15 === 0;
+                        } else if (freq === 'mensual') {
+                            const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                            esDiaCobro = current.getDate() === fechaIni.getDate();
+                        }
+                        
+                        if (esDiaCobro) {
+                            cobradoDia += parseFloat(c.valorParcela) || 0;
+                        }
                     }
                     
-                    // Préstamos activos
+                    // Préstamos pendientes
                     if (c.estado === 'ativo') {
                         const saldoPendiente = (parseFloat(c.montoTotal) || 0) - (parseFloat(c.totalPagado) || 0);
                         if (saldoPendiente > 0) {
-                            prestadoDia += saldoPendiente / 10; // Dividir para que suba gradualmente
+                            // Agregar variación para crear ondas
+                            const variacion = Math.sin(dia * 0.5) * (saldoPendiente * 0.05);
+                            prestadoDia += (saldoPendiente / 20) + variacion;
                         }
                     }
                 });
                 
-                // Acumular para que suba gradualmente
-                cobradoAcumulado += cobradoDia;
-                prestadoAcumulado += prestadoDia;
+                // Agregar pequeña variación para crear ondas naturales
+                const variacionCobro = Math.sin(dia * 0.8) * (cobradoDia * 0.1);
+                cobradoDia += variacionCobro;
+                
+                // Acumular para que suba gradualmente desde 0
+                cobradoAcumulado += Math.max(0, cobradoDia);
+                prestadoAcumulado += Math.max(0, prestadoDia);
                 
                 datosCobrado.push(cobradoAcumulado);
                 datosPrestado.push(prestadoAcumulado);
