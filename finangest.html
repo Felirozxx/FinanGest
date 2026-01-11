@@ -664,12 +664,6 @@
         @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         #authScreen input::placeholder { color: #4b5563 !important; }
     </style>
-    
-    <!-- Spinner de carga global -->
-    <div id="globalLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
-        <div style="width: 60px; height: 60px; border: 4px solid var(--bg-hover); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <p style="margin-top: 20px; color: var(--text-secondary); font-size: 1rem;">Cargando...</p>
-    </div>
     <style>
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -703,6 +697,11 @@
                     <span id="userName" class="d-none d-md-block"></span>
                     <div class="user-avatar" id="userAvatar">U</div>
                 </div>
+            </div>
+            <!-- Spinner de carga del contenido -->
+            <div id="contentLoader" style="display: none; position: absolute; top: 70px; left: 0; right: 0; bottom: 0; background: var(--bg-primary); z-index: 100; justify-content: center; align-items: center; flex-direction: column;">
+                <div style="width: 50px; height: 50px; border: 4px solid var(--bg-hover); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <p style="margin-top: 15px; color: var(--text-secondary); font-size: 0.95rem;">Cargando...</p>
             </div>
             <!-- Dashboard Section -->
             <div id="dashboard" class="section">
@@ -3921,10 +3920,6 @@
             }, 30000);
         }
         function showMainApp() {
-            // Mostrar spinner de carga
-            const loader = document.getElementById('globalLoader');
-            loader.style.display = 'flex';
-            
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('appFooter').style.display = 'block';
@@ -3934,6 +3929,11 @@
             loadTheme();
             initIdioma(); // Inicializar idioma
             buildNavMenu();
+            
+            // Mostrar spinner de carga en el área de contenido
+            const loader = document.getElementById('contentLoader');
+            loader.style.display = 'flex';
+            
             if (isAdmin) {
                 showSection('adminUsuarios');
                 renderAdminUsuarios();
@@ -3948,7 +3948,14 @@
                 
                 // Determinar sección objetivo
                 const targetSection = (savedSection && userSections.includes(savedSection)) ? savedSection : 'dashboard';
-                document.getElementById(targetSection).classList.add('active');
+                
+                // Actualizar título de página
+                const titles = {
+                    dashboard: 'Dashboard', clientes: 'Clientes', estadisticas: 'Estadísticas', cobros: 'Cobros del Día',
+                    gastos: 'Gastos', historial: 'Mi Historial', mapa: 'Mapa', misBackups: 'Backups',
+                    miConfig: 'Configuración', microseguros: 'Microseguros'
+                };
+                document.getElementById('pageTitle').textContent = titles[targetSection] || 'Dashboard';
                 
                 // Marcar nav-item correcto
                 document.querySelectorAll('.nav-item').forEach(n => {
