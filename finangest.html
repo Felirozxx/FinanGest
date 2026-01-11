@@ -5203,25 +5203,37 @@
                         });
                     }
                     
-                    // Proyección: cuotas pendientes por cobrar (fechas futuras)
-                    if (c.cuotas && c.estado !== 'pagado' && c.estado !== 'eliminado') {
-                        c.cuotas.forEach((cuota, idx) => {
-                            if (!cuota.pagada) {
-                                // Calcular fecha de la cuota basada en frecuencia
-                                const fechaInicio = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
-                                let fechaCuota = new Date(fechaInicio);
-                                const freq = c.frecuencia || 'diario';
-                                
-                                if (freq === 'diario') fechaCuota.setDate(fechaInicio.getDate() + idx);
-                                else if (freq === 'semanal') fechaCuota.setDate(fechaInicio.getDate() + (idx * 7));
-                                else if (freq === 'quincenal') fechaCuota.setDate(fechaInicio.getDate() + (idx * 15));
-                                else if (freq === 'mensual') fechaCuota.setMonth(fechaInicio.getMonth() + idx);
-                                
-                                if (fechaCuota.getDate() === dia && fechaCuota.getMonth() === mes && fechaCuota.getFullYear() === anio) {
-                                    cobradoDia += parseFloat(cuota.valor || c.valorCuota) || 0;
-                                }
+                    // Proyección: cobros esperados para clientes activos (días futuros)
+                    if (c.estado === 'ativo' && c.valorParcela) {
+                        const fechaHoy = new Date();
+                        fechaHoy.setHours(0,0,0,0);
+                        const fechaActual = new Date(current);
+                        fechaActual.setHours(0,0,0,0);
+                        
+                        // Solo para fechas futuras (no hoy ni pasado)
+                        if (fechaActual > fechaHoy) {
+                            const freq = c.frecuencia || 'diario';
+                            let esDiaCobro = false;
+                            
+                            if (freq === 'diario') {
+                                esDiaCobro = true; // Todos los días
+                            } else if (freq === 'semanal') {
+                                // Mismo día de la semana que fecha inicio
+                                const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                                esDiaCobro = fechaActual.getDay() === fechaIni.getDay();
+                            } else if (freq === 'quincenal') {
+                                const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                                const diffDias = Math.floor((fechaActual - fechaIni) / (1000*60*60*24));
+                                esDiaCobro = diffDias % 15 === 0;
+                            } else if (freq === 'mensual') {
+                                const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                                esDiaCobro = fechaActual.getDate() === fechaIni.getDate();
                             }
-                        });
+                            
+                            if (esDiaCobro) {
+                                cobradoDia += parseFloat(c.valorParcela) || 0;
+                            }
+                        }
                     }
                 });
                 
