@@ -60,6 +60,9 @@
         .sidebar-header {
             padding: 25px 20px;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .logo { font-size: 1.8rem; font-weight: 700; color: var(--accent-cyan); }
         .logo span { color: var(--text-secondary); font-weight: 400; font-size: 0.9rem; }
@@ -674,6 +677,9 @@
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">FinanGest<br><span>Software</span></div>
+                <button onclick="location.reload()" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; padding: 8px; margin-left: 10px; transition: all 0.2s;" title="Refrescar página" onmouseover="this.style.color='var(--primary)'; this.style.transform='rotate(180deg)'" onmouseout="this.style.color='var(--text-secondary)'; this.style.transform='rotate(0deg)'">
+                    <i class="fas fa-sync-alt" style="font-size: 1.1rem;"></i>
+                </button>
             </div>
             <div class="nav-menu" id="navMenu">
                 <!-- Se llena dinámicamente -->
