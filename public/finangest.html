@@ -5161,14 +5161,14 @@
                     inputFin.value = fechaFin.toISOString().split('T')[0];
                 }
             } else {
-                // Por defecto: últimos 7 días hasta hoy
+                // Por defecto: desde hoy hasta 6 días adelante
                 const hoy = new Date();
-                fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
-                fechaInicio = new Date(fechaFin);
-                fechaInicio.setDate(fechaInicio.getDate() - 6);
+                fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+                fechaFin = new Date(fechaInicio);
+                fechaFin.setDate(fechaFin.getDate() + 6);
                 
                 inputInicio.value = fechaInicio.toISOString().split('T')[0];
-                inputFin.value = hoy.toISOString().split('T')[0];
+                inputFin.value = fechaFin.toISOString().split('T')[0];
             }
             
             // Variables para acumular totales
