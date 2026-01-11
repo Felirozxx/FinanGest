@@ -3957,10 +3957,21 @@
                     <div class="nav-item" onclick="showSection('adminConfig')"><i class="fas fa-cog"></i><span data-translate="configuracion">Configuración</span></div>
                     <div class="nav-item" onclick="showSection('adminSeguridad')"><i class="fas fa-shield-alt"></i><span data-translate="seguridad">Seguridad</span></div>
                 `;
-                // Autoclick en Usuarios para admin
+                // Restaurar sección guardada o ir a Usuarios por defecto
+                const savedSection = localStorage.getItem('finangest_section');
+                const adminSections = ['adminUsuarios', 'adminCalendario', 'adminBackups', 'adminConfig', 'adminSeguridad'];
                 setTimeout(() => {
-                    const usuariosBtn = menu.querySelector('.nav-item');
-                    if (usuariosBtn) usuariosBtn.click();
+                    if (savedSection && adminSections.includes(savedSection)) {
+                        showSection(savedSection);
+                        // Marcar nav-item correcto como activo
+                        document.querySelectorAll('.nav-item').forEach(n => {
+                            n.classList.remove('active');
+                            if (n.getAttribute('onclick')?.includes(savedSection)) n.classList.add('active');
+                        });
+                    } else {
+                        const usuariosBtn = menu.querySelector('.nav-item');
+                        if (usuariosBtn) usuariosBtn.click();
+                    }
                 }, 100);
             } else {
                 menu.innerHTML = `
@@ -3975,10 +3986,21 @@
                     <div class="nav-item" onclick="showSection('misBackups')"><i class="fas fa-database"></i><span data-translate="backups">Backups</span></div>
                     <div class="nav-item" onclick="showSection('miConfig')"><i class="fas fa-cog"></i><span data-translate="configuracion">Configuración</span></div>
                 `;
-                // Autoclick en Dashboard para trabajadores
+                // Restaurar sección guardada o ir a Dashboard por defecto
+                const savedSection = localStorage.getItem('finangest_section');
+                const userSections = ['dashboard', 'estadisticas', 'clientes', 'cobros', 'gastos', 'microseguros', 'mapa', 'historial', 'misBackups', 'miConfig'];
                 setTimeout(() => {
-                    const dashboardBtn = menu.querySelector('.nav-item');
-                    if (dashboardBtn) dashboardBtn.click();
+                    if (savedSection && userSections.includes(savedSection)) {
+                        showSection(savedSection);
+                        // Marcar nav-item correcto como activo
+                        document.querySelectorAll('.nav-item').forEach(n => {
+                            n.classList.remove('active');
+                            if (n.getAttribute('onclick')?.includes(savedSection)) n.classList.add('active');
+                        });
+                    } else {
+                        const dashboardBtn = menu.querySelector('.nav-item');
+                        if (dashboardBtn) dashboardBtn.click();
+                    }
                 }, 100);
             }
             // Aplicar traducciones al menú
@@ -4002,6 +4024,9 @@
                 const navItem = event.target.closest('.nav-item');
                 if (navItem) navItem.classList.add('active');
             }
+            
+            // Guardar sección actual en localStorage
+            localStorage.setItem('finangest_section', id);
             
             // Cargar backups si es la sección de backups
             if (id === 'adminBackups') {
@@ -4078,6 +4103,7 @@
             
             localStorage.removeItem('finangest_user');
             localStorage.removeItem('finangest_session');
+            localStorage.removeItem('finangest_section');
             currentUser = null;
             clientes = [];
             document.getElementById('authScreen').style.display = 'flex';
