@@ -3701,9 +3701,13 @@
                         currentUser = data.user;
                         localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     }
-                    // Redirigir al login para que inicie sesión
+                    // Ocultar todos los formularios de registro y mostrar login
+                    document.getElementById('registerStep1').style.display = 'none';
+                    document.getElementById('registerStep2').style.display = 'none';
                     document.getElementById('registerStep3').style.display = 'none';
+                    document.getElementById('renewalPaymentForm').style.display = 'none';
                     document.getElementById('loginForm').style.display = 'block';
+                    if (verificacionInterval) clearInterval(verificacionInterval);
                     alert('Sua conta foi criada! Faça login para continuar.');
                 } else {
                     alert('Pagamento ainda não detectado. Aguarde alguns segundos após pagar.');
