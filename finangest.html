@@ -1443,7 +1443,7 @@
                 <div id="backupLockSystem" class="card-dark p-3 mb-4" style="display: none;">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                         <div class="d-flex align-items-center">
-                            <div id="backupLockIcon" style="width: 60px; height: 60px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 15px rgba(255,82,82,0.5);" onclick="clickLlaveBackup()">
+                            <div id="backupLockIcon" style="width: 60px; height: 60px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; transition: all 0.3s; box-shadow: 0 0 15px rgba(255,82,82,0.5);">
                                 <i id="backupLockIconI" class="fas fa-lock" style="color: #fff; font-size: 1.5rem;"></i>
                             </div>
                             <div>
@@ -1453,11 +1453,11 @@
                                 </p>
                             </div>
                         </div>
-                        <!-- Campo para ingresar contraseña (solo cuando está bloqueado) -->
+                        <!-- Campo contraseña + botón único -->
                         <div id="backupUnlockForm" class="d-flex align-items-center gap-2">
                             <input type="password" id="backupUnlockPassword" class="form-control form-control-dark" placeholder="Contraseña" style="width: 150px;">
-                            <button class="btn btn-success-custom" onclick="desbloquearBackup()">
-                                <i class="fas fa-unlock"></i>
+                            <button id="backupToggleBtn" class="btn" style="background: var(--accent-green); color: #fff;" onclick="toggleBackupLockBtn()">
+                                <i id="backupToggleBtnIcon" class="fas fa-unlock"></i>
                             </button>
                         </div>
                         <!-- Botón configurar -->
@@ -7355,11 +7355,12 @@
             const iconI = document.getElementById('backupLockIconI');
             const title = document.getElementById('backupLockTitle');
             const desc = document.getElementById('backupLockDesc');
-            const unlockForm = document.getElementById('backupUnlockForm');
-            
-            console.log('Actualizando llave - desbloqueado:', backupUnlocked);
+            const passwordInput = document.getElementById('backupUnlockPassword');
+            const toggleBtn = document.getElementById('backupToggleBtn');
+            const toggleBtnIcon = document.getElementById('backupToggleBtnIcon');
             
             if (backupUnlocked) {
+                // DESBLOQUEADO - Verde
                 if (icon) {
                     icon.style.background = 'var(--accent-green)';
                     icon.style.boxShadow = '0 0 20px rgba(0,230,118,0.6)';
@@ -7369,12 +7370,15 @@
                     title.innerHTML = '🔓 Backups Desbloqueados';
                     title.style.color = 'var(--accent-green)';
                 }
-                if (desc) desc.innerHTML = 'Clic en la llave para bloquear';
-                if (unlockForm) {
-                    unlockForm.style.display = 'none';
-                    unlockForm.style.visibility = 'hidden';
+                if (desc) desc.innerHTML = 'Puedes usar backups libremente';
+                if (passwordInput) passwordInput.style.display = 'none';
+                if (toggleBtn) {
+                    toggleBtn.style.background = 'var(--accent-red)';
+                    toggleBtn.onclick = function() { bloquearBackup(); };
                 }
+                if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-lock';
             } else {
+                // BLOQUEADO - Rojo
                 if (icon) {
                     icon.style.background = 'var(--accent-red)';
                     icon.style.boxShadow = '0 0 20px rgba(255,82,82,0.6)';
@@ -7385,21 +7389,18 @@
                     title.style.color = 'var(--accent-red)';
                 }
                 if (desc) desc.innerHTML = 'Ingresa tu contraseña para desbloquear';
-                if (unlockForm) {
-                    unlockForm.style.display = 'flex';
-                    unlockForm.style.visibility = 'visible';
+                if (passwordInput) passwordInput.style.display = 'block';
+                if (toggleBtn) {
+                    toggleBtn.style.background = 'var(--accent-green)';
+                    toggleBtn.onclick = function() { desbloquearBackup(); };
                 }
+                if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-unlock';
             }
         }
         
-        function clickLlaveBackup() {
-            // Solo permite bloquear si está desbloqueado
-            if (backupUnlocked) {
-                backupUnlocked = false;
-                actualizarEstadoLlaveBackup();
-                console.log('Llave bloqueada');
-            }
-            // Si está bloqueado, no hace nada (debe usar el campo de contraseña)
+        function bloquearBackup() {
+            backupUnlocked = false;
+            actualizarEstadoLlaveBackup();
         }
         
         async function desbloquearBackup() {
@@ -7428,9 +7429,21 @@
             }
         }
         
+        function toggleBackupLockBtn() {
+            if (backupUnlocked) {
+                bloquearBackup();
+            } else {
+                desbloquearBackup();
+            }
+        }
+        
+        // Funciones legacy
+        function clickLlaveBackup() {
+            if (backupUnlocked) bloquearBackup();
+        }
+        
         async function toggleBackupLock() {
-            // Función legacy - redirigir a clickLlaveBackup
-            clickLlaveBackup();
+            toggleBackupLockBtn();
         }
         
         async function crearBackupPassword() {
