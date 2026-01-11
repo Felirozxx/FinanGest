@@ -4078,12 +4078,17 @@
         function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            
+            // Quitar active de todos los nav-items
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            // Verificar que event existe y tiene target antes de usar closest
-            if (typeof event !== 'undefined' && event && event.target && typeof event.target.closest === 'function') {
-                const navItem = event.target.closest('.nav-item');
-                if (navItem) navItem.classList.add('active');
-            }
+            
+            // Buscar el nav-item que corresponde a esta sección y marcarlo como activo
+            document.querySelectorAll('.nav-item').forEach(n => {
+                const onclick = n.getAttribute('onclick');
+                if (onclick && onclick.includes("showSection('" + id + "')")) {
+                    n.classList.add('active');
+                }
+            });
             
             // Guardar sección actual en localStorage
             localStorage.setItem('finangest_section', id);
