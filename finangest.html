@@ -420,6 +420,10 @@
                     <button class="btn btn-success-custom w-100" onclick="verificarPagoRenovacion()" id="btnVerificarPagoRenovacion" style="padding: 14px;">
                         Já paguei - Verificar
                     </button>
+                    <!-- Botón TEST - QUITAR EN PRODUCCIÓN -->
+                    <button class="btn w-100 mt-2" onclick="verificarPagoRenovacionTest()" style="padding: 10px; background: #ff6b6b; color: white; border: none; border-radius: 8px; font-size: 0.8rem;">
+                        🧪 TEST: Simular Pago Renovación
+                    </button>
                     <div class="text-center mt-3">
                         <a href="#" onclick="volverAlLogin()" style="color: var(--text-secondary); text-decoration: none;">
                             <i class="fas fa-arrow-left me-1"></i>Voltar ao Login
@@ -3489,6 +3493,35 @@
             if (!auto) {
                 btn.disabled = false;
                 btn.innerHTML = 'Já paguei - Verificar';
+            }
+        }
+
+        // FUNCIÓN TEST RENOVACIÓN - QUITAR EN PRODUCCIÓN
+        async function verificarPagoRenovacionTest() {
+            if (!pendingUser || !pendingUser.id) {
+                alert('Error: No hay usuario pendiente');
+                return;
+            }
+            
+            try {
+                // Activar el usuario directamente
+                const res = await fetch(API_URL + '/api/users/' + pendingUser.id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paid: true, activo: true, pagado: true, subscriptionExpires: new Date(Date.now() + 30*24*60*60*1000) })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    if (verificacionInterval) clearInterval(verificacionInterval);
+                    alert('🧪 TEST: Pago simulado! Suscripción renovada.');
+                    volverAlLogin();
+                    document.getElementById('loginEmail').value = pendingUser.email;
+                } else {
+                    alert('Error: ' + JSON.stringify(data));
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
             }
         }
 
