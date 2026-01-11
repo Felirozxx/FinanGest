@@ -5106,8 +5106,13 @@
                     break;
             }
             
-            document.getElementById('chartFechaInicio').value = fechaInicio.toISOString().split('T')[0];
-            document.getElementById('chartFechaFin').value = fechaFin.toISOString().split('T')[0];
+            // Formato local sin problemas de zona horaria
+            const formatDate = (d) => {
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            };
+            
+            document.getElementById('chartFechaInicio').value = formatDate(fechaInicio);
+            document.getElementById('chartFechaFin').value = formatDate(fechaFin);
             renderChart();
         }
         
@@ -5155,12 +5160,23 @@
             } else {
                 // Por defecto: desde HOY hasta 7 días adelante
                 const hoy = new Date();
-                fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
-                fechaFin = new Date(fechaInicio);
-                fechaFin.setDate(fechaFin.getDate() + 6);
+                // Usar fecha local sin problemas de zona horaria
+                const year = hoy.getFullYear();
+                const month = String(hoy.getMonth() + 1).padStart(2, '0');
+                const day = String(hoy.getDate()).padStart(2, '0');
                 
-                inputInicio.value = fechaInicio.toISOString().split('T')[0];
-                inputFin.value = fechaFin.toISOString().split('T')[0];
+                inputInicio.value = `${year}-${month}-${day}`;
+                
+                const fechaFin = new Date(hoy);
+                fechaFin.setDate(fechaFin.getDate() + 6);
+                const yearFin = fechaFin.getFullYear();
+                const monthFin = String(fechaFin.getMonth() + 1).padStart(2, '0');
+                const dayFin = String(fechaFin.getDate()).padStart(2, '0');
+                
+                inputFin.value = `${yearFin}-${monthFin}-${dayFin}`;
+                
+                fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+                fechaFin.setHours(23, 59, 59);
             }
             
             // Variables para acumular (empieza desde 0)
