@@ -5582,6 +5582,12 @@
                                         title="${u.editKeyEnabled ? 'Llave ACTIVA - Clic para desactivar' : 'Llave BLOQUEADA - Clic para activar'}">
                                     <i class="fas fa-key"></i> Llave
                                 </button>
+                                <button class="btn btn-sm" 
+                                        style="background: #dc3545; color: #fff;"
+                                        onclick="event.stopPropagation(); cancelarSuscripcion('${u.id}', '${u.nombre}')"
+                                        title="Cancelar suscripción - El usuario tendrá que pagar de nuevo">
+                                    <i class="fas fa-ban"></i>
+                                </button>
                                 <button class="btn btn-sm btn-secondary" onclick="toggleUserClients('${u.id}')">
                                     <i class="fas fa-chevron-down" id="icon-${u.id}"></i>
                                 </button>
@@ -7062,6 +7068,31 @@
                 }
             } catch (e) {
                 console.log('Error cargando pendientes:', e);
+            }
+        }
+
+        async function cancelarSuscripcion(userId, nombre) {
+            if (!confirm(`⚠️ ¿Cancelar suscripción de ${nombre}?\n\nEsto:\n- Cerrará su sesión\n- Tendrá que pagar de nuevo para entrar\n- NO elimina sus clientes ni datos`)) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + userId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paid: false, activo: false, pagado: false })
+                });
+                const data = await res.json();
+                
+                // También cerrar sus sesiones
+                await fetch(API_URL + '/api/sessions/user/' + userId, { method: 'DELETE' });
+                
+                if (data.success) {
+                    alert('✅ Suscripción cancelada. El usuario tendrá que pagar de nuevo.');
+                    renderAdminUsuarios();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo cancelar'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
             }
         }
 

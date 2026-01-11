@@ -153,6 +153,17 @@ exports.handler = async (event, context) => {
             return respond(200, { success: true, sessions: userSessions });
         }
         
+        // CERRAR TODAS LAS SESIONES DE UN USUARIO (admin)
+        if (path.match(/^\/sessions\/user\/[^/]+$/) && method === 'DELETE') {
+            const userId = path.split('/')[3];
+            const sessions = db.collection('sessions');
+            await sessions.updateMany(
+                { odId: userId, active: true },
+                { $set: { active: false, closedAt: new Date() } }
+            );
+            return respond(200, { success: true });
+        }
+        
         // CERRAR UNA SESIÓN ESPECÍFICA
         if (path.match(/^\/sessions\/[^/]+\/close$/) && method === 'POST') {
             const sessionId = path.split('/')[2];
