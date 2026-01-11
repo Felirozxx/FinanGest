@@ -579,6 +579,10 @@
                         <button class="btn btn-success-custom w-100" onclick="verificarPago()" id="btnVerificarPago" style="padding: 14px;">
                             Já paguei - Verificar
                         </button>
+                        <!-- Botón TEST - QUITAR EN PRODUCCIÓN -->
+                        <button class="btn w-100 mt-2" onclick="verificarPagoTest()" style="padding: 10px; background: #ff6b6b; color: white; border: none; border-radius: 8px; font-size: 0.8rem;">
+                            🧪 TEST: Simular Pago (sin pagar)
+                        </button>
                     </div>
                 </div>
             </div>
@@ -3718,6 +3722,37 @@
             
             btn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Ya pagué - Verificar';
             btn.disabled = false;
+        }
+
+        // FUNCIÓN TEST - QUITAR EN PRODUCCIÓN
+        async function verificarPagoTest() {
+            if (!pendingUser || !pendingUser.email) {
+                alert('Error: No hay usuario pendiente');
+                return;
+            }
+            
+            try {
+                const res = await fetch(API_URL + '/api/verificar-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: pendingUser.email, testMode: 'simulate' })
+                });
+                const data = await res.json();
+                if (data.paid || data.accountCreated) {
+                    alert('🧪 TEST: Pago simulado exitosamente!');
+                    document.getElementById('registerStep1').style.display = 'none';
+                    document.getElementById('registerStep2').style.display = 'none';
+                    document.getElementById('registerStep3').style.display = 'none';
+                    document.getElementById('renewalPaymentForm').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'block';
+                    if (verificacionInterval) clearInterval(verificacionInterval);
+                    alert('Conta criada! Faça login para continuar.');
+                } else {
+                    alert('Error en test: ' + JSON.stringify(data));
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
         }
 
         async function resendCode() {

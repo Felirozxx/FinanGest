@@ -637,8 +637,45 @@ exports.handler = async (event, context) => {
 
         // VERIFICAR PAGO
         if (path === '/verificar-pago' && method === 'POST') {
-            const { oderId, oderId: paymentId, userId, email } = body;
+            const { oderId, oderId: paymentId, userId, email, testMode } = body;
             const id = oderId || paymentId;
+            
+            // MODO TEST - simular pago aprobado (QUITAR EN PRODUCCIÓN)
+            if (testMode === 'simulate') {
+                if (email) {
+                    const pendingUsers = db.collection('pending_users');
+                    const pendingUser = await pendingUsers.findOne({ email });
+                    
+                    if (pendingUser) {
+                        const users = db.collection('users');
+                        const subscriptionExpires = new Date();
+                        subscriptionExpires.setMonth(subscriptionExpires.getMonth() + 1);
+                        
+                        const result = await users.insertOne({
+                            nombre: pendingUser.nombre,
+                            username: pendingUser.username,
+                            email: pendingUser.email,
+                            password: pendingUser.password,
+                            role: 'client',
+                            paid: true,
+                            subscriptionExpires,
+                            subscriptionType: 'monthly',
+                            lastPayment: new Date(),
+                            createdAt: pendingUser.createdAt
+                        });
+                        
+                        await pendingUsers.deleteOne({ email });
+                        
+                        return respond(200, { 
+                            success: true, 
+                            paid: true, 
+                            accountCreated: true,
+                            user: { id: result.insertedId, nombre: pendingUser.nombre, email: pendingUser.email }
+                        });
+                    }
+                }
+                return respond(200, { success: true, paid: true, testMode: true });
+            }
             
             // Si es usuario nuevo (sin userId), buscar en pending_users
             if (!userId && email) {
