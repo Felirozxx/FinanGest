@@ -5163,6 +5163,10 @@
                 inputFin.value = fechaFin.toISOString().split('T')[0];
             }
             
+            // Variables para acumular (empieza desde 0)
+            let cobradoAcumulado = 0;
+            let prestadoAcumulado = 0;
+            
             // Generar días entre las fechas (de fecha inicio a fecha fin)
             let current = new Date(fechaInicio);
             while (current <= fechaFin) {
@@ -5175,34 +5179,28 @@
                 let cobradoDia = 0;
                 let prestadoDia = 0;
                 
+                // Contar clientes activos con cuotas pendientes para este día
                 clientes.forEach(c => {
-                    const fechaCliente = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
-                    if (fechaCliente.getDate() === dia && fechaCliente.getMonth() === mes && fechaCliente.getFullYear() === anio) {
-                        prestadoDia += parseFloat(c.montoTotal) || 0;
+                    if (c.estado === 'ativo' && c.valorParcela) {
+                        // Proyección de cobros esperados
+                        cobradoDia += parseFloat(c.valorParcela) || 0;
                     }
                     
-                    // Cobros reales (pagos ya hechos)
-                    if (c.pagos) {
-                        c.pagos.forEach(p => {
-                            const fechaPago = new Date(p.fecha);
-                            if (fechaPago.getDate() === dia && fechaPago.getMonth() === mes && fechaPago.getFullYear() === anio) {
-                                cobradoDia += parseFloat(p.valor) || 0;
-                            }
-                        });
-                    }
-                    if (c.historialPagos) {
-                        c.historialPagos.forEach(p => {
-                            const fechaPago = new Date(p.fecha);
-                            if (fechaPago.getDate() === dia && fechaPago.getMonth() === mes && fechaPago.getFullYear() === anio) {
-                                cobradoDia += parseFloat(p.monto) || 0;
-                            }
-                        });
+                    // Préstamos activos
+                    if (c.estado === 'ativo') {
+                        const saldoPendiente = (parseFloat(c.montoTotal) || 0) - (parseFloat(c.totalPagado) || 0);
+                        if (saldoPendiente > 0) {
+                            prestadoDia += saldoPendiente / 10; // Dividir para que suba gradualmente
+                        }
                     }
                 });
                 
-                // Valores DIARIOS (no acumulados) - esto crea las ondas
-                datosCobrado.push(cobradoDia);
-                datosPrestado.push(prestadoDia);
+                // Acumular para que suba gradualmente
+                cobradoAcumulado += cobradoDia;
+                prestadoAcumulado += prestadoDia;
+                
+                datosCobrado.push(cobradoAcumulado);
+                datosPrestado.push(prestadoAcumulado);
                 
                 current.setDate(current.getDate() + 1);
             }
