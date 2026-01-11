@@ -1403,46 +1403,72 @@
             <div id="misBackups" class="section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5><i class="fas fa-database me-2" style="color: var(--accent-cyan);"></i><span data-translate="misBackups">Mis Backups</span></h5>
-                    <button class="btn btn-success-custom" onclick="crearMiBackup()">
+                    <button class="btn btn-success-custom" onclick="crearMiBackup()" id="btnCrearBackup">
                         <i class="fas fa-plus me-2"></i><span data-translate="crearBackupAhora">Crear Backup Ahora</span>
                     </button>
                 </div>
                 
-                <!-- Estado de Acceso a Backups (Llave) -->
-                <div class="card-dark p-3 mb-4" id="backupAccessCard">
+                <!-- Sistema de Llave de Backups -->
+                <div id="backupLockSystem" class="card-dark p-3 mb-4" style="display: none;">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center">
-                            <div id="backupLockIcon" style="width: 50px; height: 50px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; cursor: pointer; transition: all 0.3s;" onclick="toggleBackupAccess()">
-                                <i class="fas fa-lock" style="color: #fff; font-size: 1.3rem;"></i>
+                            <div id="backupLockIcon" style="width: 60px; height: 60px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 15px rgba(255,82,82,0.5);" onclick="toggleBackupLock()">
+                                <i id="backupLockIconI" class="fas fa-lock" style="color: #fff; font-size: 1.5rem;"></i>
                             </div>
                             <div>
-                                <strong id="backupAccessTitle">🔒 Backups Bloqueados</strong>
-                                <p class="text-secondary mb-0" style="font-size: 0.85rem;" id="backupAccessDesc">
-                                    Haz clic en la llave para desbloquear
+                                <strong id="backupLockTitle" style="font-size: 1.1rem;">🔒 Backups Bloqueados</strong>
+                                <p class="text-secondary mb-0" style="font-size: 0.85rem;" id="backupLockDesc">
+                                    Haz clic en la llave para desbloquear con tu contraseña
                                 </p>
                             </div>
                         </div>
-                        <div id="backupConfigBtn">
-                            <!-- Botón de configurar contraseña -->
-                        </div>
+                        <button class="btn btn-sm" style="background: var(--accent-cyan); color: #000;" onclick="mostrarConfigBackupPassword()">
+                            <i class="fas fa-cog me-1"></i>Configurar
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Contraseña de Backups (Configuración) -->
-                <div class="card-dark p-3 mb-4" style="border: 2px solid var(--accent-yellow);">
+                <!-- Crear Contraseña (Primera vez) -->
+                <div id="backupCreatePassword" class="card-dark p-3 mb-4" style="border: 2px solid var(--accent-yellow); display: none;">
                     <div class="d-flex align-items-center mb-3">
                         <div style="width: 40px; height: 40px; background: var(--accent-yellow); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
                             <i class="fas fa-key" style="color: #000;"></i>
                         </div>
                         <div>
-                            <strong>⚙️ Configurar Contraseña</strong>
+                            <strong>🔐 Crear Contraseña de Backups</strong>
                             <p class="text-secondary mb-0" style="font-size: 0.85rem;">
-                                Crea o cambia tu contraseña de backups
+                                Protege tus backups con una contraseña exclusiva
                             </p>
                         </div>
                     </div>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label text-secondary" style="font-size: 0.85rem;">Nueva contraseña</label>
+                            <input type="password" id="newBackupPass" class="form-control form-control-dark" placeholder="Mínimo 4 caracteres">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label text-secondary" style="font-size: 0.85rem;">Confirmar contraseña</label>
+                            <input type="password" id="confirmBackupPass" class="form-control form-control-dark" placeholder="Repetir contraseña">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-success-custom w-100" onclick="crearBackupPassword()">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-secondary mt-2 d-block">Esta contraseña será requerida para usar backups</small>
+                </div>
+                
+                <!-- Modal Configurar Contraseña -->
+                <div id="backupConfigModal" class="card-dark p-3 mb-4" style="border: 2px solid var(--accent-cyan); display: none;">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <strong><i class="fas fa-cog me-2"></i>Configurar Contraseña</strong>
+                        <button class="btn btn-sm" style="background: var(--bg-hover);" onclick="cerrarConfigBackupPassword()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                     <div id="backupPasswordSection">
-                        <!-- Se llena dinámicamente según si tiene contraseña o no -->
+                        <!-- Se llena dinámicamente -->
                     </div>
                 </div>
                 
@@ -3973,7 +3999,7 @@
             }
             if (id === 'misBackups') {
                 cargarMisBackups();
-                verificarContraseñaBackups();
+                inicializarSistemaBackupLock();
             }
             
             const titles = {
@@ -7281,80 +7307,61 @@
 
         // ============ CONTRASEÑA DE BACKUPS (Sistema de Llave Individual) ============
         let backupUnlocked = false; // Estado de desbloqueo en sesión
+        let userHasBackupPassword = false; // Si tiene contraseña configurada
         
-        async function verificarContraseñaBackups() {
-            const accessCard = document.getElementById('backupAccessCard');
-            const section = document.getElementById('backupPasswordSection');
-            if (!section) return;
-            
+        async function inicializarSistemaBackupLock() {
             try {
                 const res = await fetch(API_URL + '/api/users/' + currentUser.id);
                 const user = await res.json();
+                userHasBackupPassword = !!user.backupPassword;
                 
-                if (user.backupPassword) {
-                    // Ya tiene contraseña - mostrar sistema de llave
-                    accessCard.style.display = 'block';
+                const lockSystem = document.getElementById('backupLockSystem');
+                const createPassword = document.getElementById('backupCreatePassword');
+                const configModal = document.getElementById('backupConfigModal');
+                
+                if (userHasBackupPassword) {
+                    // Tiene contraseña - mostrar sistema de llave
+                    lockSystem.style.display = 'block';
+                    createPassword.style.display = 'none';
+                    configModal.style.display = 'none';
+                    backupUnlocked = false;
                     actualizarEstadoLlaveBackup();
-                    
-                    // Sección de configuración
-                    section.innerHTML = `
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span style="color: var(--accent-green);"><i class="fas fa-check-circle me-2"></i>Contraseña configurada</span>
-                            <div>
-                                <button class="btn btn-sm" style="background: var(--accent-cyan); color: #000;" onclick="cambiarContraseñaBackup()">
-                                    <i class="fas fa-edit me-1"></i>Cambiar
-                                </button>
-                            </div>
-                        </div>
-                    `;
                 } else {
-                    // No tiene contraseña - ocultar llave, mostrar formulario de creación
-                    accessCard.style.display = 'none';
-                    backupUnlocked = true; // Sin contraseña = desbloqueado por defecto
-                    
-                    section.innerHTML = `
-                        <div class="row g-2 align-items-end">
-                            <div class="col-md-5">
-                                <label class="form-label text-secondary" style="font-size: 0.85rem;">Nueva contraseña</label>
-                                <input type="password" id="newBackupPassword" class="form-control form-control-dark" placeholder="Mínimo 4 caracteres">
-                            </div>
-                            <div class="col-md-5">
-                                <label class="form-label text-secondary" style="font-size: 0.85rem;">Confirmar contraseña</label>
-                                <input type="password" id="confirmBackupPassword" class="form-control form-control-dark" placeholder="Repetir contraseña">
-                            </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-success-custom w-100" onclick="guardarContraseñaBackup()">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <small class="text-secondary mt-2 d-block">⚠️ Crea una contraseña para proteger tus backups. Será requerida para restaurar.</small>
-                    `;
+                    // No tiene contraseña - mostrar formulario de creación
+                    lockSystem.style.display = 'none';
+                    createPassword.style.display = 'block';
+                    configModal.style.display = 'none';
+                    backupUnlocked = true; // Sin contraseña = acceso libre
                 }
             } catch (e) {
-                section.innerHTML = '<p class="text-secondary">Error al cargar configuración</p>';
+                console.error('Error inicializando sistema backup lock:', e);
             }
         }
         
         function actualizarEstadoLlaveBackup() {
             const icon = document.getElementById('backupLockIcon');
-            const title = document.getElementById('backupAccessTitle');
-            const desc = document.getElementById('backupAccessDesc');
+            const iconI = document.getElementById('backupLockIconI');
+            const title = document.getElementById('backupLockTitle');
+            const desc = document.getElementById('backupLockDesc');
             
             if (backupUnlocked) {
                 icon.style.background = 'var(--accent-green)';
-                icon.innerHTML = '<i class="fas fa-lock-open" style="color: #fff; font-size: 1.3rem;"></i>';
+                icon.style.boxShadow = '0 0 20px rgba(0,230,118,0.6)';
+                iconI.className = 'fas fa-lock-open';
                 title.innerHTML = '🔓 Backups Desbloqueados';
-                desc.innerHTML = 'Puedes crear y restaurar backups libremente';
+                title.style.color = 'var(--accent-green)';
+                desc.innerHTML = 'Puedes crear y restaurar backups. Clic para bloquear.';
             } else {
                 icon.style.background = 'var(--accent-red)';
-                icon.innerHTML = '<i class="fas fa-lock" style="color: #fff; font-size: 1.3rem;"></i>';
+                icon.style.boxShadow = '0 0 20px rgba(255,82,82,0.6)';
+                iconI.className = 'fas fa-lock';
                 title.innerHTML = '🔒 Backups Bloqueados';
-                desc.innerHTML = 'Haz clic en la llave para desbloquear';
+                title.style.color = 'var(--accent-red)';
+                desc.innerHTML = 'Haz clic en la llave para desbloquear con tu contraseña';
             }
         }
         
-        async function toggleBackupAccess() {
+        async function toggleBackupLock() {
             if (backupUnlocked) {
                 // Bloquear
                 backupUnlocked = false;
@@ -7374,7 +7381,6 @@
                     if (data.valid) {
                         backupUnlocked = true;
                         actualizarEstadoLlaveBackup();
-                        alert('✅ Backups desbloqueados');
                     } else {
                         alert('❌ Contraseña incorrecta');
                     }
@@ -7384,9 +7390,9 @@
             }
         }
         
-        async function guardarContraseñaBackup() {
-            const password = document.getElementById('newBackupPassword').value;
-            const confirm = document.getElementById('confirmBackupPassword').value;
+        async function crearBackupPassword() {
+            const password = document.getElementById('newBackupPass').value;
+            const confirm = document.getElementById('confirmBackupPass').value;
             
             if (!password || password.length < 4) {
                 alert('La contraseña debe tener al menos 4 caracteres');
@@ -7405,9 +7411,9 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('✅ Contraseña de backups configurada.\nAhora deberás desbloquear con la llave para usar backups.');
+                    alert('✅ Contraseña creada.\nAhora deberás desbloquear la llave para usar backups.');
                     backupUnlocked = false;
-                    verificarContraseñaBackups();
+                    inicializarSistemaBackupLock();
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo guardar'));
                 }
@@ -7416,7 +7422,10 @@
             }
         }
         
-        function cambiarContraseñaBackup() {
+        function mostrarConfigBackupPassword() {
+            const configModal = document.getElementById('backupConfigModal');
+            configModal.style.display = 'block';
+            
             const section = document.getElementById('backupPasswordSection');
             section.innerHTML = `
                 <div class="row g-2 align-items-end">
@@ -7442,11 +7451,12 @@
                     <a href="#" onclick="olvidéContraseñaBackup(); return false;" style="color: var(--accent-cyan); font-size: 0.85rem;">
                         <i class="fas fa-question-circle me-1"></i>¿Olvidaste tu contraseña?
                     </a>
-                    <a href="#" onclick="verificarContraseñaBackups(); return false;" style="color: var(--text-secondary); font-size: 0.85rem; margin-left: 15px;">
-                        Cancelar
-                    </a>
                 </div>
             `;
+        }
+        
+        function cerrarConfigBackupPassword() {
+            document.getElementById('backupConfigModal').style.display = 'none';
         }
         
         async function actualizarContraseñaBackup() {
@@ -7477,7 +7487,8 @@
                 if (data.success) {
                     alert('✅ Contraseña actualizada');
                     backupUnlocked = false;
-                    verificarContraseñaBackups();
+                    cerrarConfigBackupPassword();
+                    actualizarEstadoLlaveBackup();
                 } else {
                     alert('Error: ' + (data.error || 'Contraseña actual incorrecta'));
                 }
@@ -7519,7 +7530,8 @@
                     if (dataReset.success) {
                         alert('✅ Contraseña restablecida');
                         backupUnlocked = false;
-                        verificarContraseñaBackups();
+                        cerrarConfigBackupPassword();
+                        actualizarEstadoLlaveBackup();
                     } else {
                         alert('Error: ' + (dataReset.error || 'Código incorrecto'));
                     }
@@ -7533,6 +7545,7 @@
         
         function verificarAccesoBackups() {
             // Retorna true si puede usar backups (sin contraseña o desbloqueado)
+            if (!userHasBackupPassword) return true;
             return backupUnlocked;
         }
         
@@ -7560,7 +7573,7 @@
         }
 
         async function crearMiBackup() {
-            // Verificar si backups están bloqueados
+            // Verificar si backups están bloqueados por admin
             try {
                 const usersRes = await fetch(API_URL + '/api/users');
                 const allUsers = await usersRes.json();
@@ -7568,6 +7581,12 @@
                 
                 if (myUser?.backupBlocked) {
                     alert('🔒 El administrador ha bloqueado el uso de backups para tu cuenta.');
+                    return;
+                }
+                
+                // Verificar si tiene contraseña y está desbloqueado
+                if (myUser?.backupPassword && !backupUnlocked) {
+                    alert('🔒 Debes desbloquear la llave de backups primero.\nHaz clic en el candado rojo para ingresar tu contraseña.');
                     return;
                 }
             } catch (e) {}
@@ -7589,7 +7608,7 @@
         }
 
         async function restaurarMiBackup(backupId) {
-            // Verificar si backups están bloqueados
+            // Verificar si backups están bloqueados por admin
             try {
                 const usersRes = await fetch(API_URL + '/api/users');
                 const allUsers = await usersRes.json();
@@ -7600,10 +7619,10 @@
                     return;
                 }
                 
-                // Verificar si tiene contraseña de backups configurada
-                if (myUser?.backupPassword) {
-                    const passwordValid = await pedirContraseñaBackup();
-                    if (!passwordValid) return;
+                // Verificar si tiene contraseña y está desbloqueado
+                if (myUser?.backupPassword && !backupUnlocked) {
+                    alert('🔒 Debes desbloquear la llave de backups primero.\nHaz clic en el candado rojo para ingresar tu contraseña.');
+                    return;
                 }
             } catch (e) {}
             
