@@ -5711,25 +5711,62 @@
 
         function renderCobrosPreview() {
             const container = document.getElementById('cobrosHoyPreview');
-            const activos = clientes.filter(c => c.estado === 'ativo').slice(0, 4);
-            if (activos.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 20px;">
-                        <i class="fas fa-clipboard-check fa-2x mb-3" style="color: var(--accent-green); opacity: 0.5;"></i>
-                        <p class="text-secondary" style="font-size: 0.9rem;">No hay cobros pendientes para hoy</p>
-                        <small class="text-secondary">Los cobros aparecerán cuando registres clientes activos</small>
+            const hoy = new Date().toISOString().split('T')[0];
+            
+            // Recopilar todos los pagos de hoy
+            const pagosHoy = [];
+            clientes.forEach(c => {
+                if (c.pagos && c.pagos.length > 0) {
+                    c.pagos.forEach(p => {
+                        const fechaPago = p.fecha ? p.fecha.split('T')[0] : '';
+                        if (fechaPago === hoy && parseFloat(p.valor) > 0) {
+                            pagosHoy.push({
+                                nombre: c.nombre,
+                                valor: parseFloat(p.valor),
+                                parcelasPagas: c.parcelasPagas || 0,
+                                numeroParcelas: c.numeroParcelas || 0
+                            });
+                        }
+                    });
+                }
+            });
+            
+            if (pagosHoy.length === 0) {
+                // Si no hay pagos hoy, mostrar clientes activos pendientes de cobro
+                const activos = clientes.filter(c => c.estado === 'ativo').slice(0, 4);
+                if (activos.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-clipboard-check fa-2x mb-3" style="color: var(--accent-green); opacity: 0.5;"></i>
+                            <p class="text-secondary" style="font-size: 0.9rem;">No hay cobros pendientes para hoy</p>
+                            <small class="text-secondary">Los cobros aparecerán cuando registres clientes activos</small>
+                        </div>
+                    `;
+                    return;
+                }
+                container.innerHTML = activos.map(c => `
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
+                        <div>
+                            <div>${c.nombre}</div>
+                            <small class="text-secondary">${c.parcelasPagas || 0}/${c.numeroParcelas} parcelas</small>
+                        </div>
+                        <div class="text-end">
+                            <div style="color: var(--accent-cyan);">R$ ${(c.valorParcela || 0).toFixed(2)}</div>
+                        </div>
                     </div>
-                `;
+                `).join('');
                 return;
             }
-            container.innerHTML = activos.map(c => `
+            
+            // Mostrar pagos de hoy (cada pago individual)
+            container.innerHTML = pagosHoy.map(p => `
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
                     <div>
-                        <div>${c.nombre}</div>
-                        <small class="text-secondary">${c.parcelasPagas || 0}/${c.numeroParcelas} parcelas</small>
+                        <div>${p.nombre}</div>
+                        <small class="text-secondary">${p.parcelasPagas}/${p.numeroParcelas} parcelas</small>
                     </div>
                     <div class="text-end">
-                        <div style="color: var(--accent-cyan);">R$ ${(c.valorParcela || 0).toFixed(2)}</div>
+                        <div style="color: var(--accent-green);">✓ R$ ${p.valor.toFixed(2)}</div>
                     </div>
                 </div>
             `).join('');
