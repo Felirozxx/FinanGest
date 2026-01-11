@@ -2747,7 +2747,10 @@
                 negOtro: '📦 Otro',
                 seleccionarFecha: 'Seleccionar Fecha',
                 nombreNegocio: 'Nombre del Negocio (opcional)',
-                ejTienda: 'Ej: Tienda Don José'
+                ejTienda: 'Ej: Tienda Don José',
+                // Navegador del gráfico
+                navArrastra: '⟵ Arrastra para navegar ⟶',
+                navUsaApp: '📊 Usa la app por más días para navegar'
             },
             pt: {
                 // Navegação
@@ -2969,7 +2972,10 @@
                 negOtro: '📦 Outro',
                 seleccionarFecha: 'Selecionar Data',
                 nombreNegocio: 'Nome do Negócio (opcional)',
-                ejTienda: 'Ex: Loja do José'
+                ejTienda: 'Ex: Loja do José',
+                // Navegador do gráfico
+                navArrastra: '⟵ Arraste para navegar ⟶',
+                navUsaApp: '📊 Use o app por mais dias para navegar'
             }
         };
         
@@ -5505,7 +5511,7 @@
                 if (handleLeft) handleLeft.style.display = 'none';
                 if (handleRight) handleRight.style.display = 'none';
                 if (helpText) {
-                    helpText.textContent = '📊 Usa la app por más días para navegar';
+                    helpText.textContent = translations[currentLang]?.navUsaApp || '📊 Usa la app por más días para navegar';
                     helpText.style.color = '#8892b0';
                 }
                 selector.style.cursor = 'default';
@@ -5519,7 +5525,7 @@
                 if (handleLeft) handleLeft.style.display = 'flex';
                 if (handleRight) handleRight.style.display = 'flex';
                 if (helpText) {
-                    helpText.textContent = '⟵ Arrastra para navegar ⟶';
+                    helpText.textContent = translations[currentLang]?.navArrastra || '⟵ Arrastra para navegar ⟶';
                     helpText.style.color = '#00d4ff';
                 }
                 selector.style.cursor = 'grab';
