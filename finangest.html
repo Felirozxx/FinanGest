@@ -4937,8 +4937,12 @@
                 if ((c.montoPagado || 0) >= (c.totalAPagar || 0)) return false;
                 
                 // Calcular días desde el inicio del préstamo
-                const fechaInicio = new Date(c.fechaInicio || c.fechaCreacion || c.fechaRegistro);
-                if (isNaN(fechaInicio)) return false;
+                const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha || c.createdAt;
+                if (!fechaStr) return false;
+                
+                const fechaInicio = new Date(fechaStr);
+                fechaInicio.setHours(0, 0, 0, 0);
+                if (isNaN(fechaInicio.getTime())) return false;
                 
                 const diasTranscurridos = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24));
                 const parcelasQueDeberianEstarPagas = Math.min(diasTranscurridos, c.numeroParcelas || 1);
@@ -4954,7 +4958,13 @@
             }
             
             container.innerHTML = atrasados.map(c => {
-                const diasAtraso = Math.floor((hoy - new Date(c.fechaInicio || c.fechaCreacion)) / (1000 * 60 * 60 * 24)) - (c.parcelasPagas || 0);
+                const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha || c.createdAt;
+                const fechaInicio = new Date(fechaStr);
+                fechaInicio.setHours(0, 0, 0, 0);
+                const diasTranscurridos = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24));
+                const parcelasPagas = c.parcelasPagas || 0;
+                const diasAtraso = Math.max(0, diasTranscurridos - parcelasPagas);
+                
                 return `
                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
                     <div>
