@@ -5492,10 +5492,20 @@
             if (!wrapper || !selector) return;
             
             const wrapperWidth = wrapper.offsetWidth;
+            const numDays = allChartLabels.length;
             
-            // Posicionar selector al final (datos más recientes) - 40% del ancho
-            const selectorWidth = Math.max(60, wrapperWidth * 0.4);
-            const selectorLeft = wrapperWidth - selectorWidth;
+            // Si hay pocos datos (menos de 7 días), el selector ocupa todo
+            // Si hay más datos, el selector ocupa un porcentaje proporcional
+            let selectorWidth, selectorLeft;
+            if (numDays <= 7) {
+                selectorWidth = wrapperWidth;
+                selectorLeft = 0;
+            } else {
+                // Mostrar últimos 7 días o 30% del total, lo que sea mayor
+                const daysToShow = Math.max(7, Math.floor(numDays * 0.3));
+                selectorWidth = Math.max(60, (daysToShow / numDays) * wrapperWidth);
+                selectorLeft = wrapperWidth - selectorWidth;
+            }
             
             selector.style.width = selectorWidth + 'px';
             selector.style.left = selectorLeft + 'px';
