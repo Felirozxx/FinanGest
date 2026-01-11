@@ -780,32 +780,32 @@
                                 </div>
                             </div>
                             <div class="chart-container"><canvas id="mainChart"></canvas></div>
-                            <!-- Mini gráfico de navegación estilo profesional -->
-                            <div id="chartNavContainer" style="position: relative; height: 60px; margin-top: 10px; background: var(--bg-secondary); border-radius: 4px; border: 1px solid var(--border-color);">
-                                <!-- Etiquetas de fechas -->
-                                <div id="chartNavLabels" style="position: absolute; top: 2px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 10px; font-size: 0.7rem; color: var(--text-secondary);"></div>
-                                <!-- Mini gráfico -->
-                                <canvas id="miniChart" style="width: 100%; height: 40px; margin-top: 12px;"></canvas>
-                                <!-- Área gris izquierda (fuera de selección) -->
-                                <div id="rangeOverlayLeft" style="position: absolute; top: 12px; left: 0; height: 40px; background: rgba(0,0,0,0.5);"></div>
-                                <!-- Área gris derecha (fuera de selección) -->
-                                <div id="rangeOverlayRight" style="position: absolute; top: 12px; right: 0; height: 40px; background: rgba(0,0,0,0.5);"></div>
-                                <!-- Selector de rango con handles -->
-                                <div id="rangeSelector" style="position: absolute; top: 12px; height: 40px; border: 2px solid var(--primary); background: transparent; cursor: move; min-width: 40px; box-sizing: border-box;">
-                                    <!-- Handle izquierdo -->
-                                    <div id="rangeLeft" style="position: absolute; left: -8px; top: 50%; transform: translateY(-50%); width: 16px; height: 30px; background: var(--bg-card); border: 2px solid var(--primary); border-radius: 4px; cursor: ew-resize; display: flex; align-items: center; justify-content: center;">
-                                        <div style="width: 2px; height: 12px; background: var(--text-secondary); margin: 0 1px;"></div>
-                                        <div style="width: 2px; height: 12px; background: var(--text-secondary); margin: 0 1px;"></div>
+                            <!-- Mini gráfico de navegación -->
+                            <div id="chartNavContainer" style="position: relative; height: 60px; margin-top: 10px; background: linear-gradient(180deg, #1a1a2e 0%, #151525 100%); border-radius: 8px; padding: 8px 12px; border: 1px solid #2d2d44;">
+                                <!-- Mini gráfico con selector -->
+                                <div id="miniChartWrapper" style="position: relative; height: 35px; background: #0d0d1a; border-radius: 4px; overflow: hidden; cursor: crosshair;">
+                                    <canvas id="miniChart" style="width: 100%; height: 100%;"></canvas>
+                                    <!-- Overlay izquierdo (área no seleccionada) -->
+                                    <div id="rangeOverlayLeft" style="position: absolute; top: 0; left: 0; height: 100%; background: rgba(0,0,0,0.7); pointer-events: none;"></div>
+                                    <!-- Selector de rango arrastrable -->
+                                    <div id="rangeSelector" style="position: absolute; top: 0; height: 100%; background: rgba(0,212,255,0.1); border: 2px solid #00d4ff; cursor: grab; min-width: 40px; box-sizing: border-box; border-radius: 3px;">
+                                        <!-- Handle izquierdo -->
+                                        <div id="handleLeft" style="position: absolute; left: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 20px; background: #00d4ff; border-radius: 3px; cursor: ew-resize; display: flex; align-items: center; justify-content: center;">
+                                            <div style="width: 2px; height: 10px; background: #0d0d1a; border-radius: 1px;"></div>
+                                        </div>
+                                        <!-- Handle derecho -->
+                                        <div id="handleRight" style="position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 20px; background: #00d4ff; border-radius: 3px; cursor: ew-resize; display: flex; align-items: center; justify-content: center;">
+                                            <div style="width: 2px; height: 10px; background: #0d0d1a; border-radius: 1px;"></div>
+                                        </div>
                                     </div>
-                                    <!-- Handle derecho -->
-                                    <div id="rangeRight" style="position: absolute; right: -8px; top: 50%; transform: translateY(-50%); width: 16px; height: 30px; background: var(--bg-card); border: 2px solid var(--primary); border-radius: 4px; cursor: ew-resize; display: flex; align-items: center; justify-content: center;">
-                                        <div style="width: 2px; height: 12px; background: var(--text-secondary); margin: 0 1px;"></div>
-                                        <div style="width: 2px; height: 12px; background: var(--text-secondary); margin: 0 1px;"></div>
-                                    </div>
+                                    <!-- Overlay derecho (área no seleccionada) -->
+                                    <div id="rangeOverlayRight" style="position: absolute; top: 0; right: 0; height: 100%; background: rgba(0,0,0,0.7); pointer-events: none;"></div>
                                 </div>
-                                <!-- Scrollbar -->
-                                <div style="position: absolute; bottom: 0; left: 10px; right: 10px; height: 6px; background: var(--bg-hover); border-radius: 3px;">
-                                    <div id="scrollThumb" style="position: absolute; height: 100%; background: var(--text-secondary); border-radius: 3px; cursor: pointer; min-width: 30px;"></div>
+                                <!-- Indicador de rango de fechas -->
+                                <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 0.65rem; color: #6b7280;">
+                                    <span id="navDateStart">-</span>
+                                    <span style="color: #00d4ff; font-size: 0.6rem;">⟵ Arrastra para navegar ⟶</span>
+                                    <span id="navDateEnd">-</span>
                                 </div>
                             </div>
                         </div>
@@ -5422,10 +5422,15 @@
         }
         
         let miniChart = null;
+        let allChartData = { cobrado: [], prestado: [], labels: [] };
         
         function renderMiniChart(datosCobrado, datosPrestado, labels) {
             const ctx = document.getElementById('miniChart');
             if (!ctx) return;
+            
+            // Guardar datos globalmente para el selector
+            allChartLabels = labels;
+            allChartData = { cobrado: datosCobrado, prestado: datosPrestado, labels: labels };
             
             if (miniChart) miniChart.destroy();
             
@@ -5457,42 +5462,37 @@
                     plugins: { legend: { display: false } },
                     scales: {
                         x: { display: false },
-                        y: { display: false }
+                        y: { display: false, beginAtZero: true }
                     },
                     interaction: { enabled: false }
                 }
             });
             
-            // Inicializar selector de rango
-            initRangeSelector();
+            // Inicializar selector de rango después de un pequeño delay
+            setTimeout(() => initRangeSelector(), 100);
         }
         
         function initRangeSelector() {
-            const container = document.getElementById('chartNavContainer');
+            const wrapper = document.getElementById('miniChartWrapper');
             const selector = document.getElementById('rangeSelector');
             const overlayLeft = document.getElementById('rangeOverlayLeft');
             const overlayRight = document.getElementById('rangeOverlayRight');
-            const scrollThumb = document.getElementById('scrollThumb');
-            const labelsContainer = document.getElementById('chartNavLabels');
+            const handleLeft = document.getElementById('handleLeft');
+            const handleRight = document.getElementById('handleRight');
             
-            if (!container || !selector) return;
+            if (!wrapper || !selector) return;
             
-            const containerWidth = container.offsetWidth - 20; // Padding
+            const wrapperWidth = wrapper.offsetWidth;
             
-            // Posicionar selector al final (datos más recientes)
-            const selectorWidth = containerWidth * 0.3;
-            const selectorLeft = containerWidth * 0.7;
+            // Posicionar selector al final (datos más recientes) - 40% del ancho
+            const selectorWidth = Math.max(60, wrapperWidth * 0.4);
+            const selectorLeft = wrapperWidth - selectorWidth;
             
             selector.style.width = selectorWidth + 'px';
-            selector.style.left = (selectorLeft + 10) + 'px';
+            selector.style.left = selectorLeft + 'px';
             
-            // Actualizar overlays y scrollbar
+            // Actualizar overlays
             updateOverlays();
-            
-            // Agregar etiquetas de fechas
-            if (labelsContainer) {
-                labelsContainer.innerHTML = '<span>Inicio</span><span>Hoy</span>';
-            }
             
             let isDragging = false;
             let isResizingLeft = false;
@@ -5507,12 +5507,13 @@
             
             function onStart(e) {
                 const target = e.target;
-                if (target.id === 'rangeLeft' || target.closest('#rangeLeft')) {
+                if (target === handleLeft || target.closest('#handleLeft')) {
                     isResizingLeft = true;
-                } else if (target.id === 'rangeRight' || target.closest('#rangeRight')) {
+                } else if (target === handleRight || target.closest('#handleRight')) {
                     isResizingRight = true;
-                } else if (target.id === 'rangeSelector' || target.closest('#rangeSelector')) {
+                } else if (target === selector || target.closest('#rangeSelector')) {
                     isDragging = true;
+                    selector.style.cursor = 'grabbing';
                 }
                 startX = getClientX(e);
                 startLeft = selector.offsetLeft;
@@ -5524,27 +5525,28 @@
                 if (!isDragging && !isResizingLeft && !isResizingRight) return;
                 
                 const dx = getClientX(e) - startX;
-                const maxRight = container.offsetWidth - 10;
+                const maxRight = wrapper.offsetWidth;
                 
                 if (isDragging) {
                     let newLeft = startLeft + dx;
-                    newLeft = Math.max(10, Math.min(newLeft, maxRight - selector.offsetWidth));
+                    newLeft = Math.max(0, Math.min(newLeft, maxRight - selector.offsetWidth));
                     selector.style.left = newLeft + 'px';
                 } else if (isResizingLeft) {
                     let newLeft = startLeft + dx;
                     let newWidth = startWidth - dx;
-                    if (newLeft >= 10 && newWidth >= 40) {
+                    if (newLeft >= 0 && newWidth >= 50) {
                         selector.style.left = newLeft + 'px';
                         selector.style.width = newWidth + 'px';
                     }
                 } else if (isResizingRight) {
                     let newWidth = startWidth + dx;
-                    if (newWidth >= 40 && startLeft + newWidth <= maxRight) {
+                    if (newWidth >= 50 && startLeft + newWidth <= maxRight) {
                         selector.style.width = newWidth + 'px';
                     }
                 }
                 
                 updateOverlays();
+                e.preventDefault();
             }
             
             function onEnd() {
@@ -5554,6 +5556,7 @@
                 isDragging = false;
                 isResizingLeft = false;
                 isResizingRight = false;
+                selector.style.cursor = 'grab';
             }
             
             function updateOverlays() {
@@ -5561,47 +5564,68 @@
                 const sWidth = selector.offsetWidth;
                 const sRight = sLeft + sWidth;
                 
-                overlayLeft.style.width = (sLeft - 10) + 'px';
-                overlayLeft.style.left = '0';
+                overlayLeft.style.width = sLeft + 'px';
+                overlayRight.style.width = (wrapper.offsetWidth - sRight) + 'px';
                 
-                overlayRight.style.width = (container.offsetWidth - sRight - 10) + 'px';
-                overlayRight.style.right = '0';
-                
-                // Actualizar scrollbar
-                const totalWidth = container.offsetWidth - 20;
-                const thumbWidth = (sWidth / totalWidth) * (totalWidth - 20);
-                const thumbLeft = ((sLeft - 10) / totalWidth) * (totalWidth - 20);
-                scrollThumb.style.width = Math.max(30, thumbWidth) + 'px';
-                scrollThumb.style.left = thumbLeft + 'px';
+                // Actualizar fechas mostradas
+                updateNavDates(sLeft, sRight, wrapper.offsetWidth);
             }
             
             // Mouse events
             selector.addEventListener('mousedown', onStart);
+            handleLeft.addEventListener('mousedown', onStart);
+            handleRight.addEventListener('mousedown', onStart);
             document.addEventListener('mousemove', onMove);
             document.addEventListener('mouseup', onEnd);
             
             // Touch events para celular
             selector.addEventListener('touchstart', onStart, { passive: false });
+            handleLeft.addEventListener('touchstart', onStart, { passive: false });
+            handleRight.addEventListener('touchstart', onStart, { passive: false });
             document.addEventListener('touchmove', onMove, { passive: false });
             document.addEventListener('touchend', onEnd);
         }
         
-        function actualizarGraficoPorSelector() {
-            const container = document.getElementById('chartNavContainer');
-            const selector = document.getElementById('rangeSelector');
-            if (!container || !selector) return;
+        // Variable global para almacenar todas las fechas del gráfico
+        let allChartLabels = [];
+        
+        function updateNavDates(sLeft, sRight, totalWidth) {
+            const startEl = document.getElementById('navDateStart');
+            const endEl = document.getElementById('navDateEnd');
             
-            const containerWidth = container.offsetWidth;
+            if (!startEl || !endEl || allChartLabels.length === 0) return;
+            
+            const startIdx = Math.floor((sLeft / totalWidth) * allChartLabels.length);
+            const endIdx = Math.min(Math.floor((sRight / totalWidth) * allChartLabels.length), allChartLabels.length - 1);
+            
+            startEl.textContent = allChartLabels[Math.max(0, startIdx)] || '-';
+            endEl.textContent = allChartLabels[Math.max(0, endIdx)] || '-';
+        }
+        
+        function actualizarGraficoPorSelector() {
+            const wrapper = document.getElementById('miniChartWrapper');
+            const selector = document.getElementById('rangeSelector');
+            if (!wrapper || !selector || !mainChart || allChartData.labels.length === 0) return;
+            
+            const wrapperWidth = wrapper.offsetWidth;
             const selectorLeft = selector.offsetLeft;
             const selectorWidth = selector.offsetWidth;
             
-            // Calcular porcentajes
-            const startPercent = selectorLeft / containerWidth;
-            const endPercent = (selectorLeft + selectorWidth) / containerWidth;
+            // Calcular índices basados en la posición del selector
+            const totalLabels = allChartData.labels.length;
+            const startIdx = Math.floor((selectorLeft / wrapperWidth) * totalLabels);
+            const endIdx = Math.min(Math.ceil(((selectorLeft + selectorWidth) / wrapperWidth) * totalLabels), totalLabels);
             
-            // Calcular fechas basadas en el rango total de datos
-            // Por ahora solo actualiza visualmente, cuando tengas más datos funcionará mejor
-            console.log('Rango seleccionado:', Math.round(startPercent * 100) + '% - ' + Math.round(endPercent * 100) + '%');
+            // Obtener datos filtrados
+            const filteredLabels = allChartData.labels.slice(startIdx, endIdx);
+            const filteredCobrado = allChartData.cobrado.slice(startIdx, endIdx);
+            const filteredPrestado = allChartData.prestado.slice(startIdx, endIdx);
+            
+            // Actualizar gráfico principal
+            mainChart.data.labels = filteredLabels;
+            mainChart.data.datasets[0].data = filteredCobrado;
+            mainChart.data.datasets[1].data = filteredPrestado;
+            mainChart.update('none');
         }
 
         function renderCobrosPreview() {
