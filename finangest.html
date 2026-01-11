@@ -7473,13 +7473,12 @@
             const porcentaje = parseInt(document.getElementById('clienteComision').value) || 20;
             const microseguro = parseFloat(document.getElementById('clienteMicroseguro').value) || 0;
             const comision = monto * (porcentaje / 100);
-            const totalParcelas = monto + comision;
+            const totalParcelas = monto + comision; // Total a pagar SIN microseguro
             const porParcela = totalParcelas / parcelas;
-            const totalConMicroseguro = totalParcelas + microseguro;
             document.getElementById('comisionLabel').textContent = porcentaje;
             document.getElementById('calcComision').textContent = 'R$ ' + comision.toFixed(2);
             document.getElementById('calcMicroseguro').textContent = 'R$ ' + microseguro.toFixed(2);
-            document.getElementById('calcTotal').textContent = 'R$ ' + totalConMicroseguro.toFixed(2);
+            document.getElementById('calcTotal').textContent = 'R$ ' + totalParcelas.toFixed(2); // Sin microseguro
             document.getElementById('calcParcela').textContent = 'R$ ' + porParcela.toFixed(2);
         }
 
@@ -7504,7 +7503,7 @@
             if (!nombre || !monto || !parcelas) return alert('Completa los campos requeridos');
             const comision = monto * (porcentaje / 100);
             const totalParcelas = monto + comision;
-            const total = totalParcelas + microseguro;
+            const total = totalParcelas; // Total a pagar SIN microseguro
             
             // ========== MODO EDICIÓN (trabajador con llave activa) ==========
             if (window.clienteEditandoId) {
