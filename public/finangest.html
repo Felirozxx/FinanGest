@@ -5077,32 +5077,41 @@
         // Función para establecer rango de fechas rápido
         function setChartRange(range) {
             const hoy = new Date();
-            let fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
-            let fechaFin = new Date(fechaInicio);
+            let fechaInicio = new Date(hoy);
+            let fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
             
             // Actualizar botones activos
             document.querySelectorAll('.chart-range-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Desde HOY hacia ADELANTE
+            // Desde el PASADO hasta HOY (datos reales)
             switch(range) {
-                case '1w': // 1 semana adelante
-                    fechaFin.setDate(fechaInicio.getDate() + 7);
+                case '1w': // última semana
+                    fechaInicio.setDate(hoy.getDate() - 7);
                     break;
-                case '1m': // 1 mes adelante
-                    fechaFin.setMonth(fechaInicio.getMonth() + 1);
+                case '1m': // último mes
+                    fechaInicio.setMonth(hoy.getMonth() - 1);
                     break;
-                case '3m': // 3 meses adelante
-                    fechaFin.setMonth(fechaInicio.getMonth() + 3);
+                case '3m': // últimos 3 meses
+                    fechaInicio.setMonth(hoy.getMonth() - 3);
                     break;
-                case '6m': // 6 meses adelante
-                    fechaFin.setMonth(fechaInicio.getMonth() + 6);
+                case '6m': // últimos 6 meses
+                    fechaInicio.setMonth(hoy.getMonth() - 6);
                     break;
-                case '1y': // 1 año adelante
-                    fechaFin.setFullYear(fechaInicio.getFullYear() + 1);
+                case '1y': // último año
+                    fechaInicio.setFullYear(hoy.getFullYear() - 1);
                     break;
-                case 'all': // Todo - 30 días adelante
-                    fechaFin.setDate(fechaInicio.getDate() + 30);
+                case 'all': // Todo - desde el primer cliente
+                    if (clientes && clientes.length > 0) {
+                        const fechas = clientes.map(c => new Date(c.fechaCreacion || c.fechaInicio || c.fechaRegistro)).filter(f => !isNaN(f.getTime()));
+                        if (fechas.length > 0) {
+                            fechaInicio = new Date(Math.min(...fechas.map(f => f.getTime())));
+                        } else {
+                            fechaInicio.setMonth(hoy.getMonth() - 1);
+                        }
+                    } else {
+                        fechaInicio.setMonth(hoy.getMonth() - 1);
+                    }
                     break;
             }
             
@@ -5158,25 +5167,21 @@
                     inputFin.value = fechaFin.toISOString().split('T')[0];
                 }
             } else {
-                // Por defecto: desde HOY hasta 7 días adelante
+                // Por defecto: desde hace 7 días hasta HOY (datos reales)
                 const hoy = new Date();
-                // Usar fecha local sin problemas de zona horaria
-                const year = hoy.getFullYear();
-                const month = String(hoy.getMonth() + 1).padStart(2, '0');
-                const day = String(hoy.getDate()).padStart(2, '0');
+                const fechaIni = new Date(hoy);
+                fechaIni.setDate(fechaIni.getDate() - 6);
                 
-                inputInicio.value = `${year}-${month}-${day}`;
+                // Formato local sin problemas de zona horaria
+                const formatDate = (d) => {
+                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                };
                 
-                const fechaFin = new Date(hoy);
-                fechaFin.setDate(fechaFin.getDate() + 6);
-                const yearFin = fechaFin.getFullYear();
-                const monthFin = String(fechaFin.getMonth() + 1).padStart(2, '0');
-                const dayFin = String(fechaFin.getDate()).padStart(2, '0');
+                inputInicio.value = formatDate(fechaIni);
+                inputFin.value = formatDate(hoy);
                 
-                inputFin.value = `${yearFin}-${monthFin}-${dayFin}`;
-                
-                fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
-                fechaFin.setHours(23, 59, 59);
+                fechaInicio = new Date(fechaIni.getFullYear(), fechaIni.getMonth(), fechaIni.getDate(), 0, 0, 0);
+                fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
             }
             
             // Variables para acumular (empieza desde 0)
@@ -5195,49 +5200,35 @@
                 let cobradoDia = 0;
                 let prestadoDia = 0;
                 
-                // Proyección de cobros esperados por día (clientes activos)
                 clientes.forEach(c => {
-                    if (c.estado === 'ativo' && c.valorParcela) {
-                        const freq = c.frecuencia || 'diario';
-                        let esDiaCobro = false;
-                        
-                        if (freq === 'diario') {
-                            esDiaCobro = true;
-                        } else if (freq === 'semanal') {
-                            const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
-                            esDiaCobro = current.getDay() === fechaIni.getDay();
-                        } else if (freq === 'quincenal') {
-                            const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
-                            const diffDias = Math.floor((current - fechaIni) / (1000*60*60*24));
-                            esDiaCobro = diffDias >= 0 && diffDias % 15 === 0;
-                        } else if (freq === 'mensual') {
-                            const fechaIni = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
-                            esDiaCobro = current.getDate() === fechaIni.getDate();
-                        }
-                        
-                        if (esDiaCobro) {
-                            cobradoDia += parseFloat(c.valorParcela) || 0;
-                        }
+                    // Préstamos realizados en este día
+                    const fechaCliente = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                    if (fechaCliente.getDate() === dia && fechaCliente.getMonth() === mes && fechaCliente.getFullYear() === anio) {
+                        prestadoDia += parseFloat(c.montoTotal) || 0;
                     }
                     
-                    // Préstamos pendientes
-                    if (c.estado === 'ativo') {
-                        const saldoPendiente = (parseFloat(c.montoTotal) || 0) - (parseFloat(c.totalPagado) || 0);
-                        if (saldoPendiente > 0) {
-                            // Agregar variación para crear ondas
-                            const variacion = Math.sin(dia * 0.5) * (saldoPendiente * 0.05);
-                            prestadoDia += (saldoPendiente / 20) + variacion;
-                        }
+                    // Cobros reales (pagos ya hechos)
+                    if (c.pagos) {
+                        c.pagos.forEach(p => {
+                            const fechaPago = new Date(p.fecha);
+                            if (fechaPago.getDate() === dia && fechaPago.getMonth() === mes && fechaPago.getFullYear() === anio) {
+                                cobradoDia += parseFloat(p.valor) || 0;
+                            }
+                        });
+                    }
+                    if (c.historialPagos) {
+                        c.historialPagos.forEach(p => {
+                            const fechaPago = new Date(p.fecha);
+                            if (fechaPago.getDate() === dia && fechaPago.getMonth() === mes && fechaPago.getFullYear() === anio) {
+                                cobradoDia += parseFloat(p.monto) || 0;
+                            }
+                        });
                     }
                 });
                 
-                // Agregar pequeña variación para crear ondas naturales
-                const variacionCobro = Math.sin(dia * 0.8) * (cobradoDia * 0.1);
-                cobradoDia += variacionCobro;
-                
-                // Acumular para que suba gradualmente desde 0
-                cobradoAcumulado += Math.max(0, cobradoDia);
-                prestadoAcumulado += Math.max(0, prestadoDia);
+                // Acumular totales (empieza desde 0 y sube)
+                cobradoAcumulado += cobradoDia;
+                prestadoAcumulado += prestadoDia;
                 
                 datosCobrado.push(cobradoAcumulado);
                 datosPrestado.push(prestadoAcumulado);
