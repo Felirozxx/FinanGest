@@ -5494,17 +5494,27 @@
             const wrapperWidth = wrapper.offsetWidth;
             const numDays = allChartLabels.length;
             
-            // Si hay pocos datos (menos de 7 días), el selector ocupa todo
+            // Si hay pocos datos (menos de 7 días), el selector ocupa todo y no es interactivo
             // Si hay más datos, el selector ocupa un porcentaje proporcional
             let selectorWidth, selectorLeft;
             if (numDays <= 7) {
                 selectorWidth = wrapperWidth;
                 selectorLeft = 0;
+                // Ocultar handles y cambiar cursor cuando no hay suficientes datos
+                if (handleLeft) handleLeft.style.display = 'none';
+                if (handleRight) handleRight.style.display = 'none';
+                selector.style.cursor = 'default';
+                selector.style.borderColor = '#4a4a6a'; // Color más tenue
             } else {
                 // Mostrar últimos 7 días o 30% del total, lo que sea mayor
                 const daysToShow = Math.max(7, Math.floor(numDays * 0.3));
                 selectorWidth = Math.max(60, (daysToShow / numDays) * wrapperWidth);
                 selectorLeft = wrapperWidth - selectorWidth;
+                // Mostrar handles
+                if (handleLeft) handleLeft.style.display = 'flex';
+                if (handleRight) handleRight.style.display = 'flex';
+                selector.style.cursor = 'grab';
+                selector.style.borderColor = '#00d4ff';
             }
             
             selector.style.width = selectorWidth + 'px';
@@ -5534,11 +5544,23 @@
                     isDragging = true;
                     selector.style.cursor = 'grabbing';
                 }
+                
+                // Si hay pocos datos, no permitir interacción
+                if (numDays <= 7) {
+                    isDragging = false;
+                    isResizingLeft = false;
+                    isResizingRight = false;
+                    return;
+                }
+                
                 startX = getClientX(e);
                 startLeft = selector.offsetLeft;
                 startWidth = selector.offsetWidth;
                 e.preventDefault();
             }
+            
+            // Ancho mínimo del selector basado en cantidad de datos
+            const minSelectorWidth = numDays <= 14 ? wrapperWidth * 0.5 : 50;
             
             function onMove(e) {
                 if (!isDragging && !isResizingLeft && !isResizingRight) return;
@@ -5553,13 +5575,13 @@
                 } else if (isResizingLeft) {
                     let newLeft = startLeft + dx;
                     let newWidth = startWidth - dx;
-                    if (newLeft >= 0 && newWidth >= 50) {
+                    if (newLeft >= 0 && newWidth >= minSelectorWidth) {
                         selector.style.left = newLeft + 'px';
                         selector.style.width = newWidth + 'px';
                     }
                 } else if (isResizingRight) {
                     let newWidth = startWidth + dx;
-                    if (newWidth >= 50 && startLeft + newWidth <= maxRight) {
+                    if (newWidth >= minSelectorWidth && startLeft + newWidth <= maxRight) {
                         selector.style.width = newWidth + 'px';
                     }
                 }
