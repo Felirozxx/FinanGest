@@ -3410,9 +3410,9 @@
                     currentUser = data.user;
                     // Guardar sessionId
                     if (data.sessionId) {
-                        sessionStorage.setItem('finangest_session', data.sessionId);
+                        localStorage.setItem('finangest_session', data.sessionId);
                     }
-                    sessionStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                    localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     
                     // Backup automático al iniciar sesión
                     const userId = currentUser.id || currentUser._id;
@@ -3831,7 +3831,7 @@
                 if (data.paid || data.status === 'approved') {
                     alert('🎉 ¡Pago confirmado! Bienvenido a FinanGest');
                     currentUser = pendingUser;
-                    sessionStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                    localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     showMainApp();
                     return true;
                 }
@@ -3862,7 +3862,7 @@
                     alert('🎉 ¡Pago confirmado! Bienvenido a FinanGest');
                     if (data.user) {
                         currentUser = data.user;
-                        sessionStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                        localStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     }
                     // Ocultar todos los formularios de registro y mostrar login
                     document.getElementById('registerStep1').style.display = 'none';
@@ -4169,9 +4169,10 @@
                 }).catch(() => {});
             }
             
-            sessionStorage.removeItem('finangest_user');
-            sessionStorage.removeItem('finangest_session');
+            localStorage.removeItem('finangest_user');
+            localStorage.removeItem('finangest_session');
             localStorage.removeItem('finangest_section');
+            sessionStorage.removeItem('finangest_session_active');
             currentUser = null;
             clientes = [];
             document.getElementById('authScreen').style.display = 'flex';
@@ -9290,6 +9291,34 @@
             deferredPrompt = null;
         });
 
+        // Sistema híbrido de sesión: localStorage + detección de cierre de navegador
+        // Marca que la sesión está activa en esta pestaña
+        const SESSION_KEY = 'finangest_user';
+        const SESSION_ACTIVE_KEY = 'finangest_session_active';
+        
+        // Al cargar, marcar sesión como activa
+        sessionStorage.setItem(SESSION_ACTIVE_KEY, 'true');
+        
+        // Detectar cierre de navegador/pestaña
+        window.addEventListener('beforeunload', () => {
+            // Si es un refresh, sessionStorage mantiene SESSION_ACTIVE_KEY
+            // Si es cierre de pestaña/navegador, sessionStorage se borra
+        });
+        
+        // Verificar si es una nueva sesión de navegador
+        window.addEventListener('pageshow', (event) => {
+            // Si viene del bfcache (back-forward cache), no hacer nada
+            if (event.persisted) return;
+            
+            // Si no hay marca de sesión activa en sessionStorage pero hay usuario en localStorage,
+            // significa que el navegador se cerró y reabrió - limpiar sesión
+            if (!sessionStorage.getItem(SESSION_ACTIVE_KEY) && localStorage.getItem(SESSION_KEY)) {
+                localStorage.removeItem(SESSION_KEY);
+                localStorage.removeItem('finangest_session');
+            }
+            sessionStorage.setItem(SESSION_ACTIVE_KEY, 'true');
+        });
+
         // Init
         document.addEventListener('DOMContentLoaded', () => {
             // Inicializar idioma en pantalla de Auth
@@ -9297,12 +9326,21 @@
             
             // Si viene con ?logout en la URL, borrar sesión
             if (window.location.search.includes('logout')) {
-                sessionStorage.removeItem('finangest_user');
+                localStorage.removeItem(SESSION_KEY);
+                localStorage.removeItem('finangest_session');
                 window.history.replaceState({}, '', window.location.pathname);
                 document.body.classList.add('loaded');
                 return;
             }
-            const saved = sessionStorage.getItem('finangest_user');
+            
+            // Verificar sesión - si no hay marca activa y hay usuario guardado, limpiar
+            if (!sessionStorage.getItem(SESSION_ACTIVE_KEY) && localStorage.getItem(SESSION_KEY)) {
+                localStorage.removeItem(SESSION_KEY);
+                localStorage.removeItem('finangest_session');
+            }
+            sessionStorage.setItem(SESSION_ACTIVE_KEY, 'true');
+            
+            const saved = localStorage.getItem(SESSION_KEY);
             if (saved) {
                 currentUser = JSON.parse(saved);
                 showMainApp();
