@@ -376,6 +376,150 @@ exports.handler = async (event, context) => {
             return respond(200, { success: true, blocked: newStatus });
         }
 
+        // ============ CONTRASEÑA DE BACKUPS ============
+        // Configurar contraseña de backups (primera vez)
+        if (path.match(/^\/users\/[^/]+\/backup-password$/) && method === 'POST') {
+            const userId = path.split('/')[2];
+            const { password } = body;
+            
+            if (!password || password.length < 4) {
+                return respond(200, { success: false, error: 'Contraseña debe tener al menos 4 caracteres' });
+            }
+            
+            const hashedPassword = hashPassword(password);
+            try {
+                await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: { backupPassword: hashedPassword } });
+            } catch (e) {
+                await db.collection('users').updateOne({ id: userId }, { $set: { backupPassword: hashedPassword } });
+            }
+            return respond(200, { success: true });
+        }
+        
+        // Actualizar contraseña de backups
+        if (path.match(/^\/users\/[^/]+\/backup-password$/) && method === 'PUT') {
+            const userId = path.split('/')[2];
+            const { currentPassword, newPassword } = body;
+            
+            let user;
+            try {
+                user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+            } catch (e) {
+                user = await db.collection('users').findOne({ id: userId });
+            }
+            
+            if (!user || !user.backupPassword) {
+                return respond(200, { success: false, error: 'No hay contraseña configurada' });
+            }
+            
+            if (!verifyPassword(currentPassword, user.backupPassword)) {
+                return respond(200, { success: false, error: 'Contraseña actual incorrecta' });
+            }
+            
+            if (!newPassword || newPassword.length < 4) {
+                return respond(200, { success: false, error: 'Nueva contraseña debe tener al menos 4 caracteres' });
+            }
+            
+            const hashedPassword = hashPassword(newPassword);
+            try {
+                await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: { backupPassword: hashedPassword } });
+            } catch (e) {
+                await db.collection('users').updateOne({ id: userId }, { $set: { backupPassword: hashedPassword } });
+            }
+            return respond(200, { success: true });
+        }
+        
+        // Verificar contraseña de backups
+        if (path.match(/^\/users\/[^/]+\/verify-backup-password$/) && method === 'POST') {
+            const userId = path.split('/')[2];
+            const { password } = body;
+            
+            let user;
+            try {
+                user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+            } catch (e) {
+                user = await db.collection('users').findOne({ id: userId });
+            }
+            
+            if (!user || !user.backupPassword) {
+                return respond(200, { valid: true }); // Si no tiene contraseña, permitir
+            }
+            
+            const valid = verifyPassword(password, user.backupPassword);
+            return respond(200, { valid });
+        }
+        
+        // Solicitar reset de contraseña de backups (envía código por email)
+        if (path.match(/^\/users\/[^/]+\/backup-password-reset$/) && method === 'POST') {
+            const userId = path.split('/')[2];
+            
+            let user;
+            try {
+                user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+            } catch (e) {
+                user = await db.collection('users').findOne({ id: userId });
+            }
+            
+            if (!user) return respond(200, { success: false, error: 'Usuario no encontrado' });
+            
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
+            
+            // Guardar código
+            await db.collection('backup_reset_codes').updateOne(
+                { odId: userId },
+                { $set: { odId: userId, code, expiry } },
+                { upsert: true }
+            );
+            
+            // Enviar email
+            try {
+                await transporter.sendMail({
+                    from: EMAIL_USER,
+                    to: user.email,
+                    subject: '🔐 Código para restablecer contraseña de Backups - FinanGest',
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+                            <h2 style="color: #00d4ff;">FinanGest</h2>
+                            <p>Tu código para restablecer la contraseña de backups es:</p>
+                            <h1 style="color: #00d4ff; font-size: 32px; letter-spacing: 5px; text-align: center;">${code}</h1>
+                            <p style="color: #666;">Este código expira en 10 minutos.</p>
+                        </div>
+                    `
+                });
+                return respond(200, { success: true });
+            } catch (e) {
+                return respond(200, { success: false, error: 'Error al enviar email' });
+            }
+        }
+        
+        // Confirmar reset de contraseña de backups
+        if (path.match(/^\/users\/[^/]+\/backup-password-confirm$/) && method === 'POST') {
+            const userId = path.split('/')[2];
+            const { code, newPassword } = body;
+            
+            const resetCode = await db.collection('backup_reset_codes').findOne({ odId: userId });
+            
+            if (!resetCode || resetCode.code !== code || new Date() > new Date(resetCode.expiry)) {
+                return respond(200, { success: false, error: 'Código inválido o expirado' });
+            }
+            
+            if (!newPassword || newPassword.length < 4) {
+                return respond(200, { success: false, error: 'Contraseña debe tener al menos 4 caracteres' });
+            }
+            
+            const hashedPassword = hashPassword(newPassword);
+            try {
+                await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: { backupPassword: hashedPassword } });
+            } catch (e) {
+                await db.collection('users').updateOne({ id: userId }, { $set: { backupPassword: hashedPassword } });
+            }
+            
+            // Eliminar código usado
+            await db.collection('backup_reset_codes').deleteOne({ odId: userId });
+            
+            return respond(200, { success: true });
+        }
+
         // DEBUG - Ver cliente raw
         if (path.match(/^\/debug-cliente\/[^/]+$/) && method === 'GET') {
             const clientId = path.split('/')[2];

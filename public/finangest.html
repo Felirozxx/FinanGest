@@ -1407,6 +1407,45 @@
                         <i class="fas fa-plus me-2"></i><span data-translate="crearBackupAhora">Crear Backup Ahora</span>
                     </button>
                 </div>
+                
+                <!-- Estado de Acceso a Backups (Llave) -->
+                <div class="card-dark p-3 mb-4" id="backupAccessCard">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div id="backupLockIcon" style="width: 50px; height: 50px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; cursor: pointer; transition: all 0.3s;" onclick="toggleBackupAccess()">
+                                <i class="fas fa-lock" style="color: #fff; font-size: 1.3rem;"></i>
+                            </div>
+                            <div>
+                                <strong id="backupAccessTitle">🔒 Backups Bloqueados</strong>
+                                <p class="text-secondary mb-0" style="font-size: 0.85rem;" id="backupAccessDesc">
+                                    Haz clic en la llave para desbloquear
+                                </p>
+                            </div>
+                        </div>
+                        <div id="backupConfigBtn">
+                            <!-- Botón de configurar contraseña -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contraseña de Backups (Configuración) -->
+                <div class="card-dark p-3 mb-4" style="border: 2px solid var(--accent-yellow);">
+                    <div class="d-flex align-items-center mb-3">
+                        <div style="width: 40px; height: 40px; background: var(--accent-yellow); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-key" style="color: #000;"></i>
+                        </div>
+                        <div>
+                            <strong>⚙️ Configurar Contraseña</strong>
+                            <p class="text-secondary mb-0" style="font-size: 0.85rem;">
+                                Crea o cambia tu contraseña de backups
+                            </p>
+                        </div>
+                    </div>
+                    <div id="backupPasswordSection">
+                        <!-- Se llena dinámicamente según si tiene contraseña o no -->
+                    </div>
+                </div>
+                
                 <div class="card-dark p-3 mb-4">
                     <div class="d-flex align-items-center">
                         <div style="width: 40px; height: 40px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
@@ -3934,6 +3973,7 @@
             }
             if (id === 'misBackups') {
                 cargarMisBackups();
+                verificarContraseñaBackups();
             }
             
             const titles = {
@@ -7239,6 +7279,286 @@
             }
         }
 
+        // ============ CONTRASEÑA DE BACKUPS (Sistema de Llave Individual) ============
+        let backupUnlocked = false; // Estado de desbloqueo en sesión
+        
+        async function verificarContraseñaBackups() {
+            const accessCard = document.getElementById('backupAccessCard');
+            const section = document.getElementById('backupPasswordSection');
+            if (!section) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id);
+                const user = await res.json();
+                
+                if (user.backupPassword) {
+                    // Ya tiene contraseña - mostrar sistema de llave
+                    accessCard.style.display = 'block';
+                    actualizarEstadoLlaveBackup();
+                    
+                    // Sección de configuración
+                    section.innerHTML = `
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span style="color: var(--accent-green);"><i class="fas fa-check-circle me-2"></i>Contraseña configurada</span>
+                            <div>
+                                <button class="btn btn-sm" style="background: var(--accent-cyan); color: #000;" onclick="cambiarContraseñaBackup()">
+                                    <i class="fas fa-edit me-1"></i>Cambiar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // No tiene contraseña - ocultar llave, mostrar formulario de creación
+                    accessCard.style.display = 'none';
+                    backupUnlocked = true; // Sin contraseña = desbloqueado por defecto
+                    
+                    section.innerHTML = `
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label text-secondary" style="font-size: 0.85rem;">Nueva contraseña</label>
+                                <input type="password" id="newBackupPassword" class="form-control form-control-dark" placeholder="Mínimo 4 caracteres">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label text-secondary" style="font-size: 0.85rem;">Confirmar contraseña</label>
+                                <input type="password" id="confirmBackupPassword" class="form-control form-control-dark" placeholder="Repetir contraseña">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-success-custom w-100" onclick="guardarContraseñaBackup()">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <small class="text-secondary mt-2 d-block">⚠️ Crea una contraseña para proteger tus backups. Será requerida para restaurar.</small>
+                    `;
+                }
+            } catch (e) {
+                section.innerHTML = '<p class="text-secondary">Error al cargar configuración</p>';
+            }
+        }
+        
+        function actualizarEstadoLlaveBackup() {
+            const icon = document.getElementById('backupLockIcon');
+            const title = document.getElementById('backupAccessTitle');
+            const desc = document.getElementById('backupAccessDesc');
+            
+            if (backupUnlocked) {
+                icon.style.background = 'var(--accent-green)';
+                icon.innerHTML = '<i class="fas fa-lock-open" style="color: #fff; font-size: 1.3rem;"></i>';
+                title.innerHTML = '🔓 Backups Desbloqueados';
+                desc.innerHTML = 'Puedes crear y restaurar backups libremente';
+            } else {
+                icon.style.background = 'var(--accent-red)';
+                icon.innerHTML = '<i class="fas fa-lock" style="color: #fff; font-size: 1.3rem;"></i>';
+                title.innerHTML = '🔒 Backups Bloqueados';
+                desc.innerHTML = 'Haz clic en la llave para desbloquear';
+            }
+        }
+        
+        async function toggleBackupAccess() {
+            if (backupUnlocked) {
+                // Bloquear
+                backupUnlocked = false;
+                actualizarEstadoLlaveBackup();
+            } else {
+                // Pedir contraseña para desbloquear
+                const password = prompt('🔐 Ingresa tu contraseña de backups:');
+                if (!password) return;
+                
+                try {
+                    const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/verify-backup-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password })
+                    });
+                    const data = await res.json();
+                    if (data.valid) {
+                        backupUnlocked = true;
+                        actualizarEstadoLlaveBackup();
+                        alert('✅ Backups desbloqueados');
+                    } else {
+                        alert('❌ Contraseña incorrecta');
+                    }
+                } catch (e) {
+                    alert('Error de conexión');
+                }
+            }
+        }
+        
+        async function guardarContraseñaBackup() {
+            const password = document.getElementById('newBackupPassword').value;
+            const confirm = document.getElementById('confirmBackupPassword').value;
+            
+            if (!password || password.length < 4) {
+                alert('La contraseña debe tener al menos 4 caracteres');
+                return;
+            }
+            if (password !== confirm) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Contraseña de backups configurada.\nAhora deberás desbloquear con la llave para usar backups.');
+                    backupUnlocked = false;
+                    verificarContraseñaBackups();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo guardar'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+        
+        function cambiarContraseñaBackup() {
+            const section = document.getElementById('backupPasswordSection');
+            section.innerHTML = `
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label text-secondary" style="font-size: 0.85rem;">Contraseña actual</label>
+                        <input type="password" id="currentBackupPassword" class="form-control form-control-dark" placeholder="Actual">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-secondary" style="font-size: 0.85rem;">Nueva</label>
+                        <input type="password" id="newBackupPassword" class="form-control form-control-dark" placeholder="Nueva">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-secondary" style="font-size: 0.85rem;">Confirmar</label>
+                        <input type="password" id="confirmBackupPassword" class="form-control form-control-dark" placeholder="Confirmar">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-success-custom w-100" onclick="actualizarContraseñaBackup()">
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <a href="#" onclick="olvidéContraseñaBackup(); return false;" style="color: var(--accent-cyan); font-size: 0.85rem;">
+                        <i class="fas fa-question-circle me-1"></i>¿Olvidaste tu contraseña?
+                    </a>
+                    <a href="#" onclick="verificarContraseñaBackups(); return false;" style="color: var(--text-secondary); font-size: 0.85rem; margin-left: 15px;">
+                        Cancelar
+                    </a>
+                </div>
+            `;
+        }
+        
+        async function actualizarContraseñaBackup() {
+            const current = document.getElementById('currentBackupPassword').value;
+            const password = document.getElementById('newBackupPassword').value;
+            const confirm = document.getElementById('confirmBackupPassword').value;
+            
+            if (!current) {
+                alert('Ingresa tu contraseña actual');
+                return;
+            }
+            if (!password || password.length < 4) {
+                alert('La nueva contraseña debe tener al menos 4 caracteres');
+                return;
+            }
+            if (password !== confirm) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword: current, newPassword: password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Contraseña actualizada');
+                    backupUnlocked = false;
+                    verificarContraseñaBackups();
+                } else {
+                    alert('Error: ' + (data.error || 'Contraseña actual incorrecta'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+        
+        async function olvidéContraseñaBackup() {
+            if (!confirm('Se enviará un código a tu email para restablecer la contraseña de backups.\n\n¿Continuar?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password-reset', {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const codigo = prompt('Se envió un código a tu email. Ingrésalo aquí:');
+                    if (!codigo) return;
+                    
+                    const newPass = prompt('Ingresa tu nueva contraseña de backups (mínimo 4 caracteres):');
+                    if (!newPass || newPass.length < 4) {
+                        alert('Contraseña inválida');
+                        return;
+                    }
+                    
+                    const confirmPass = prompt('Confirma tu nueva contraseña:');
+                    if (newPass !== confirmPass) {
+                        alert('Las contraseñas no coinciden');
+                        return;
+                    }
+                    
+                    const resReset = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password-confirm', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: codigo, newPassword: newPass })
+                    });
+                    const dataReset = await resReset.json();
+                    if (dataReset.success) {
+                        alert('✅ Contraseña restablecida');
+                        backupUnlocked = false;
+                        verificarContraseñaBackups();
+                    } else {
+                        alert('Error: ' + (dataReset.error || 'Código incorrecto'));
+                    }
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo enviar el código'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+        
+        function verificarAccesoBackups() {
+            // Retorna true si puede usar backups (sin contraseña o desbloqueado)
+            return backupUnlocked;
+        }
+        
+        async function pedirContraseñaBackup() {
+            const password = prompt('🔐 Ingresa tu contraseña de backups:');
+            if (!password) return false;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/verify-backup-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+                if (data.valid) {
+                    return true;
+                } else {
+                    alert('❌ Contraseña incorrecta');
+                    return false;
+                }
+            } catch (e) {
+                alert('Error de conexión');
+                return false;
+            }
+        }
+
         async function crearMiBackup() {
             // Verificar si backups están bloqueados
             try {
@@ -7278,6 +7598,12 @@
                 if (myUser?.backupBlocked) {
                     alert('🔒 El administrador ha bloqueado el uso de backups para tu cuenta.');
                     return;
+                }
+                
+                // Verificar si tiene contraseña de backups configurada
+                if (myUser?.backupPassword) {
+                    const passwordValid = await pedirContraseñaBackup();
+                    if (!passwordValid) return;
                 }
             } catch (e) {}
             
