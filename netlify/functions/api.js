@@ -786,6 +786,29 @@ exports.handler = async (event, context) => {
             });
         }
 
+        // RESET EVERYTHING (Admin only) - Borra TODO excepto usuarios admin
+        if (path === '/admin/reset-all' && method === 'POST') {
+            const results = {};
+            results.clients = (await db.collection('clients').deleteMany({})).deletedCount;
+            results.clientes_eliminados = (await db.collection('clientes_eliminados').deleteMany({})).deletedCount;
+            results.gastos = (await db.collection('gastos').deleteMany({})).deletedCount;
+            results.backups = (await db.collection('backups').deleteMany({})).deletedCount;
+            results.system_backups = (await db.collection('system-backups').deleteMany({})).deletedCount;
+            results.sessions = (await db.collection('sessions').deleteMany({})).deletedCount;
+            results.verification_codes = (await db.collection('verification_codes').deleteMany({})).deletedCount;
+            results.reset_codes = (await db.collection('reset_codes').deleteMany({})).deletedCount;
+            results.backup_reset_codes = (await db.collection('backup_reset_codes').deleteMany({})).deletedCount;
+            // Resetear datos de usuarios (no borrar usuarios, solo limpiar sus datos)
+            await db.collection('users').updateMany({}, { 
+                $unset: { 
+                    backupPassword: '', 
+                    backupPasswordHash: '',
+                    editKeyEnabled: ''
+                }
+            });
+            return respond(200, { success: true, deleted: results });
+        }
+
         // HEARTBEAT
         if (path === '/heartbeat' && method === 'POST') {
             const { userId } = body;
