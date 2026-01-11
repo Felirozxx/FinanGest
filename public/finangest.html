@@ -38,6 +38,11 @@
         body {
             background: var(--bg-primary);
             color: var(--text-primary);
+            opacity: 0;
+            transition: opacity 0.15s ease-in-out;
+        }
+        body.loaded {
+            opacity: 1;
             font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
             margin: 0;
@@ -8928,6 +8933,7 @@
             if (window.location.search.includes('logout')) {
                 localStorage.removeItem('finangest_user');
                 window.history.replaceState({}, '', window.location.pathname);
+                document.body.classList.add('loaded');
                 return;
             }
             const saved = localStorage.getItem('finangest_user');
@@ -8935,6 +8941,8 @@
                 currentUser = JSON.parse(saved);
                 showMainApp();
             }
+            // Mostrar página después de verificar sesión
+            document.body.classList.add('loaded');
             
             // Limpiar Service Worker viejo y forzar actualización
             if ('serviceWorker' in navigator) {
