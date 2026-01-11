@@ -5170,95 +5170,102 @@
                 return;
             }
             
+            // Recopilar TODOS los eventos con fechas reales
+            const eventos = [];
+            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            
+            clientes.forEach(c => {
+                // Préstamo realizado
+                if (parseFloat(c.montoTotal) > 0) {
+                    const fecha = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                    if (!isNaN(fecha.getTime())) {
+                        eventos.push({
+                            fecha: fecha,
+                            tipo: 'prestamo',
+                            valor: parseFloat(c.montoTotal) || 0
+                        });
+                    }
+                }
+                
+                // Pagos/Cobros realizados
+                if (c.pagos && c.pagos.length > 0) {
+                    c.pagos.forEach(p => {
+                        if (parseFloat(p.valor) > 0) {
+                            const fecha = new Date(p.fecha);
+                            if (!isNaN(fecha.getTime())) {
+                                eventos.push({
+                                    fecha: fecha,
+                                    tipo: 'cobro',
+                                    valor: parseFloat(p.valor) || 0
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Si no hay eventos, mostrar mensaje
+            if (eventos.length === 0) {
+                const container = document.getElementById('mainChart').parentElement;
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-chart-line fa-3x mb-3" style="color: var(--accent-cyan); opacity: 0.5;"></i>
+                        <h5 style="color: var(--text-secondary);">Sin datos para mostrar</h5>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Registra préstamos y cobros para ver el gráfico.
+                        </p>
+                    </div>
+                    <canvas id="mainChart" style="display:none;"></canvas>
+                `;
+                return;
+            }
+            
+            // Ordenar eventos por fecha
+            eventos.sort((a, b) => a.fecha - b.fecha);
+            
+            // Agrupar por día y acumular
+            const datosPorDia = {};
+            let cobradoAcum = 0;
+            let prestadoAcum = 0;
+            
+            eventos.forEach(e => {
+                const key = e.fecha.toISOString().split('T')[0];
+                if (!datosPorDia[key]) {
+                    datosPorDia[key] = { cobrado: 0, prestado: 0, fecha: e.fecha };
+                }
+                if (e.tipo === 'cobro') {
+                    datosPorDia[key].cobrado += e.valor;
+                } else {
+                    datosPorDia[key].prestado += e.valor;
+                }
+            });
+            
+            // Convertir a arrays para el gráfico
             const labels = [];
             const datosCobrado = [];
             const datosPrestado = [];
             
+            // Ordenar las fechas
+            const fechasOrdenadas = Object.keys(datosPorDia).sort();
+            
+            fechasOrdenadas.forEach(key => {
+                const d = datosPorDia[key];
+                const fecha = new Date(key + 'T12:00:00');
+                labels.push(fecha.getDate() + ' ' + meses[fecha.getMonth()]);
+                
+                cobradoAcum += d.cobrado;
+                prestadoAcum += d.prestado;
+                
+                datosCobrado.push(cobradoAcum);
+                datosPrestado.push(prestadoAcum);
+            });
+            
+            // Actualizar inputs de fecha
             const inputInicio = document.getElementById('chartFechaInicio');
             const inputFin = document.getElementById('chartFechaFin');
-            
-            let fechaInicio, fechaFin;
-            
-            if (inputInicio.value && inputFin.value) {
-                fechaInicio = new Date(inputInicio.value + 'T00:00:00');
-                fechaFin = new Date(inputFin.value + 'T23:59:59');
-                
-                // Validar que fecha inicio sea menor que fecha fin
-                if (fechaInicio > fechaFin) {
-                    const temp = fechaInicio;
-                    fechaInicio = fechaFin;
-                    fechaFin = temp;
-                    inputInicio.value = fechaInicio.toISOString().split('T')[0];
-                    inputFin.value = fechaFin.toISOString().split('T')[0];
-                }
-            } else {
-                // Por defecto: desde hace 7 días hasta HOY (datos reales)
-                const hoy = new Date();
-                const fechaIni = new Date(hoy);
-                fechaIni.setDate(fechaIni.getDate() - 6);
-                
-                // Formato local sin problemas de zona horaria
-                const formatDate = (d) => {
-                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                };
-                
-                inputInicio.value = formatDate(fechaIni);
-                inputFin.value = formatDate(hoy);
-                
-                fechaInicio = new Date(fechaIni.getFullYear(), fechaIni.getMonth(), fechaIni.getDate(), 0, 0, 0);
-                fechaFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
-            }
-            
-            // Variables para acumular (empieza desde 0)
-            let cobradoAcumulado = 0;
-            let prestadoAcumulado = 0;
-            
-            // Generar días entre las fechas (de fecha inicio a fecha fin)
-            let current = new Date(fechaInicio);
-            while (current <= fechaFin) {
-                const dia = current.getDate();
-                const mes = current.getMonth();
-                const anio = current.getFullYear();
-                const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-                labels.push(dia + ' ' + meses[mes]);
-                
-                let cobradoDia = 0;
-                let prestadoDia = 0;
-                
-                clientes.forEach(c => {
-                    // Préstamos realizados en este día
-                    const fechaCliente = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
-                    if (fechaCliente.getDate() === dia && fechaCliente.getMonth() === mes && fechaCliente.getFullYear() === anio) {
-                        prestadoDia += parseFloat(c.montoTotal) || 0;
-                    }
-                    
-                    // Cobros reales (pagos ya hechos)
-                    if (c.pagos) {
-                        c.pagos.forEach(p => {
-                            const fechaPago = new Date(p.fecha);
-                            if (fechaPago.getDate() === dia && fechaPago.getMonth() === mes && fechaPago.getFullYear() === anio) {
-                                cobradoDia += parseFloat(p.valor) || 0;
-                            }
-                        });
-                    }
-                    if (c.historialPagos) {
-                        c.historialPagos.forEach(p => {
-                            const fechaPago = new Date(p.fecha);
-                            if (fechaPago.getDate() === dia && fechaPago.getMonth() === mes && fechaPago.getFullYear() === anio) {
-                                cobradoDia += parseFloat(p.monto) || 0;
-                            }
-                        });
-                    }
-                });
-                
-                // Acumular totales (empieza desde 0 y sube)
-                cobradoAcumulado += cobradoDia;
-                prestadoAcumulado += prestadoDia;
-                
-                datosCobrado.push(cobradoAcumulado);
-                datosPrestado.push(prestadoAcumulado);
-                
-                current.setDate(current.getDate() + 1);
+            if (fechasOrdenadas.length > 0) {
+                inputInicio.value = fechasOrdenadas[0];
+                inputFin.value = fechasOrdenadas[fechasOrdenadas.length - 1];
             }
             
             mainChart = new Chart(ctx, {
