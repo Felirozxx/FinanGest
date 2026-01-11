@@ -591,43 +591,48 @@ exports.handler = async (event, context) => {
             const precio = parseFloat(config?.precioSuscripcion) || 79.50;
             
             if (!MP_ACCESS_TOKEN) {
-                return respond(400, { success: false, error: 'Sistema de pago no configurado. Contacte al administrador.' });
+                return respond(400, { success: false, error: 'MP_ACCESS_TOKEN no configurado' });
             }
             
-            const paymentData = {
-                transaction_amount: precio,
-                description: `FINANGEST-${email || userId}`,
-                payment_method_id: 'pix',
-                payer: {
-                    email: email || 'cliente@finangest.app',
-                    first_name: nombre || 'Cliente',
-                    identification: { type: 'CPF', number: '00000000000' }
+            try {
+                const paymentData = {
+                    transaction_amount: precio,
+                    description: `FINANGEST-${email || userId || 'user'}`,
+                    payment_method_id: 'pix',
+                    payer: {
+                        email: email || 'cliente@finangest.app',
+                        first_name: nombre || 'Cliente',
+                        identification: { type: 'CPF', number: '00000000000' }
+                    }
+                };
+                
+                const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+                        'X-Idempotency-Key': `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+                    },
+                    body: JSON.stringify(paymentData)
+                });
+                
+                const mpData = await mpResponse.json();
+                
+                if (mpData.id && mpData.point_of_interaction?.transaction_data) {
+                    const txData = mpData.point_of_interaction.transaction_data;
+                    await db.collection('pending_payments').updateOne(
+                        { paymentId: mpData.id },
+                        { $set: { paymentId: mpData.id, userId, email, amount: precio, status: 'pending', createdAt: new Date(), qr_code: txData.qr_code, qr_code_base64: txData.qr_code_base64 } },
+                        { upsert: true }
+                    );
+                    return respond(200, { success: true, paymentId: mpData.id, qrCode: txData.qr_code, qrCodeBase64: txData.qr_code_base64, amount: precio });
                 }
-            };
-            
-            const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
-                    'X-Idempotency-Key': `${userId}-${Date.now()}`
-                },
-                body: JSON.stringify(paymentData)
-            });
-            
-            const mpData = await mpResponse.json();
-            
-            if (mpData.id && mpData.point_of_interaction?.transaction_data) {
-                const txData = mpData.point_of_interaction.transaction_data;
-                await db.collection('pending_payments').updateOne(
-                    { oderId: mpData.id },
-                    { $set: { oderId: mpData.id, oderId: mpData.id, oderId: oderId, oderId: oderId, userId, email, amount: precio, status: 'pending', createdAt: new Date(), qr_code: txData.qr_code, qr_code_base64: txData.qr_code_base64 } },
-                    { upsert: true }
-                );
-                return respond(200, { success: true, paymentId: mpData.id, qrCode: txData.qr_code, qrCodeBase64: txData.qr_code_base64, amount: precio });
+                
+                // Devolver error específico de MP
+                return respond(200, { success: false, error: mpData.message || mpData.cause?.[0]?.description || JSON.stringify(mpData) });
+            } catch (err) {
+                return respond(500, { success: false, error: 'Error de conexión con Mercado Pago: ' + err.message });
             }
-            
-            return respond(200, { success: false, error: mpData.message || 'Error al crear pago' });
         }
 
         // VERIFICAR PAGO

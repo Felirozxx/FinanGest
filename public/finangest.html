@@ -3612,13 +3612,13 @@
                     `;
                     iniciarVerificacionAutomatica();
                 } else {
-                    // Error - mostrar mensaje
+                    // Error - mostrar mensaje específico
                     pixContainer.innerHTML = `
                         <div style="text-align: center;">
                             <p style="color: var(--accent-red); font-size: 1rem; margin-bottom: 15px;">
                                 <i class="fas fa-exclamation-triangle me-2"></i>Error al generar pago
                             </p>
-                            <p style="color: var(--text-secondary);">Sistema de pago no disponible. Intente más tarde.</p>
+                            <p style="color: var(--text-secondary);">${data.error || 'Sistema de pago no disponible'}</p>
                         </div>
                     `;
                 }
@@ -3631,7 +3631,7 @@
                         <p style="color: var(--accent-red); font-size: 1rem; margin-bottom: 15px;">
                             <i class="fas fa-exclamation-triangle me-2"></i>Error de conexión
                         </p>
-                        <p style="color: var(--text-secondary);">No se pudo conectar al servidor. Intente más tarde.</p>
+                        <p style="color: var(--text-secondary);">${e.message || 'No se pudo conectar al servidor'}</p>
                     </div>
                 `;
             }
