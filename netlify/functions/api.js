@@ -387,11 +387,27 @@ exports.handler = async (event, context) => {
             }
             
             const hashedPassword = hashPassword(password);
+            let result;
             try {
-                await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: { backupPassword: hashedPassword } });
+                result = await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: { backupPassword: hashedPassword } });
             } catch (e) {
-                await db.collection('users').updateOne({ id: userId }, { $set: { backupPassword: hashedPassword } });
+                // Si falla con ObjectId, intentar con id string
             }
+            
+            if (!result || result.matchedCount === 0) {
+                result = await db.collection('users').updateOne({ id: userId }, { $set: { backupPassword: hashedPassword } });
+            }
+            
+            if (!result || result.matchedCount === 0) {
+                // Intentar buscar por email o nombre
+                const user = await db.collection('users').findOne({ $or: [{ email: userId }, { nombre: userId }] });
+                if (user) {
+                    await db.collection('users').updateOne({ _id: user._id }, { $set: { backupPassword: hashedPassword } });
+                    return respond(200, { success: true });
+                }
+                return respond(200, { success: false, error: 'Usuario no encontrado' });
+            }
+            
             return respond(200, { success: true });
         }
         

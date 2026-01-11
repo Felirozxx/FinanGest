@@ -7404,21 +7404,34 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password', {
+                const url = API_URL + '/api/users/' + currentUser.id + '/backup-password';
+                console.log('Guardando contraseña backup para:', currentUser.id, 'URL:', url);
+                
+                const res = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password })
                 });
+                
+                if (!res.ok) {
+                    alert('Error HTTP: ' + res.status);
+                    return;
+                }
+                
                 const data = await res.json();
+                console.log('Respuesta:', data);
+                
                 if (data.success) {
                     alert('✅ Contraseña creada.\nAhora deberás desbloquear la llave para usar backups.');
                     backupUnlocked = false;
+                    userHasBackupPassword = true;
                     inicializarSistemaBackupLock();
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo guardar'));
                 }
             } catch (e) {
-                alert('Error de conexión');
+                console.error('Error guardando contraseña backup:', e);
+                alert('Error de conexión: ' + e.message);
             }
         }
         
