@@ -63,6 +63,15 @@ exports.handler = async (event, context) => {
         if (event.body) body = JSON.parse(event.body);
     } catch (e) {}
 
+    // Debug endpoint
+    if (path === '/debug-path') {
+        return respond(200, { 
+            originalPath: event.path, 
+            processedPath: path, 
+            method: method 
+        });
+    }
+
     try {
         const db = await connectDB();
 
