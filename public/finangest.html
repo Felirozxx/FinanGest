@@ -555,7 +555,8 @@
                         </button>
                         <div class="text-center mt-3">
                             <span style="color: var(--text-secondary);">Não recebeu o código? </span>
-                            <a href="#" onclick="resendCode(); return false;" style="color: var(--accent-cyan); text-decoration: underline; cursor: pointer;">Reenviar</a>
+                            <a href="#" id="resendLink" onclick="resendCode(); return false;" style="color: var(--accent-cyan); text-decoration: underline; cursor: pointer;">Reenviar</a>
+                            <p id="resendStatus" style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 8px; display: none;"></p>
                         </div>
                     </div>
                     <!-- Paso 3: Pago PIX -->
@@ -3792,10 +3793,20 @@
         async function resendCode() {
             const email = document.getElementById('regEmail').value;
             const nombre = document.getElementById('regNombre').value;
+            const link = document.getElementById('resendLink');
+            const status = document.getElementById('resendStatus');
+            
             if (!email) {
                 alert('Error: email no encontrado');
                 return;
             }
+            
+            // Mostrar estado de envío
+            link.style.pointerEvents = 'none';
+            link.style.opacity = '0.5';
+            status.style.display = 'block';
+            status.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Enviando código...';
+            
             try {
                 const res = await fetch(API_URL + '/api/send-code', {
                     method: 'POST',
@@ -3804,13 +3815,22 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('Código reenviado!');
+                    status.style.color = 'var(--accent-green)';
+                    status.innerHTML = '<i class="fas fa-check me-1"></i>Código reenviado! Llegará en 5-10 segundos.';
                 } else {
-                    alert(data.error || 'Error al reenviar código');
+                    status.style.color = 'var(--accent-red)';
+                    status.innerHTML = '<i class="fas fa-times me-1"></i>' + (data.error || 'Error al reenviar');
                 }
             } catch (e) {
-                alert('Error de conexión');
+                status.style.color = 'var(--accent-red)';
+                status.innerHTML = '<i class="fas fa-times me-1"></i>Error de conexión';
             }
+            
+            // Reactivar link después de 30 segundos
+            setTimeout(() => {
+                link.style.pointerEvents = 'auto';
+                link.style.opacity = '1';
+            }, 30000);
         }
         function showMainApp() {
             document.getElementById('authScreen').style.display = 'none';
