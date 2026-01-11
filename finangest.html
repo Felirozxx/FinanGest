@@ -4970,7 +4970,8 @@
             const container = document.getElementById('mejoresClientesPreview');
             if (!container) return;
             
-            const buenos = clientes.filter(c => c.tipoCliente === 'bueno' || c.montoPagado > 0)
+            // Solo clientes que han pagado algo (montoPagado > 0)
+            const buenos = clientes.filter(c => (c.montoPagado || 0) > 0)
                 .sort((a, b) => (b.montoPagado || 0) - (a.montoPagado || 0))
                 .slice(0, 5);
             
