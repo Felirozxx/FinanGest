@@ -3925,9 +3925,20 @@
                 showSection('adminUsuarios');
                 renderAdminUsuarios();
             } else {
-                // Actualizar estado de llave de edición
+                // Actualizar estado de llave de edición y cargar datos ANTES de restaurar sección
                 updateEditKeyStatus().then(() => {
-                    loadData();
+                    loadData().then(() => {
+                        // Restaurar sección guardada después de cargar datos
+                        const savedSection = localStorage.getItem('finangest_section');
+                        const userSections = ['dashboard', 'estadisticas', 'clientes', 'cobros', 'gastos', 'microseguros', 'mapa', 'historial', 'misBackups', 'miConfig'];
+                        if (savedSection && userSections.includes(savedSection)) {
+                            showSection(savedSection);
+                            document.querySelectorAll('.nav-item').forEach(n => {
+                                n.classList.remove('active');
+                                if (n.getAttribute('onclick')?.includes(savedSection)) n.classList.add('active');
+                            });
+                        }
+                    });
                 });
             }
             // Iniciar heartbeat cada 2 minutos
@@ -3986,22 +3997,7 @@
                     <div class="nav-item" onclick="showSection('misBackups')"><i class="fas fa-database"></i><span data-translate="backups">Backups</span></div>
                     <div class="nav-item" onclick="showSection('miConfig')"><i class="fas fa-cog"></i><span data-translate="configuracion">Configuración</span></div>
                 `;
-                // Restaurar sección guardada o ir a Dashboard por defecto
-                const savedSection = localStorage.getItem('finangest_section');
-                const userSections = ['dashboard', 'estadisticas', 'clientes', 'cobros', 'gastos', 'microseguros', 'mapa', 'historial', 'misBackups', 'miConfig'];
-                setTimeout(() => {
-                    if (savedSection && userSections.includes(savedSection)) {
-                        showSection(savedSection);
-                        // Marcar nav-item correcto como activo
-                        document.querySelectorAll('.nav-item').forEach(n => {
-                            n.classList.remove('active');
-                            if (n.getAttribute('onclick')?.includes(savedSection)) n.classList.add('active');
-                        });
-                    } else {
-                        const dashboardBtn = menu.querySelector('.nav-item');
-                        if (dashboardBtn) dashboardBtn.click();
-                    }
-                }, 100);
+                // La restauración de sección se hace en showMainApp después de loadData
             }
             // Aplicar traducciones al menú
             cambiarIdioma(currentLang);
