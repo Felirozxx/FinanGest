@@ -7622,10 +7622,12 @@
 
         async function restaurarMiBackup(backupId) {
             // Verificar si backups están bloqueados por admin
+            let myUser = null;
             try {
                 const usersRes = await fetch(API_URL + '/api/users');
+                if (!usersRes.ok) throw new Error('Error cargando usuarios');
                 const allUsers = await usersRes.json();
-                const myUser = allUsers.find(u => u.id === currentUser.id || u._id === currentUser.id || u.id?.toString() === currentUser.id?.toString());
+                myUser = allUsers.find(u => u.id === currentUser.id || u._id === currentUser.id || u.id?.toString() === currentUser.id?.toString());
                 
                 if (myUser?.backupBlocked) {
                     alert('🔒 El administrador ha bloqueado el uso de backups para tu cuenta.');
@@ -7637,12 +7639,19 @@
                     alert('🔒 Debes desbloquear la llave de backups primero.\nHaz clic en el candado rojo para ingresar tu contraseña.');
                     return;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error('Error verificando usuario:', e);
+                // Continuar sin verificación si falla
+            }
             
             if (!confirm('⚠️ ¿RESTAURAR este backup?\n\nEsto reemplazará TODOS tus datos actuales con los del backup.\n\n¿Continuar?')) return;
             
             try {
                 const res = await fetch(API_URL + '/api/admin/restore-trabajador/' + backupId, { method: 'POST' });
+                if (!res.ok) {
+                    alert('Error HTTP: ' + res.status);
+                    return;
+                }
                 const data = await res.json();
                 if (data.success) {
                     alert('✅ Backup restaurado correctamente');
@@ -7653,7 +7662,8 @@
                     alert('Error: ' + (data.error || 'No se pudo restaurar'));
                 }
             } catch (e) {
-                alert('Error de conexión');
+                console.error('Error restaurando backup:', e);
+                alert('Error de conexión: ' + e.message);
             }
         }
 
