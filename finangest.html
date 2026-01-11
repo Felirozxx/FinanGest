@@ -780,6 +780,20 @@
                                 </div>
                             </div>
                             <div class="chart-container"><canvas id="mainChart"></canvas></div>
+                            <!-- Slider de navegación del gráfico -->
+                            <div id="chartSliderContainer" style="padding: 10px 5px; margin-top: 5px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <button onclick="moverGrafico(-7)" style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 5px 10px; border-radius: 4px; cursor: pointer;" title="7 días atrás">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <input type="range" id="chartRangeSlider" min="0" max="100" value="100" 
+                                        style="flex: 1; height: 6px; -webkit-appearance: none; background: var(--bg-hover); border-radius: 3px; cursor: pointer;"
+                                        oninput="actualizarGraficoPorSlider(this.value)">
+                                    <button onclick="moverGrafico(7)" style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 5px 10px; border-radius: 4px; cursor: pointer;" title="7 días adelante">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -5388,6 +5402,50 @@
                     }
                 }
             });
+        }
+        
+        // Funciones para navegar el gráfico
+        function moverGrafico(dias) {
+            const inputInicio = document.getElementById('chartFechaInicio');
+            const inputFin = document.getElementById('chartFechaFin');
+            
+            if (inputInicio.value && inputFin.value) {
+                const fechaInicio = new Date(inputInicio.value);
+                const fechaFin = new Date(inputFin.value);
+                
+                fechaInicio.setDate(fechaInicio.getDate() + dias);
+                fechaFin.setDate(fechaFin.getDate() + dias);
+                
+                const formatDate = (d) => {
+                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                };
+                
+                inputInicio.value = formatDate(fechaInicio);
+                inputFin.value = formatDate(fechaFin);
+                renderChart();
+            }
+        }
+        
+        function actualizarGraficoPorSlider(valor) {
+            // El slider va de 0 a 100, donde 100 es "hoy"
+            // Calculamos cuántos días hacia atrás basado en el valor
+            const hoy = new Date();
+            const diasMaxAtras = 365; // Máximo 1 año atrás
+            const diasAtras = Math.round((100 - valor) / 100 * diasMaxAtras);
+            
+            const fechaFin = new Date(hoy);
+            fechaFin.setDate(fechaFin.getDate() - diasAtras);
+            
+            const fechaInicio = new Date(fechaFin);
+            fechaInicio.setDate(fechaInicio.getDate() - 30); // Mostrar 30 días
+            
+            const formatDate = (d) => {
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            };
+            
+            document.getElementById('chartFechaInicio').value = formatDate(fechaInicio);
+            document.getElementById('chartFechaFin').value = formatDate(fechaFin);
+            renderChart();
         }
 
         function renderCobrosPreview() {
