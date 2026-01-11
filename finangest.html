@@ -5173,10 +5173,6 @@
                 inputFin.value = fechaFin.toISOString().split('T')[0];
             }
             
-            // Variables para acumular totales
-            let cobradoAcumulado = 0;
-            let prestadoAcumulado = 0;
-            
             // Generar días entre las fechas (de fecha inicio a fecha fin)
             let current = new Date(fechaInicio);
             while (current <= fechaFin) {
@@ -5214,12 +5210,9 @@
                     }
                 });
                 
-                // Acumular totales (empieza desde 0)
-                cobradoAcumulado += cobradoDia;
-                prestadoAcumulado += prestadoDia;
-                
-                datosCobrado.push(cobradoAcumulado);
-                datosPrestado.push(prestadoAcumulado);
+                // Valores DIARIOS (no acumulados) - esto crea las ondas
+                datosCobrado.push(cobradoDia);
+                datosPrestado.push(prestadoDia);
                 
                 current.setDate(current.getDate() + 1);
             }
