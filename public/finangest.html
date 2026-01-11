@@ -7448,11 +7448,11 @@
                 <div class="row g-2 align-items-end">
                     <div class="col-md-4">
                         <label class="form-label text-secondary" style="font-size: 0.85rem;">Contraseña actual</label>
-                        <input type="password" id="currentBackupPassword" class="form-control form-control-dark" placeholder="Actual">
+                        <input type="password" id="currentBackupPassword" class="form-control form-control-dark" placeholder="Tu contraseña actual">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label text-secondary" style="font-size: 0.85rem;">Nueva</label>
-                        <input type="password" id="newBackupPassword" class="form-control form-control-dark" placeholder="Nueva">
+                        <input type="password" id="newBackupPassword" class="form-control form-control-dark" placeholder="Nueva contraseña">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label text-secondary" style="font-size: 0.85rem;">Confirmar</label>
@@ -7465,11 +7465,98 @@
                     </div>
                 </div>
                 <div class="mt-2">
-                    <a href="#" onclick="olvidéContraseñaBackup(); return false;" style="color: var(--accent-cyan); font-size: 0.85rem;">
+                    <a href="#" onclick="iniciarRecuperacionBackupPassword(); return false;" style="color: var(--accent-cyan); font-size: 0.85rem;">
                         <i class="fas fa-question-circle me-1"></i>¿Olvidaste tu contraseña?
                     </a>
                 </div>
             `;
+        }
+        
+        async function iniciarRecuperacionBackupPassword() {
+            if (!confirm('Se enviará un código a tu email para restablecer la contraseña de backups.\n\n¿Continuar?')) return;
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password-reset', {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Mostrar formulario para ingresar código y nueva contraseña
+                    const section = document.getElementById('backupPasswordSection');
+                    section.innerHTML = `
+                        <div class="alert" style="background: var(--accent-cyan); color: #000; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                            <i class="fas fa-envelope me-2"></i>Se envió un código a tu email. Revisa tu bandeja de entrada.
+                        </div>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label text-secondary" style="font-size: 0.85rem;">Código</label>
+                                <input type="text" id="resetBackupCode" class="form-control form-control-dark" placeholder="Código de 6 dígitos">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-secondary" style="font-size: 0.85rem;">Nueva contraseña</label>
+                                <input type="password" id="newBackupPassword" class="form-control form-control-dark" placeholder="Mínimo 4 caracteres">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-secondary" style="font-size: 0.85rem;">Confirmar</label>
+                                <input type="password" id="confirmBackupPassword" class="form-control form-control-dark" placeholder="Confirmar">
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-success-custom w-100" onclick="confirmarRecuperacionBackupPassword()">
+                                    <i class="fas fa-check me-1"></i>Restablecer
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <a href="#" onclick="mostrarConfigBackupPassword(); return false;" style="color: var(--text-secondary); font-size: 0.85rem;">
+                                <i class="fas fa-arrow-left me-1"></i>Volver
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo enviar el código'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+        
+        async function confirmarRecuperacionBackupPassword() {
+            const codigo = document.getElementById('resetBackupCode').value;
+            const newPass = document.getElementById('newBackupPassword').value;
+            const confirmPass = document.getElementById('confirmBackupPassword').value;
+            
+            if (!codigo || codigo.length !== 6) {
+                alert('Ingresa el código de 6 dígitos');
+                return;
+            }
+            if (!newPass || newPass.length < 4) {
+                alert('La contraseña debe tener al menos 4 caracteres');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password-confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: codigo, newPassword: newPass })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Contraseña restablecida correctamente');
+                    backupUnlocked = false;
+                    cerrarConfigBackupPassword();
+                    actualizarEstadoLlaveBackup();
+                } else {
+                    alert('Error: ' + (data.error || 'Código incorrecto o expirado'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
         }
         
         function cerrarConfigBackupPassword() {
@@ -7508,52 +7595,6 @@
                     actualizarEstadoLlaveBackup();
                 } else {
                     alert('Error: ' + (data.error || 'Contraseña actual incorrecta'));
-                }
-            } catch (e) {
-                alert('Error de conexión');
-            }
-        }
-        
-        async function olvidéContraseñaBackup() {
-            if (!confirm('Se enviará un código a tu email para restablecer la contraseña de backups.\n\n¿Continuar?')) return;
-            
-            try {
-                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password-reset', {
-                    method: 'POST'
-                });
-                const data = await res.json();
-                if (data.success) {
-                    const codigo = prompt('Se envió un código a tu email. Ingrésalo aquí:');
-                    if (!codigo) return;
-                    
-                    const newPass = prompt('Ingresa tu nueva contraseña de backups (mínimo 4 caracteres):');
-                    if (!newPass || newPass.length < 4) {
-                        alert('Contraseña inválida');
-                        return;
-                    }
-                    
-                    const confirmPass = prompt('Confirma tu nueva contraseña:');
-                    if (newPass !== confirmPass) {
-                        alert('Las contraseñas no coinciden');
-                        return;
-                    }
-                    
-                    const resReset = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password-confirm', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code: codigo, newPassword: newPass })
-                    });
-                    const dataReset = await resReset.json();
-                    if (dataReset.success) {
-                        alert('✅ Contraseña restablecida');
-                        backupUnlocked = false;
-                        cerrarConfigBackupPassword();
-                        actualizarEstadoLlaveBackup();
-                    } else {
-                        alert('Error: ' + (dataReset.error || 'Código incorrecto'));
-                    }
-                } else {
-                    alert('Error: ' + (data.error || 'No se pudo enviar el código'));
                 }
             } catch (e) {
                 alert('Error de conexión');
