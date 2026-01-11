@@ -388,34 +388,43 @@ exports.handler = async (event, context) => {
         // ============ CONTRASEÑA DE BACKUPS ============
         // Configurar contraseña de backups (primera vez)
         if (path.match(/^\/users\/[^/]+\/backup-password$/) && method === 'POST') {
-            const userId = path.split('/')[2];
+            const userId = decodeURIComponent(path.split('/')[2]);
             const { password } = body;
+            
+            console.log('Backup password POST - userId:', userId, 'password length:', password?.length);
             
             if (!password || password.length < 4) {
                 return respond(200, { success: false, error: 'Contraseña debe tener al menos 4 caracteres' });
             }
             
             const hashedPassword = hashPassword(password);
-            let result;
+            
+            // Buscar usuario por diferentes criterios
+            let user = null;
             try {
-                result = await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: { backupPassword: hashedPassword } });
+                user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
             } catch (e) {
-                // Si falla con ObjectId, intentar con id string
+                // No es un ObjectId válido, buscar por otros campos
             }
             
-            if (!result || result.matchedCount === 0) {
-                result = await db.collection('users').updateOne({ id: userId }, { $set: { backupPassword: hashedPassword } });
+            if (!user) {
+                user = await db.collection('users').findOne({ 
+                    $or: [
+                        { id: userId },
+                        { email: userId },
+                        { nombre: userId }
+                    ]
+                });
             }
             
-            if (!result || result.matchedCount === 0) {
-                // Intentar buscar por email o nombre
-                const user = await db.collection('users').findOne({ $or: [{ email: userId }, { nombre: userId }] });
-                if (user) {
-                    await db.collection('users').updateOne({ _id: user._id }, { $set: { backupPassword: hashedPassword } });
-                    return respond(200, { success: true });
-                }
-                return respond(200, { success: false, error: 'Usuario no encontrado' });
+            if (!user) {
+                return respond(200, { success: false, error: 'Usuario no encontrado: ' + userId });
             }
+            
+            await db.collection('users').updateOne(
+                { _id: user._id }, 
+                { $set: { backupPassword: hashedPassword } }
+            );
             
             return respond(200, { success: true });
         }
