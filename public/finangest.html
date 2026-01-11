@@ -7489,47 +7489,10 @@
             
             const section = document.getElementById('backupPasswordSection');
             section.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label text-secondary" style="font-size: 0.85rem;">¿Qué deseas hacer?</label>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-sm" style="background: var(--accent-cyan); color: #000;" onclick="mostrarCambiarPassword()">
-                            <i class="fas fa-edit me-1"></i>Cambiar contraseña
-                        </button>
-                        <button class="btn btn-sm" style="background: var(--accent-yellow); color: #000;" onclick="iniciarRecuperacionBackupPassword()">
-                            <i class="fas fa-question-circle me-1"></i>Olvidé mi contraseña
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function mostrarCambiarPassword() {
-            const section = document.getElementById('backupPasswordSection');
-            section.innerHTML = `
-                <div class="row g-2 align-items-end">
-                    <div class="col-md-4">
-                        <label class="form-label text-secondary" style="font-size: 0.85rem;">Contraseña actual</label>
-                        <input type="password" id="currentBackupPassword" class="form-control form-control-dark" placeholder="Tu contraseña actual">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-secondary" style="font-size: 0.85rem;">Nueva</label>
-                        <input type="password" id="newBackupPassword" class="form-control form-control-dark" placeholder="Nueva contraseña">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-secondary" style="font-size: 0.85rem;">Confirmar</label>
-                        <input type="password" id="confirmBackupPassword" class="form-control form-control-dark" placeholder="Confirmar">
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-success-custom w-100" onclick="actualizarContraseñaBackup()">
-                            <i class="fas fa-save"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-2">
-                    <a href="#" onclick="mostrarConfigBackupPassword(); return false;" style="color: var(--text-secondary); font-size: 0.85rem;">
-                        <i class="fas fa-arrow-left me-1"></i>Volver
-                    </a>
-                </div>
+                <p class="text-secondary mb-3">Para cambiar tu contraseña de backups, te enviaremos un código a tu email.</p>
+                <button class="btn" style="background: var(--accent-yellow); color: #000;" onclick="iniciarRecuperacionBackupPassword()">
+                    <i class="fas fa-envelope me-2"></i>Enviar código al email
+                </button>
             `;
         }
         
