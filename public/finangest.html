@@ -7357,22 +7357,38 @@
             const desc = document.getElementById('backupLockDesc');
             const unlockForm = document.getElementById('backupUnlockForm');
             
+            console.log('Actualizando llave - desbloqueado:', backupUnlocked);
+            
             if (backupUnlocked) {
-                icon.style.background = 'var(--accent-green)';
-                icon.style.boxShadow = '0 0 20px rgba(0,230,118,0.6)';
-                iconI.className = 'fas fa-lock-open';
-                title.innerHTML = '🔓 Backups Desbloqueados';
-                title.style.color = 'var(--accent-green)';
-                desc.innerHTML = 'Clic en la llave para bloquear';
-                if (unlockForm) unlockForm.style.display = 'none';
+                if (icon) {
+                    icon.style.background = 'var(--accent-green)';
+                    icon.style.boxShadow = '0 0 20px rgba(0,230,118,0.6)';
+                }
+                if (iconI) iconI.className = 'fas fa-lock-open';
+                if (title) {
+                    title.innerHTML = '🔓 Backups Desbloqueados';
+                    title.style.color = 'var(--accent-green)';
+                }
+                if (desc) desc.innerHTML = 'Clic en la llave para bloquear';
+                if (unlockForm) {
+                    unlockForm.style.display = 'none';
+                    unlockForm.style.visibility = 'hidden';
+                }
             } else {
-                icon.style.background = 'var(--accent-red)';
-                icon.style.boxShadow = '0 0 20px rgba(255,82,82,0.6)';
-                iconI.className = 'fas fa-lock';
-                title.innerHTML = '🔒 Backups Bloqueados';
-                title.style.color = 'var(--accent-red)';
-                desc.innerHTML = 'Ingresa tu contraseña para desbloquear';
-                if (unlockForm) unlockForm.style.display = 'flex';
+                if (icon) {
+                    icon.style.background = 'var(--accent-red)';
+                    icon.style.boxShadow = '0 0 20px rgba(255,82,82,0.6)';
+                }
+                if (iconI) iconI.className = 'fas fa-lock';
+                if (title) {
+                    title.innerHTML = '🔒 Backups Bloqueados';
+                    title.style.color = 'var(--accent-red)';
+                }
+                if (desc) desc.innerHTML = 'Ingresa tu contraseña para desbloquear';
+                if (unlockForm) {
+                    unlockForm.style.display = 'flex';
+                    unlockForm.style.visibility = 'visible';
+                }
             }
         }
         
@@ -7381,6 +7397,7 @@
             if (backupUnlocked) {
                 backupUnlocked = false;
                 actualizarEstadoLlaveBackup();
+                console.log('Llave bloqueada');
             }
             // Si está bloqueado, no hace nada (debe usar el campo de contraseña)
         }
