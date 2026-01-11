@@ -5101,29 +5101,41 @@
                 case '1y': // último año
                     fechaInicio.setFullYear(hoy.getFullYear() - 1);
                     break;
-                case 'all': // Todo - desde el primer cliente o pago
+                case 'all': // Todo - desde el primer dato REAL hasta hoy
                     let fechaMasAntigua = new Date(hoy);
-                    fechaMasAntigua.setMonth(hoy.getMonth() - 1); // Por defecto 1 mes atrás
+                    let hayDatos = false;
                     
                     if (clientes && clientes.length > 0) {
                         clientes.forEach(c => {
-                            // Buscar fecha del cliente
-                            const fechaCliente = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion || c.createdAt);
-                            if (!isNaN(fechaCliente.getTime()) && fechaCliente < fechaMasAntigua) {
-                                fechaMasAntigua = new Date(fechaCliente);
+                            // Solo considerar clientes con montoTotal > 0
+                            if (parseFloat(c.montoTotal) > 0) {
+                                const fechaCliente = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion || c.createdAt);
+                                if (!isNaN(fechaCliente.getTime()) && fechaCliente < fechaMasAntigua) {
+                                    fechaMasAntigua = new Date(fechaCliente);
+                                    hayDatos = true;
+                                }
                             }
                             
-                            // Buscar fecha del primer pago
+                            // Buscar fecha del primer pago real
                             if (c.pagos && c.pagos.length > 0) {
                                 c.pagos.forEach(p => {
-                                    const fechaPago = new Date(p.fecha);
-                                    if (!isNaN(fechaPago.getTime()) && fechaPago < fechaMasAntigua) {
-                                        fechaMasAntigua = new Date(fechaPago);
+                                    if (parseFloat(p.valor) > 0) {
+                                        const fechaPago = new Date(p.fecha);
+                                        if (!isNaN(fechaPago.getTime()) && fechaPago < fechaMasAntigua) {
+                                            fechaMasAntigua = new Date(fechaPago);
+                                            hayDatos = true;
+                                        }
                                     }
                                 });
                             }
                         });
                     }
+                    
+                    // Si no hay datos, mostrar solo hoy
+                    if (!hayDatos) {
+                        fechaMasAntigua = new Date(hoy);
+                    }
+                    
                     fechaInicio = fechaMasAntigua;
                     break;
             }
