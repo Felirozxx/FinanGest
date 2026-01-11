@@ -5241,7 +5241,8 @@
             clientes.forEach(c => {
                 // Préstamo realizado
                 if (parseFloat(c.montoTotal) > 0) {
-                    const fecha = new Date(c.fechaInicio || c.fechaRegistro || c.fechaCreacion);
+                    const fechaStr = c.fechaInicio || c.fechaRegistro || c.fechaCreacion || c.fecha || c.createdAt;
+                    const fecha = new Date(fechaStr);
                     if (!isNaN(fecha.getTime())) {
                         eventos.push({
                             fecha: fecha,
@@ -5281,6 +5282,9 @@
                     </div>
                     <canvas id="mainChart" style="display:none;"></canvas>
                 `;
+                // Ocultar navegador del gráfico
+                const navContainer = document.getElementById('chartNavContainer');
+                if (navContainer) navContainer.style.display = 'none';
                 return;
             }
             
