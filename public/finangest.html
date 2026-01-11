@@ -7360,7 +7360,7 @@
             const toggleBtnIcon = document.getElementById('backupToggleBtnIcon');
             
             if (backupUnlocked) {
-                // DESBLOQUEADO - Verde (decoración)
+                // DESBLOQUEADO - Todo Verde
                 if (icon) {
                     icon.style.background = 'var(--accent-green)';
                     icon.style.boxShadow = '0 0 20px rgba(0,230,118,0.6)';
@@ -7371,12 +7371,12 @@
                     title.style.color = 'var(--accent-green)';
                 }
                 if (desc) desc.innerHTML = 'Puedes usar backups libremente';
-                // Campo oculto, botón para bloquear
+                // Campo oculto, botón verde para bloquear
                 if (passwordInput) passwordInput.style.display = 'none';
-                if (toggleBtn) toggleBtn.style.background = 'var(--accent-red)';
-                if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-lock';
+                if (toggleBtn) toggleBtn.style.background = 'var(--accent-green)';
+                if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-lock-open';
             } else {
-                // BLOQUEADO - Rojo (decoración)
+                // BLOQUEADO - Todo Rojo
                 if (icon) {
                     icon.style.background = 'var(--accent-red)';
                     icon.style.boxShadow = '0 0 20px rgba(255,82,82,0.6)';
@@ -7387,10 +7387,10 @@
                     title.style.color = 'var(--accent-red)';
                 }
                 if (desc) desc.innerHTML = 'Ingresa tu contraseña para desbloquear';
-                // Campo visible, botón para desbloquear
+                // Campo visible, botón rojo
                 if (passwordInput) passwordInput.style.display = 'block';
-                if (toggleBtn) toggleBtn.style.background = 'var(--accent-green)';
-                if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-unlock';
+                if (toggleBtn) toggleBtn.style.background = 'var(--accent-red)';
+                if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-lock';
             }
         }
         
