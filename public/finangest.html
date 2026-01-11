@@ -807,7 +807,7 @@
                                 <!-- Indicador de rango de fechas -->
                                 <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 0.65rem; color: #6b7280;">
                                     <span id="navDateStart">-</span>
-                                    <span style="color: #00d4ff; font-size: 0.6rem;">⟵ Arrastra para navegar ⟶</span>
+                                    <span id="navHelpText" style="color: #00d4ff; font-size: 0.6rem;">⟵ Arrastra para navegar ⟶</span>
                                     <span id="navDateEnd">-</span>
                                 </div>
                             </div>
@@ -5488,6 +5488,7 @@
             const overlayRight = document.getElementById('rangeOverlayRight');
             const handleLeft = document.getElementById('handleLeft');
             const handleRight = document.getElementById('handleRight');
+            const helpText = document.getElementById('navHelpText');
             
             if (!wrapper || !selector) return;
             
@@ -5500,19 +5501,27 @@
             if (numDays <= 7) {
                 selectorWidth = wrapperWidth;
                 selectorLeft = 0;
-                // Ocultar handles y cambiar cursor cuando no hay suficientes datos
+                // Ocultar handles y mostrar mensaje informativo
                 if (handleLeft) handleLeft.style.display = 'none';
                 if (handleRight) handleRight.style.display = 'none';
+                if (helpText) {
+                    helpText.textContent = '📊 Usa la app por más días para navegar';
+                    helpText.style.color = '#8892b0';
+                }
                 selector.style.cursor = 'default';
-                selector.style.borderColor = '#4a4a6a'; // Color más tenue
+                selector.style.borderColor = '#4a4a6a';
             } else {
                 // Mostrar últimos 7 días o 30% del total, lo que sea mayor
                 const daysToShow = Math.max(7, Math.floor(numDays * 0.3));
                 selectorWidth = Math.max(60, (daysToShow / numDays) * wrapperWidth);
                 selectorLeft = wrapperWidth - selectorWidth;
-                // Mostrar handles
+                // Mostrar handles y mensaje de navegación
                 if (handleLeft) handleLeft.style.display = 'flex';
                 if (handleRight) handleRight.style.display = 'flex';
+                if (helpText) {
+                    helpText.textContent = '⟵ Arrastra para navegar ⟶';
+                    helpText.style.color = '#00d4ff';
+                }
                 selector.style.cursor = 'grab';
                 selector.style.borderColor = '#00d4ff';
             }
