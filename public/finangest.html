@@ -3925,24 +3925,29 @@
                 showSection('adminUsuarios');
                 renderAdminUsuarios();
             } else {
-                // Restaurar sección guardada INMEDIATAMENTE (antes de cargar datos)
+                // Restaurar sección guardada INMEDIATAMENTE (solo visual, sin parpadeo)
                 const savedSection = localStorage.getItem('finangest_section');
                 const userSections = ['dashboard', 'estadisticas', 'clientes', 'cobros', 'gastos', 'microseguros', 'mapa', 'historial', 'misBackups', 'miConfig'];
-                if (savedSection && userSections.includes(savedSection)) {
-                    // Ocultar todas las secciones primero
-                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                    document.getElementById(savedSection).classList.add('active');
-                    document.querySelectorAll('.nav-item').forEach(n => {
-                        n.classList.remove('active');
-                        if (n.getAttribute('onclick')?.includes(savedSection)) n.classList.add('active');
-                    });
-                } else {
-                    showSection('dashboard');
-                }
                 
-                // Cargar datos
+                // Ocultar todas las secciones primero (evita parpadeo)
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                
+                // Mostrar sección guardada o dashboard
+                const targetSection = (savedSection && userSections.includes(savedSection)) ? savedSection : 'dashboard';
+                document.getElementById(targetSection).classList.add('active');
+                
+                // Marcar nav-item correcto
+                document.querySelectorAll('.nav-item').forEach(n => {
+                    n.classList.remove('active');
+                    if (n.getAttribute('onclick')?.includes(targetSection)) n.classList.add('active');
+                });
+                
+                // Cargar datos y luego ejecutar showSection para cargar contenido específico
                 updateEditKeyStatus().then(() => {
-                    loadData();
+                    loadData().then(() => {
+                        // Ejecutar showSection para que cargue los datos de la sección (cobros, gastos, etc.)
+                        showSection(targetSection);
+                    });
                 });
             }
             // Iniciar heartbeat cada 2 minutos
