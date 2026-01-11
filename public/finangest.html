@@ -5248,17 +5248,30 @@
             // Ordenar las fechas
             const fechasOrdenadas = Object.keys(datosPorDia).sort();
             
-            fechasOrdenadas.forEach(key => {
-                const d = datosPorDia[key];
-                const fecha = new Date(key + 'T12:00:00');
-                labels.push(fecha.getDate() + ' ' + meses[fecha.getMonth()]);
+            // Si hay datos, llenar los días intermedios con 0
+            if (fechasOrdenadas.length > 0) {
+                const primeraFecha = new Date(fechasOrdenadas[0] + 'T12:00:00');
+                const ultimaFecha = new Date(fechasOrdenadas[fechasOrdenadas.length - 1] + 'T12:00:00');
                 
-                cobradoAcum += d.cobrado;
-                prestadoAcum += d.prestado;
-                
-                datosCobrado.push(cobradoAcum);
-                datosPrestado.push(prestadoAcum);
-            });
+                // Generar todos los días desde la primera hasta la última fecha
+                let current = new Date(primeraFecha);
+                while (current <= ultimaFecha) {
+                    const key = current.toISOString().split('T')[0];
+                    labels.push(current.getDate() + ' ' + meses[current.getMonth()]);
+                    
+                    if (datosPorDia[key]) {
+                        // Día con datos
+                        datosCobrado.push(datosPorDia[key].cobrado);
+                        datosPrestado.push(datosPorDia[key].prestado);
+                    } else {
+                        // Día sin datos = 0 (crea la bajada)
+                        datosCobrado.push(0);
+                        datosPrestado.push(0);
+                    }
+                    
+                    current.setDate(current.getDate() + 1);
+                }
+            }
             
             // Actualizar inputs de fecha
             const inputInicio = document.getElementById('chartFechaInicio');
