@@ -5077,45 +5077,37 @@
         // Función para establecer rango de fechas rápido
         function setChartRange(range) {
             const hoy = new Date();
-            let fechaInicio = new Date();
+            let fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+            let fechaFin = new Date(fechaInicio);
             
             // Actualizar botones activos
             document.querySelectorAll('.chart-range-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
+            // Ahora va desde HOY hacia ADELANTE (futuro)
             switch(range) {
-                case '1w': // 1 semana atrás
-                    fechaInicio.setDate(hoy.getDate() - 7);
+                case '1w': // 1 semana adelante
+                    fechaFin.setDate(fechaInicio.getDate() + 7);
                     break;
-                case '1m': // 1 mes atrás
-                    fechaInicio.setMonth(hoy.getMonth() - 1);
+                case '1m': // 1 mes adelante
+                    fechaFin.setMonth(fechaInicio.getMonth() + 1);
                     break;
-                case '3m': // 3 meses atrás
-                    fechaInicio.setMonth(hoy.getMonth() - 3);
+                case '3m': // 3 meses adelante
+                    fechaFin.setMonth(fechaInicio.getMonth() + 3);
                     break;
-                case '6m': // 6 meses atrás
-                    fechaInicio.setMonth(hoy.getMonth() - 6);
+                case '6m': // 6 meses adelante
+                    fechaFin.setMonth(fechaInicio.getMonth() + 6);
                     break;
-                case '1y': // 1 año atrás
-                    fechaInicio.setFullYear(hoy.getFullYear() - 1);
+                case '1y': // 1 año adelante
+                    fechaFin.setFullYear(fechaInicio.getFullYear() + 1);
                     break;
-                case 'all': // Todo - desde el primer cliente
-                    fechaInicio = new Date(hoy);
-                    fechaInicio.setDate(fechaInicio.getDate() - 30);
-                    if (clientes && clientes.length > 0) {
-                        const fechas = clientes.map(c => new Date(c.fechaCreacion || c.fechaInicio || c.fechaRegistro)).filter(f => !isNaN(f.getTime()));
-                        if (fechas.length > 0) {
-                            const fechaMasAntigua = new Date(Math.min(...fechas.map(f => f.getTime())));
-                            if (fechaMasAntigua < fechaInicio) {
-                                fechaInicio = fechaMasAntigua;
-                            }
-                        }
-                    }
+                case 'all': // Todo - mostrar 1 mes adelante por defecto
+                    fechaFin.setDate(fechaInicio.getDate() + 30);
                     break;
             }
             
             document.getElementById('chartFechaInicio').value = fechaInicio.toISOString().split('T')[0];
-            document.getElementById('chartFechaFin').value = hoy.toISOString().split('T')[0];
+            document.getElementById('chartFechaFin').value = fechaFin.toISOString().split('T')[0];
             renderChart();
         }
         
