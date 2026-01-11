@@ -3410,9 +3410,9 @@
                     currentUser = data.user;
                     // Guardar sessionId
                     if (data.sessionId) {
-                        localStorage.setItem('finangest_session', data.sessionId);
+                        sessionStorage.setItem('finangest_session', data.sessionId);
                     }
-                    localStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                    sessionStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     
                     // Backup automático al iniciar sesión
                     const userId = currentUser.id || currentUser._id;
@@ -3831,7 +3831,7 @@
                 if (data.paid || data.status === 'approved') {
                     alert('🎉 ¡Pago confirmado! Bienvenido a FinanGest');
                     currentUser = pendingUser;
-                    localStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                    sessionStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     showMainApp();
                     return true;
                 }
@@ -3862,7 +3862,7 @@
                     alert('🎉 ¡Pago confirmado! Bienvenido a FinanGest');
                     if (data.user) {
                         currentUser = data.user;
-                        localStorage.setItem('finangest_user', JSON.stringify(currentUser));
+                        sessionStorage.setItem('finangest_user', JSON.stringify(currentUser));
                     }
                     // Ocultar todos los formularios de registro y mostrar login
                     document.getElementById('registerStep1').style.display = 'none';
@@ -4169,8 +4169,8 @@
                 }).catch(() => {});
             }
             
-            localStorage.removeItem('finangest_user');
-            localStorage.removeItem('finangest_session');
+            sessionStorage.removeItem('finangest_user');
+            sessionStorage.removeItem('finangest_session');
             localStorage.removeItem('finangest_section');
             currentUser = null;
             clientes = [];
@@ -9297,12 +9297,12 @@
             
             // Si viene con ?logout en la URL, borrar sesión
             if (window.location.search.includes('logout')) {
-                localStorage.removeItem('finangest_user');
+                sessionStorage.removeItem('finangest_user');
                 window.history.replaceState({}, '', window.location.pathname);
                 document.body.classList.add('loaded');
                 return;
             }
-            const saved = localStorage.getItem('finangest_user');
+            const saved = sessionStorage.getItem('finangest_user');
             if (saved) {
                 currentUser = JSON.parse(saved);
                 showMainApp();
