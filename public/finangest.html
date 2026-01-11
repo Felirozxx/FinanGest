@@ -7360,7 +7360,7 @@
             const toggleBtnIcon = document.getElementById('backupToggleBtnIcon');
             
             if (backupUnlocked) {
-                // DESBLOQUEADO - Verde
+                // DESBLOQUEADO - Verde (decoración)
                 if (icon) {
                     icon.style.background = 'var(--accent-green)';
                     icon.style.boxShadow = '0 0 20px rgba(0,230,118,0.6)';
@@ -7371,14 +7371,12 @@
                     title.style.color = 'var(--accent-green)';
                 }
                 if (desc) desc.innerHTML = 'Puedes usar backups libremente';
+                // Campo oculto, botón para bloquear
                 if (passwordInput) passwordInput.style.display = 'none';
-                if (toggleBtn) {
-                    toggleBtn.style.background = 'var(--accent-red)';
-                    toggleBtn.onclick = function() { bloquearBackup(); };
-                }
+                if (toggleBtn) toggleBtn.style.background = 'var(--accent-red)';
                 if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-lock';
             } else {
-                // BLOQUEADO - Rojo
+                // BLOQUEADO - Rojo (decoración)
                 if (icon) {
                     icon.style.background = 'var(--accent-red)';
                     icon.style.boxShadow = '0 0 20px rgba(255,82,82,0.6)';
@@ -7389,11 +7387,9 @@
                     title.style.color = 'var(--accent-red)';
                 }
                 if (desc) desc.innerHTML = 'Ingresa tu contraseña para desbloquear';
+                // Campo visible, botón para desbloquear
                 if (passwordInput) passwordInput.style.display = 'block';
-                if (toggleBtn) {
-                    toggleBtn.style.background = 'var(--accent-green)';
-                    toggleBtn.onclick = function() { desbloquearBackup(); };
-                }
+                if (toggleBtn) toggleBtn.style.background = 'var(--accent-green)';
                 if (toggleBtnIcon) toggleBtnIcon.className = 'fas fa-unlock';
             }
         }
@@ -7430,6 +7426,7 @@
         }
         
         function toggleBackupLockBtn() {
+            // Botón único: si desbloqueado -> bloquear, si bloqueado -> desbloquear
             if (backupUnlocked) {
                 bloquearBackup();
             } else {
@@ -7437,14 +7434,9 @@
             }
         }
         
-        // Funciones legacy
-        function clickLlaveBackup() {
-            if (backupUnlocked) bloquearBackup();
-        }
-        
-        async function toggleBackupLock() {
-            toggleBackupLockBtn();
-        }
+        // Funciones legacy (círculo grande ya no es clickeable)
+        function clickLlaveBackup() { }
+        async function toggleBackupLock() { toggleBackupLockBtn(); }
         
         async function crearBackupPassword() {
             const password = document.getElementById('newBackupPass').value;
