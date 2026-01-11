@@ -7313,24 +7313,28 @@
             try {
                 const res = await fetch(API_URL + '/api/users/' + currentUser.id);
                 const user = await res.json();
-                userHasBackupPassword = !!user.backupPassword;
+                
+                // backupPassword ahora es true/false desde el API
+                userHasBackupPassword = user.backupPassword === true;
                 
                 const lockSystem = document.getElementById('backupLockSystem');
                 const createPassword = document.getElementById('backupCreatePassword');
                 const configModal = document.getElementById('backupConfigModal');
                 
+                console.log('Sistema backup lock - tiene contraseña:', userHasBackupPassword);
+                
                 if (userHasBackupPassword) {
                     // Tiene contraseña - mostrar sistema de llave
-                    lockSystem.style.display = 'block';
-                    createPassword.style.display = 'none';
-                    configModal.style.display = 'none';
+                    if (lockSystem) lockSystem.style.display = 'block';
+                    if (createPassword) createPassword.style.display = 'none';
+                    if (configModal) configModal.style.display = 'none';
                     backupUnlocked = false;
                     actualizarEstadoLlaveBackup();
                 } else {
                     // No tiene contraseña - mostrar formulario de creación
-                    lockSystem.style.display = 'none';
-                    createPassword.style.display = 'block';
-                    configModal.style.display = 'none';
+                    if (lockSystem) lockSystem.style.display = 'none';
+                    if (createPassword) createPassword.style.display = 'block';
+                    if (configModal) configModal.style.display = 'none';
                     backupUnlocked = true; // Sin contraseña = acceso libre
                 }
             } catch (e) {

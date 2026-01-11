@@ -307,6 +307,34 @@ exports.handler = async (event, context) => {
             const safeUsers = users.map(u => ({ ...u, id: u._id.toString(), password: undefined }));
             return respond(200, safeUsers);
         }
+        
+        // GET SINGLE USER
+        if (path.match(/^\/users\/[^/]+$/) && method === 'GET') {
+            const userId = decodeURIComponent(path.split('/')[2]);
+            let user = null;
+            
+            try {
+                user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+            } catch (e) {}
+            
+            if (!user) {
+                user = await db.collection('users').findOne({ 
+                    $or: [{ id: userId }, { email: userId }, { nombre: userId }]
+                });
+            }
+            
+            if (!user) {
+                return respond(404, { error: 'Usuario no encontrado' });
+            }
+            
+            // Devolver usuario sin password pero con backupPassword (para verificar si existe)
+            return respond(200, { 
+                ...user, 
+                id: user._id.toString(), 
+                password: undefined,
+                backupPassword: user.backupPassword ? true : false // Solo indicar si tiene, no el hash
+            });
+        }
 
         // CREATE USER
         if (path === '/users' && method === 'POST') {
