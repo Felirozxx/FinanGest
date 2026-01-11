@@ -317,6 +317,20 @@
         body.light-theme .modal-dark .modal-header {
             background: #eaecef;
         }
+        body.light-theme #chartNavContainer {
+            background: linear-gradient(180deg, #e8ebef 0%, #dde1e6 100%) !important;
+            border-color: #c5ccd6 !important;
+        }
+        body.light-theme #miniChartWrapper {
+            background: #d0d5dc !important;
+        }
+        body.light-theme #rangeSelector {
+            background: rgba(0, 180, 220, 0.15) !important;
+        }
+        body.light-theme #rangeOverlayLeft,
+        body.light-theme #rangeOverlayRight {
+            background: rgba(255,255,255,0.6) !important;
+        }
         /* Mapa */
         #mapContainer {
             height: 400px;
@@ -5197,7 +5211,7 @@
             const ctx = document.getElementById('mainChart').getContext('2d');
             if (mainChart) mainChart.destroy();
             
-            // Si no hay clientes, mostrar mensaje
+            // Si no hay clientes, mostrar mensaje y ocultar navegador
             if (!clientes || clientes.length === 0) {
                 const container = document.getElementById('mainChart').parentElement;
                 container.innerHTML = `
@@ -5210,8 +5224,15 @@
                     </div>
                     <canvas id="mainChart" style="display:none;"></canvas>
                 `;
+                // Ocultar navegador del gráfico
+                const navContainer = document.getElementById('chartNavContainer');
+                if (navContainer) navContainer.style.display = 'none';
                 return;
             }
+            
+            // Mostrar navegador si estaba oculto
+            const navContainer = document.getElementById('chartNavContainer');
+            if (navContainer) navContainer.style.display = 'block';
             
             // Recopilar TODOS los eventos con fechas reales
             const eventos = [];
