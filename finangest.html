@@ -7535,9 +7535,12 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="mt-2">
+                            <div class="mt-2 d-flex justify-content-between">
                                 <a href="#" onclick="mostrarConfigBackupPassword(); return false;" style="color: var(--text-secondary); font-size: 0.85rem;">
                                     <i class="fas fa-arrow-left me-1"></i>Volver
+                                </a>
+                                <a href="#" onclick="reenviarCodigoBackup(); return false;" style="color: var(--accent-cyan); font-size: 0.85rem;">
+                                    <i class="fas fa-redo me-1"></i>Reenviar código
                                 </a>
                             </div>
                         `;
@@ -7583,6 +7586,22 @@
                     actualizarEstadoLlaveBackup();
                 } else {
                     alert('Error: ' + (data.error || 'Código incorrecto o expirado'));
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+        
+        async function reenviarCodigoBackup() {
+            try {
+                const res = await fetch(API_URL + '/api/users/' + currentUser.id + '/backup-password-reset', {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Código reenviado a tu email');
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo reenviar'));
                 }
             } catch (e) {
                 alert('Error de conexión');
