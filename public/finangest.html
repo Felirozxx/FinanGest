@@ -5248,15 +5248,18 @@
             // Ordenar las fechas
             const fechasOrdenadas = Object.keys(datosPorDia).sort();
             
-            // Si hay datos, llenar los días intermedios con 0
+            // Si hay datos, incluir desde el día anterior al primer dato hasta hoy
             if (fechasOrdenadas.length > 0) {
                 const primeraFecha = new Date(fechasOrdenadas[0] + 'T12:00:00');
-                const ultimaFecha = new Date(fechasOrdenadas[fechasOrdenadas.length - 1] + 'T12:00:00');
+                const hoy = new Date();
+                hoy.setHours(12, 0, 0, 0);
                 
-                // Generar todos los días desde la primera hasta la última fecha
+                // Empezar desde un día antes del primer dato (para mostrar la subida desde 0)
                 let current = new Date(primeraFecha);
-                while (current <= ultimaFecha) {
-                    const key = current.toISOString().split('T')[0];
+                current.setDate(current.getDate() - 1);
+                
+                while (current <= hoy) {
+                    const key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
                     labels.push(current.getDate() + ' ' + meses[current.getMonth()]);
                     
                     if (datosPorDia[key]) {
@@ -5264,7 +5267,7 @@
                         datosCobrado.push(datosPorDia[key].cobrado);
                         datosPrestado.push(datosPorDia[key].prestado);
                     } else {
-                        // Día sin datos = 0 (crea la bajada)
+                        // Día sin datos = 0 (crea la bajada/subida)
                         datosCobrado.push(0);
                         datosPrestado.push(0);
                     }
