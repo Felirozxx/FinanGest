@@ -696,7 +696,7 @@
                 </div>
             </div>
             <!-- Dashboard Section -->
-            <div id="dashboard" class="section active">
+            <div id="dashboard" class="section">
                 <!-- Filtro de fecha para stats -->
                 <div class="d-flex align-items-center gap-3 mb-3">
                     <input type="date" id="dashboardFecha" class="form-control form-control-dark" style="width: 160px;" onchange="filtrarDashboardPorFecha()">
@@ -3925,20 +3925,24 @@
                 showSection('adminUsuarios');
                 renderAdminUsuarios();
             } else {
-                // Actualizar estado de llave de edición y cargar datos ANTES de restaurar sección
-                updateEditKeyStatus().then(() => {
-                    loadData().then(() => {
-                        // Restaurar sección guardada después de cargar datos
-                        const savedSection = localStorage.getItem('finangest_section');
-                        const userSections = ['dashboard', 'estadisticas', 'clientes', 'cobros', 'gastos', 'microseguros', 'mapa', 'historial', 'misBackups', 'miConfig'];
-                        if (savedSection && userSections.includes(savedSection)) {
-                            showSection(savedSection);
-                            document.querySelectorAll('.nav-item').forEach(n => {
-                                n.classList.remove('active');
-                                if (n.getAttribute('onclick')?.includes(savedSection)) n.classList.add('active');
-                            });
-                        }
+                // Restaurar sección guardada INMEDIATAMENTE (antes de cargar datos)
+                const savedSection = localStorage.getItem('finangest_section');
+                const userSections = ['dashboard', 'estadisticas', 'clientes', 'cobros', 'gastos', 'microseguros', 'mapa', 'historial', 'misBackups', 'miConfig'];
+                if (savedSection && userSections.includes(savedSection)) {
+                    // Ocultar todas las secciones primero
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    document.getElementById(savedSection).classList.add('active');
+                    document.querySelectorAll('.nav-item').forEach(n => {
+                        n.classList.remove('active');
+                        if (n.getAttribute('onclick')?.includes(savedSection)) n.classList.add('active');
                     });
+                } else {
+                    showSection('dashboard');
+                }
+                
+                // Cargar datos
+                updateEditKeyStatus().then(() => {
+                    loadData();
                 });
             }
             // Iniciar heartbeat cada 2 minutos
