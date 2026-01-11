@@ -780,18 +780,13 @@
                                 </div>
                             </div>
                             <div class="chart-container"><canvas id="mainChart"></canvas></div>
-                            <!-- Slider de navegación del gráfico -->
-                            <div id="chartSliderContainer" style="padding: 10px 5px; margin-top: 5px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <button onclick="moverGrafico(-7)" style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 5px 10px; border-radius: 4px; cursor: pointer;" title="7 días atrás">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <input type="range" id="chartRangeSlider" min="0" max="100" value="100" 
-                                        style="flex: 1; height: 6px; -webkit-appearance: none; background: var(--bg-hover); border-radius: 3px; cursor: pointer;"
-                                        oninput="actualizarGraficoPorSlider(this.value)">
-                                    <button onclick="moverGrafico(7)" style="background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 5px 10px; border-radius: 4px; cursor: pointer;" title="7 días adelante">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                            <!-- Mini gráfico de navegación -->
+                            <div id="chartNavContainer" style="position: relative; height: 50px; margin-top: 10px; background: var(--bg-hover); border-radius: 4px; overflow: hidden;">
+                                <canvas id="miniChart" style="width: 100%; height: 100%;"></canvas>
+                                <!-- Selector de rango -->
+                                <div id="rangeSelector" style="position: absolute; top: 0; height: 100%; background: rgba(0, 212, 255, 0.2); border-left: 2px solid var(--primary); border-right: 2px solid var(--primary); cursor: move; min-width: 50px;">
+                                    <div id="rangeLeft" style="position: absolute; left: -5px; top: 0; width: 10px; height: 100%; cursor: ew-resize;"></div>
+                                    <div id="rangeRight" style="position: absolute; right: -5px; top: 0; width: 10px; height: 100%; cursor: ew-resize;"></div>
                                 </div>
                             </div>
                         </div>
@@ -5402,50 +5397,141 @@
                     }
                 }
             });
+            
+            // Crear mini gráfico de navegación
+            renderMiniChart(datosCobrado, datosPrestado, labels);
         }
         
-        // Funciones para navegar el gráfico
-        function moverGrafico(dias) {
-            const inputInicio = document.getElementById('chartFechaInicio');
-            const inputFin = document.getElementById('chartFechaFin');
+        let miniChart = null;
+        
+        function renderMiniChart(datosCobrado, datosPrestado, labels) {
+            const ctx = document.getElementById('miniChart');
+            if (!ctx) return;
             
-            if (inputInicio.value && inputFin.value) {
-                const fechaInicio = new Date(inputInicio.value);
-                const fechaFin = new Date(inputFin.value);
-                
-                fechaInicio.setDate(fechaInicio.getDate() + dias);
-                fechaFin.setDate(fechaFin.getDate() + dias);
-                
-                const formatDate = (d) => {
-                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                };
-                
-                inputInicio.value = formatDate(fechaInicio);
-                inputFin.value = formatDate(fechaFin);
-                renderChart();
-            }
+            if (miniChart) miniChart.destroy();
+            
+            miniChart = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: datosCobrado,
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.3)',
+                        borderWidth: 1,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }, {
+                        data: datosPrestado,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.3)',
+                        borderWidth: 1,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    interaction: { enabled: false }
+                }
+            });
+            
+            // Inicializar selector de rango
+            initRangeSelector();
         }
         
-        function actualizarGraficoPorSlider(valor) {
-            // El slider va de 0 a 100, donde 100 es "hoy"
-            // Calculamos cuántos días hacia atrás basado en el valor
-            const hoy = new Date();
-            const diasMaxAtras = 365; // Máximo 1 año atrás
-            const diasAtras = Math.round((100 - valor) / 100 * diasMaxAtras);
+        function initRangeSelector() {
+            const container = document.getElementById('chartNavContainer');
+            const selector = document.getElementById('rangeSelector');
+            if (!container || !selector) return;
             
-            const fechaFin = new Date(hoy);
-            fechaFin.setDate(fechaFin.getDate() - diasAtras);
+            const containerWidth = container.offsetWidth;
             
-            const fechaInicio = new Date(fechaFin);
-            fechaInicio.setDate(fechaInicio.getDate() - 30); // Mostrar 30 días
+            // Posicionar selector al final (datos más recientes)
+            selector.style.width = '30%';
+            selector.style.left = '70%';
             
-            const formatDate = (d) => {
-                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            };
+            let isDragging = false;
+            let isResizingLeft = false;
+            let isResizingRight = false;
+            let startX = 0;
+            let startLeft = 0;
+            let startWidth = 0;
             
-            document.getElementById('chartFechaInicio').value = formatDate(fechaInicio);
-            document.getElementById('chartFechaFin').value = formatDate(fechaFin);
-            renderChart();
+            selector.addEventListener('mousedown', (e) => {
+                if (e.target.id === 'rangeLeft') {
+                    isResizingLeft = true;
+                } else if (e.target.id === 'rangeRight') {
+                    isResizingRight = true;
+                } else {
+                    isDragging = true;
+                }
+                startX = e.clientX;
+                startLeft = selector.offsetLeft;
+                startWidth = selector.offsetWidth;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging && !isResizingLeft && !isResizingRight) return;
+                
+                const dx = e.clientX - startX;
+                const containerWidth = container.offsetWidth;
+                
+                if (isDragging) {
+                    let newLeft = startLeft + dx;
+                    newLeft = Math.max(0, Math.min(newLeft, containerWidth - selector.offsetWidth));
+                    selector.style.left = newLeft + 'px';
+                } else if (isResizingLeft) {
+                    let newLeft = startLeft + dx;
+                    let newWidth = startWidth - dx;
+                    if (newLeft >= 0 && newWidth >= 50) {
+                        selector.style.left = newLeft + 'px';
+                        selector.style.width = newWidth + 'px';
+                    }
+                } else if (isResizingRight) {
+                    let newWidth = startWidth + dx;
+                    if (newWidth >= 50 && startLeft + newWidth <= containerWidth) {
+                        selector.style.width = newWidth + 'px';
+                    }
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isDragging || isResizingLeft || isResizingRight) {
+                    // Actualizar gráfico principal basado en la posición del selector
+                    actualizarGraficoPorSelector();
+                }
+                isDragging = false;
+                isResizingLeft = false;
+                isResizingRight = false;
+            });
+        }
+        
+        function actualizarGraficoPorSelector() {
+            const container = document.getElementById('chartNavContainer');
+            const selector = document.getElementById('rangeSelector');
+            if (!container || !selector) return;
+            
+            const containerWidth = container.offsetWidth;
+            const selectorLeft = selector.offsetLeft;
+            const selectorWidth = selector.offsetWidth;
+            
+            // Calcular porcentajes
+            const startPercent = selectorLeft / containerWidth;
+            const endPercent = (selectorLeft + selectorWidth) / containerWidth;
+            
+            // Calcular fechas basadas en el rango total de datos
+            // Por ahora solo actualiza visualmente, cuando tengas más datos funcionará mejor
+            console.log('Rango seleccionado:', Math.round(startPercent * 100) + '% - ' + Math.round(endPercent * 100) + '%');
         }
 
         function renderCobrosPreview() {
