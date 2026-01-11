@@ -1469,11 +1469,8 @@
                 
                 <!-- Modal Configurar Contraseña -->
                 <div id="backupConfigModal" class="card-dark p-3 mb-4" style="border: 2px solid var(--accent-cyan); display: none;">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center mb-3">
                         <strong><i class="fas fa-cog me-2"></i>Configurar Contraseña</strong>
-                        <button class="btn btn-sm" style="background: var(--bg-hover);" onclick="cerrarConfigBackupPassword()">
-                            <i class="fas fa-times"></i>
-                        </button>
                     </div>
                     <div id="backupPasswordSection">
                         <!-- Se llena dinámicamente -->
@@ -7485,15 +7482,20 @@
         
         function mostrarConfigBackupPassword() {
             const configModal = document.getElementById('backupConfigModal');
-            configModal.style.display = 'block';
-            
-            const section = document.getElementById('backupPasswordSection');
-            section.innerHTML = `
-                <p class="text-secondary mb-3">Para cambiar tu contraseña de backups, te enviaremos un código a tu email.</p>
-                <button class="btn" style="background: var(--accent-yellow); color: #000;" onclick="iniciarRecuperacionBackupPassword()">
-                    <i class="fas fa-envelope me-2"></i>Enviar código al email
-                </button>
-            `;
+            // Toggle: si está visible lo oculta, si está oculto lo muestra
+            if (configModal.style.display === 'none' || configModal.style.display === '') {
+                configModal.style.display = 'block';
+                
+                const section = document.getElementById('backupPasswordSection');
+                section.innerHTML = `
+                    <p class="text-secondary mb-3">Para cambiar tu contraseña de backups, te enviaremos un código a tu email.</p>
+                    <button class="btn" style="background: var(--accent-yellow); color: #000;" onclick="iniciarRecuperacionBackupPassword()">
+                        <i class="fas fa-envelope me-2"></i>Enviar código al email
+                    </button>
+                `;
+            } else {
+                configModal.style.display = 'none';
+            }
         }
         
         async function iniciarRecuperacionBackupPassword() {
