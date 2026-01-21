@@ -1,5 +1,6 @@
 const { connectToDatabase } = require('./_db');
 
+// Endpoint para crear carteras
 module.exports = async (req, res) => {
     // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
