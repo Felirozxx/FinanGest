@@ -21,8 +21,15 @@ module.exports = async (req, res) => {
     try {
         const { db } = await connectToDatabase();
 
+        // Parsear el body si es string
+        let body = req.body;
+        if (typeof body === 'string') {
+            body = JSON.parse(body);
+        }
+
         const cartera = { 
-            ...req.body, 
+            ...body,
+            creadoPor: body.userId || body.creadoPor,
             fechaCreacion: new Date(),
             eliminada: false,
             activa: true
