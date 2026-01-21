@@ -17047,7 +17047,7 @@
                     // Si tiene carteras disponibles (pagadas pero no creadas), crear sin pago
                     if (carterasActuales < carterasPagadas) {
                         // Crear cartera sin pago (ya pagó por ella)
-                        res = await fetch(API_URL + '/api/carteras', {
+                        res = await fetch(API_URL + '/api/carteras/create', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -17083,7 +17083,7 @@
                     } else {
                         // Cartera adicional - requiere pago
                         // Primero crear la cartera como pendiente de pago
-                        res = await fetch(API_URL + '/api/carteras', {
+                        res = await fetch(API_URL + '/api/carteras/create', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
