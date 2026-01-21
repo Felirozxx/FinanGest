@@ -1,13 +1,9 @@
 {
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/carteras/:path*",
-      "destination": "/api/carteras"
-    },
-    {
-      "source": "/api/:path*",
-      "destination": "/server-mongodb.js"
+  "functions": {
+    "api/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ]
+  }
 }
