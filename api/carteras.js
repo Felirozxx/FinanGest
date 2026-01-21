@@ -1,6 +1,7 @@
 const { connectToDatabase } = require('./_db');
 const { ObjectId } = require('mongodb');
 
+// Endpoint para crear carteras - v2
 module.exports = async (req, res) => {
     // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
