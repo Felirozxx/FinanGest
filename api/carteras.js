@@ -1,4 +1,4 @@
-const { connectToDatabase } = require('../_db');
+const { connectToDatabase } = require('./_db');
 
 module.exports = async (req, res) => {
     // CORS

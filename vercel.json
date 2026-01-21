@@ -5,32 +5,6 @@
       "runtime": "@vercel/node@3.0.7"
     }
   },
-  "rewrites": [
-    {
-      "source": "/api/carteras-eliminadas",
-      "destination": "/api/carteras-eliminadas"
-    },
-    {
-      "source": "/api/carteras/:id/restablecer",
-      "destination": "/api/carteras/[id]/restablecer"
-    },
-    {
-      "source": "/api/carteras/:id/eliminar",
-      "destination": "/api/carteras/[id]/eliminar"
-    },
-    {
-      "source": "/api/carteras/:id",
-      "destination": "/api/carteras/[id]"
-    },
-    {
-      "source": "/api/carteras/:userId",
-      "destination": "/api/carteras/[userId]"
-    },
-    {
-      "source": "/api/carteras",
-      "destination": "/api/carteras/index"
-    }
-  ],
   "routes": [
     {
       "src": "/(.*)",
