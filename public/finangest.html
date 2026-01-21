@@ -11732,7 +11732,7 @@
             
             try {
                 // Cargar carteras del usuario
-                const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
+                const carterasRes = await fetch(API_URL + '/api/carteras-por-usuario?userId=' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                 
@@ -11913,7 +11913,7 @@
                 verTodoGastos = Array.isArray(gastosData) ? gastosData : [];
                 
                 // Cargar carteras del usuario
-                const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
+                const carterasRes = await fetch(API_URL + '/api/carteras-por-usuario?userId=' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                 
@@ -12942,7 +12942,7 @@
                     
                     try {
                         // Cargar carteras del usuario
-                        const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
+                        const carterasRes = await fetch(API_URL + '/api/carteras-por-usuario?userId=' + userId);
                         const carterasData = await carterasRes.json();
                         const carteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                         
@@ -16429,7 +16429,7 @@
         async function cargarCarteras() {
             if (!currentUser) return;
             try {
-                const res = await fetch(API_URL + '/api/carteras/' + currentUser.id);
+                const res = await fetch(API_URL + '/api/carteras-por-usuario?userId=' + currentUser.id);
                 const data = await res.json();
                 if (data.success) {
                     carteras = data.carteras || [];
