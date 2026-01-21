@@ -1,23 +1,13 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "server-mongodb.js",
-      "use": "@vercel/node"
+      "source": "/api/carteras/:path*",
+      "destination": "/api/carteras"
     },
     {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server-mongodb.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "source": "/api/:path*",
+      "destination": "/server-mongodb.js"
     }
   ]
 }
