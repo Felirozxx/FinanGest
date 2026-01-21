@@ -523,11 +523,11 @@ app.post('/api/carteras/:id/eliminar', async (req, res) => {
 
 // Ruta principal
 app.get('/', (req, res) => {
-    res.redirect('/finangest.html');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 FinanGest Server corriendo en puerto ${PORT}`);
 });
 
