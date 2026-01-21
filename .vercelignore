@@ -1,0 +1,15 @@
+node_modules
+.env
+.git
+*.log
+vercel-finangest.html
+check-password.js
+update-password-vercel.js
+reset-all-passwords.js
+test-login.js
+test-mongo-connection.js
+update-password.js
+server-mongodb.js
+create-worker.js
+FinanGest-Original
+finangest-flutter
