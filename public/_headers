@@ -1,0 +1,7 @@
+/flutter-app/*
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin
+  
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
