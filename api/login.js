@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs');
 const { connectToDatabase } = require('./_db');
+const { verifyPassword } = require('./_crypto-hash');
 
 module.exports = async (req, res) => {
     // CORS headers
@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
         console.log('🔑 Password hash:', user.password.substring(0, 20) + '...');
         console.log('🔑 Testing password:', password);
         
-        const valid = await bcrypt.compare(password, user.password);
+        const valid = verifyPassword(password, user.password);
         console.log('🔐 Password valid:', valid);
         
         if (!valid) {

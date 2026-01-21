@@ -4783,7 +4783,7 @@
             
             try {
                 const deviceInfo = getDeviceInfo();
-                const res = await fetch(API_URL + '/api/login-temp', {
+                const res = await fetch(API_URL + '/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password, deviceInfo })
@@ -7021,7 +7021,7 @@
             
             try {
                 // Verificar contraseña actual
-                const loginRes = await fetch(API_URL + '/api/login-temp', {
+                const loginRes = await fetch(API_URL + '/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: currentUser.email, password: actual })
@@ -7476,7 +7476,7 @@
                 
                 // Verificar contraseña
                 try {
-                    const res = await fetch(API_URL + '/api/login-temp', {
+                    const res = await fetch(API_URL + '/api/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: currentUser.email, password })
