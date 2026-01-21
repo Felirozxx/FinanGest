@@ -25,11 +25,12 @@ module.exports = async (req, res) => {
 
     try {
         const db = await connectToDatabase();
+        
+        // Extraer userId de la query o URL
+        const { userId, id } = req.query;
 
-        // GET /api/carteras/:userId
-        if (req.method === 'GET') {
-            const userId = req.query.userId || req.url.split('/').pop();
-            
+        // GET /api/carteras?userId=xxx
+        if (req.method === 'GET' && userId) {
             const carteras = await db.collection('carteras').find({ 
                 creadoPor: userId,
                 eliminada: { $ne: true }
@@ -50,7 +51,9 @@ module.exports = async (req, res) => {
                 activa: true
             };
             
+            console.log('Creando cartera:', cartera);
             const result = await db.collection('carteras').insertOne(cartera);
+            console.log('Cartera creada con ID:', result.insertedId);
             
             return res.json({ 
                 success: true, 
@@ -59,9 +62,8 @@ module.exports = async (req, res) => {
             });
         }
 
-        // PUT /api/carteras/:id
-        if (req.method === 'PUT') {
-            const id = req.query.id || req.url.split('/').pop();
+        // PUT /api/carteras?id=xxx
+        if (req.method === 'PUT' && id) {
             const updateData = { ...req.body };
             delete updateData._id;
             delete updateData.id;
@@ -74,10 +76,8 @@ module.exports = async (req, res) => {
             return res.json({ success: true });
         }
 
-        // DELETE /api/carteras/:id
-        if (req.method === 'DELETE') {
-            const id = req.query.id || req.url.split('/').pop();
-            
+        // DELETE /api/carteras?id=xxx
+        if (req.method === 'DELETE' && id) {
             await db.collection('carteras').updateOne(
                 { _id: new ObjectId(id) },
                 { 
@@ -91,7 +91,10 @@ module.exports = async (req, res) => {
             return res.json({ success: true });
         }
 
-        return res.status(405).json({ error: 'Method not allowed' });
+        return res.status(400).json({ 
+            success: false, 
+            error: 'Invalid request' 
+        });
 
     } catch (error) {
         console.error('Error en /api/carteras:', error);
