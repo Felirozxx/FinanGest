@@ -13,7 +13,8 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { email } = req.body || req.query;
+        // Aceptar email de query params (GET) o body (POST)
+        const email = req.query.email || (req.body && req.body.email);
         const { db } = await connectToDatabase();
 
         const user = await db.collection('users').findOne({ 
