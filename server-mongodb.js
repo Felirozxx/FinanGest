@@ -541,5 +541,3 @@ connectDB().then(() => {
 }).catch(err => {
     console.error('⚠️ Error en inicialización:', err.message);
 });
-
-module.exports = app;
