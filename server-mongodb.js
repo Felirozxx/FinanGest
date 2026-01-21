@@ -18,12 +18,19 @@ const mongoUri = process.env.MONGODB_URI;
 
 async function connectDB() {
     try {
+        if (!mongoUri) {
+            console.error('❌ MONGODB_URI no está definida en las variables de entorno');
+            return;
+        }
+        
+        console.log('🔄 Conectando a MongoDB Atlas...');
         const client = new MongoClient(mongoUri);
         await client.connect();
         db = client.db('finangest');
-        console.log('✅ Conectado a MongoDB Atlas');
+        console.log('✅ Conectado a MongoDB Atlas - Base de datos: finangest');
     } catch (e) {
         console.error('❌ Error conectando a MongoDB:', e.message);
+        console.error('💡 Verifica que MONGODB_URI esté correctamente configurada');
     }
 }
 connectDB();
@@ -441,6 +448,14 @@ app.get('/api/carteras/:userId', async (req, res) => {
 // Crear nueva cartera
 app.post('/api/carteras', async (req, res) => {
     try {
+        if (!db) {
+            console.error('❌ Base de datos no conectada');
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Base de datos no conectada. Verifica MONGODB_URI en variables de entorno.' 
+            });
+        }
+        
         const cartera = { 
             ...req.body, 
             fechaCreacion: new Date(),
@@ -448,17 +463,20 @@ app.post('/api/carteras', async (req, res) => {
             activa: true
         };
         
+        console.log('📝 Creando cartera:', cartera.nombre);
         const result = await db.collection('carteras').insertOne(cartera);
+        console.log('✅ Cartera creada con ID:', result.insertedId);
+        
         res.json({ 
             success: true, 
             id: result.insertedId, 
             cartera: { ...cartera, id: result.insertedId } 
         });
     } catch (e) {
-        console.error('Error creando cartera:', e);
+        console.error('❌ Error creando cartera:', e.message);
         res.status(500).json({ 
             success: false, 
-            error: 'Error creando cartera' 
+            error: `Error creando cartera: ${e.message}` 
         });
     }
 });
