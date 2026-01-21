@@ -19,17 +19,27 @@ module.exports = async (req, res) => {
 
     try {
         const { email, password } = req.body;
+        console.log('🔐 Login attempt:', email);
+        
         const { db } = await connectToDatabase();
+        console.log('✅ DB connected');
 
         const user = await db.collection('users').findOne({ 
             $or: [{ email }, { username: email }] 
         });
         
         if (!user) {
+            console.log('❌ User not found:', email);
             return res.json({ success: false, error: 'Usuario no encontrado' });
         }
         
+        console.log('✅ User found:', user.email, 'Role:', user.role);
+        console.log('🔑 Password hash:', user.password.substring(0, 20) + '...');
+        console.log('🔑 Testing password:', password);
+        
         const valid = await bcrypt.compare(password, user.password);
+        console.log('🔐 Password valid:', valid);
+        
         if (!valid) {
             return res.json({ success: false, error: 'Contraseña incorrecta' });
         }
