@@ -35,7 +35,6 @@ async function connectDB() {
         console.log('⚠️ El servidor continuará sin base de datos');
     }
 }
-connectDB();
 
 // Email transporter
 const transporter = nodemailer.createTransport({
@@ -529,9 +528,18 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => {
+
+// Iniciar servidor inmediatamente
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 FinanGest Server corriendo en puerto ${PORT}`);
     console.log(`📡 Servidor escuchando en todas las interfaces`);
+});
+
+// Conectar a MongoDB después de iniciar el servidor
+connectDB().then(() => {
+    console.log('✅ Inicialización completa');
+}).catch(err => {
+    console.error('⚠️ Error en inicialización:', err.message);
 });
 
 module.exports = app;
