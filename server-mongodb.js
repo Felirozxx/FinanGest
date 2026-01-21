@@ -20,6 +20,7 @@ async function connectDB() {
     try {
         if (!mongoUri) {
             console.error('❌ MONGODB_URI no está definida en las variables de entorno');
+            console.log('⚠️ El servidor continuará sin base de datos');
             return;
         }
         
@@ -31,6 +32,7 @@ async function connectDB() {
     } catch (e) {
         console.error('❌ Error conectando a MongoDB:', e.message);
         console.error('💡 Verifica que MONGODB_URI esté correctamente configurada');
+        console.log('⚠️ El servidor continuará sin base de datos');
     }
 }
 connectDB();
