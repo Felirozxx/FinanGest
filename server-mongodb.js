@@ -418,6 +418,91 @@ app.post('/api/backup/restore', async (req, res) => {
     }
 });
 
+// ============ CARTERAS ROUTES ============
+
+// Obtener carteras de un usuario
+app.get('/api/carteras/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const carteras = await db.collection('carteras').find({ 
+            creadoPor: userId,
+            eliminada: { $ne: true }
+        }).toArray();
+        res.json({ 
+            success: true, 
+            carteras: carteras.map(c => ({ ...c, id: c._id }))
+        });
+    } catch (e) {
+        console.error('Error obteniendo carteras:', e);
+        res.status(500).json({ success: false, error: 'Error obteniendo carteras' });
+    }
+});
+
+// Crear nueva cartera
+app.post('/api/carteras', async (req, res) => {
+    try {
+        const cartera = { 
+            ...req.body, 
+            fechaCreacion: new Date(),
+            eliminada: false,
+            activa: true
+        };
+        
+        const result = await db.collection('carteras').insertOne(cartera);
+        res.json({ 
+            success: true, 
+            id: result.insertedId, 
+            cartera: { ...cartera, id: result.insertedId } 
+        });
+    } catch (e) {
+        console.error('Error creando cartera:', e);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error creando cartera' 
+        });
+    }
+});
+
+// Actualizar cartera
+app.put('/api/carteras/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = { ...req.body };
+        delete updateData._id;
+        delete updateData.id;
+        
+        await db.collection('carteras').updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updateData }
+        );
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Error actualizando cartera:', e);
+        res.status(500).json({ success: false, error: 'Error actualizando cartera' });
+    }
+});
+
+// Eliminar cartera (soft delete)
+app.post('/api/carteras/:id/eliminar', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        await db.collection('carteras').updateOne(
+            { _id: new ObjectId(id) },
+            { 
+                $set: { 
+                    eliminada: true, 
+                    fechaEliminacion: new Date() 
+                } 
+            }
+        );
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Error eliminando cartera:', e);
+        res.status(500).json({ success: false, error: 'Error eliminando cartera' });
+    }
+});
+
 // Ruta principal
 app.get('/', (req, res) => {
     res.redirect('/finangest.html');
