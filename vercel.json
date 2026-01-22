@@ -1,21 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "echo 'No build needed'",
-  "outputDirectory": "public",
   "functions": {
     "api/**/*.js": {
       "memory": 1024,
       "maxDuration": 10
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     }
   ]
 }
