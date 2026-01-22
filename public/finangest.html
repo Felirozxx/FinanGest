@@ -8580,9 +8580,19 @@
                         showToast('❌ Contraseña incorrecta', 2000);
                         return;
                     }
+                } else {
+                    // NO tiene contraseña configurada - OBLIGAR a crear una primero
+                    showToast('⚠️ Debes configurar una contraseña de caja primero', 3000);
+                    input.value = ''; // Limpiar el input
+                    setTimeout(() => {
+                        configurarPasswordCaja();
+                    }, 500);
+                    return;
                 }
             } catch (e) {
                 console.error('Error verificando contraseña:', e);
+                showToast('❌ Error verificando contraseña. Configura una contraseña primero.', 3000);
+                return;
             }
             
             const carteraKey = carteraActual || 'todas';
