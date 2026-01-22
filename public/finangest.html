@@ -8554,7 +8554,7 @@
             
             // Verificar si tiene contraseña de caja configurada
             try {
-                const checkRes = await fetch(API_URL + '/api/tiene-password-caja?userId=' + currentUser?.id);
+                const checkRes = await fetch(API_URL + '/api/password-caja?action=tiene-password&userId=' + currentUser?.id);
                 const checkData = await checkRes.json();
                 
                 if (checkData.success && checkData.hasPassword) {
@@ -8566,7 +8566,7 @@
                     }
                     
                     // Verificar contraseña
-                    const res = await fetch(API_URL + '/api/verificar-password-caja', {
+                    const res = await fetch(API_URL + '/api/password-caja?action=verificar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -8618,7 +8618,7 @@
         async function configurarPasswordCaja() {
             // Primero verificar si ya tiene contraseña configurada
             try {
-                const checkRes = await fetch(API_URL + '/api/tiene-password-caja?userId=' + currentUser?.id);
+                const checkRes = await fetch(API_URL + '/api/password-caja?action=tiene-password&userId=' + currentUser?.id);
                 const checkData = await checkRes.json();
                 
                 if (checkData.success && checkData.hasPassword) {
@@ -8727,7 +8727,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/cambiar-password-caja', {
+                const res = await fetch(API_URL + '/api/password-caja?action=cambiar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -8914,7 +8914,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/eliminar-password-caja', {
+                const res = await fetch(API_URL + '/api/password-caja?action=eliminar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -8960,7 +8960,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/configurar-password-caja', {
+                const res = await fetch(API_URL + '/api/password-caja?action=configurar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
