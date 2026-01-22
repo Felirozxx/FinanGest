@@ -1,6 +1,7 @@
 const { connectToDatabase } = require('./_db');
 const { verifyPassword } = require('./_crypto-hash');
 
+// Login endpoint v2
 module.exports = async (req, res) => {
     // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
