@@ -27,7 +27,15 @@ module.exports = async (req, res) => {
             const carteras = await db.collection('carteras')
                 .find({ creadoPor: userId, eliminada: false })
                 .toArray();
-            return res.json({ success: true, carteras });
+            
+            // Convertir _id a id para compatibilidad con frontend
+            const carterasConId = carteras.map(c => ({
+                ...c,
+                id: c._id.toString(),
+                _id: undefined
+            }));
+            
+            return res.json({ success: true, carteras: carterasConId });
         }
 
         // GET - Obtener carteras eliminadas
@@ -35,7 +43,15 @@ module.exports = async (req, res) => {
             const carteras = await db.collection('carteras')
                 .find({ creadoPor: userId, eliminada: true })
                 .toArray();
-            return res.json({ success: true, carteras });
+            
+            // Convertir _id a id para compatibilidad con frontend
+            const carterasConId = carteras.map(c => ({
+                ...c,
+                id: c._id.toString(),
+                _id: undefined
+            }));
+            
+            return res.json({ success: true, carteras: carterasConId });
         }
 
         // POST - Crear nueva cartera
@@ -54,8 +70,8 @@ module.exports = async (req, res) => {
             
             return res.json({ 
                 success: true, 
-                id: result.insertedId, 
-                cartera: { ...cartera, id: result.insertedId } 
+                id: result.insertedId.toString(), 
+                cartera: { ...cartera, id: result.insertedId.toString() } 
             });
         }
 
