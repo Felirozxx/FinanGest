@@ -1,5 +1,6 @@
 const { connectToDatabase } = require('./_db');
 const { hashPassword, verifyPassword } = require('./_crypto-hash');
+const { ObjectId } = require('mongodb');
 
 // Endpoint consolidado para contraseña de caja
 module.exports = async (req, res) => {
@@ -24,8 +25,14 @@ module.exports = async (req, res) => {
 
         // GET - Verificar si tiene contraseña configurada
         if (req.method === 'GET' && action === 'tiene-password') {
+            const userIdToUse = userId || body.userId;
+            
+            // Buscar por _id o por id string
             const user = await db.collection('users').findOne({ 
-                _id: require('mongodb').ObjectId(userId) 
+                $or: [
+                    { _id: ObjectId.isValid(userIdToUse) ? new ObjectId(userIdToUse) : null },
+                    { id: userIdToUse }
+                ]
             });
             
             return res.json({ 
@@ -39,6 +46,8 @@ module.exports = async (req, res) => {
             const { password } = body;
             const userIdFromBody = body.userId || userId;
             
+            console.log('Configurando contraseña para userId:', userIdFromBody);
+            
             if (!password || password.length < 4) {
                 return res.json({ 
                     success: false, 
@@ -47,11 +56,20 @@ module.exports = async (req, res) => {
             }
             
             const hashedPassword = hashPassword(password);
+            console.log('Password hasheada:', hashedPassword.substring(0, 20) + '...');
             
+            // Buscar por _id o por id string
             const result = await db.collection('users').updateOne(
-                { _id: require('mongodb').ObjectId(userIdFromBody) },
+                { 
+                    $or: [
+                        { _id: ObjectId.isValid(userIdFromBody) ? new ObjectId(userIdFromBody) : null },
+                        { id: userIdFromBody }
+                    ]
+                },
                 { $set: { passwordCaja: hashedPassword } }
             );
+            
+            console.log('Resultado update:', result);
             
             return res.json({ 
                 success: result.modifiedCount > 0 || result.matchedCount > 0,
@@ -65,7 +83,10 @@ module.exports = async (req, res) => {
             const userIdFromBody = body.userId || userId;
             
             const user = await db.collection('users').findOne({ 
-                _id: require('mongodb').ObjectId(userIdFromBody) 
+                $or: [
+                    { _id: ObjectId.isValid(userIdFromBody) ? new ObjectId(userIdFromBody) : null },
+                    { id: userIdFromBody }
+                ]
             });
             
             if (!user || !user.passwordCaja) {
@@ -97,7 +118,10 @@ module.exports = async (req, res) => {
             }
             
             const user = await db.collection('users').findOne({ 
-                _id: require('mongodb').ObjectId(userIdFromBody) 
+                $or: [
+                    { _id: ObjectId.isValid(userIdFromBody) ? new ObjectId(userIdFromBody) : null },
+                    { id: userIdFromBody }
+                ]
             });
             
             if (!user || !user.passwordCaja) {
@@ -119,7 +143,12 @@ module.exports = async (req, res) => {
             const hashedPassword = hashPassword(newPassword);
             
             const result = await db.collection('users').updateOne(
-                { _id: require('mongodb').ObjectId(userIdFromBody) },
+                { 
+                    $or: [
+                        { _id: ObjectId.isValid(userIdFromBody) ? new ObjectId(userIdFromBody) : null },
+                        { id: userIdFromBody }
+                    ]
+                },
                 { $set: { passwordCaja: hashedPassword } }
             );
             
@@ -135,7 +164,10 @@ module.exports = async (req, res) => {
             const userIdFromBody = body.userId || userId;
             
             const user = await db.collection('users').findOne({ 
-                _id: require('mongodb').ObjectId(userIdFromBody) 
+                $or: [
+                    { _id: ObjectId.isValid(userIdFromBody) ? new ObjectId(userIdFromBody) : null },
+                    { id: userIdFromBody }
+                ]
             });
             
             if (!user || !user.passwordCaja) {
@@ -155,7 +187,12 @@ module.exports = async (req, res) => {
             }
             
             const result = await db.collection('users').updateOne(
-                { _id: require('mongodb').ObjectId(userIdFromBody) },
+                { 
+                    $or: [
+                        { _id: ObjectId.isValid(userIdFromBody) ? new ObjectId(userIdFromBody) : null },
+                        { id: userIdFromBody }
+                    ]
+                },
                 { $unset: { passwordCaja: "" } }
             );
             
