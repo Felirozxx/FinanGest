@@ -5,6 +5,11 @@
       "runtime": "@vercel/node@3.0.7"
     }
   },
+  "build": {
+    "env": {
+      "NODE_VERSION": "18.17.0"
+    }
+  },
   "routes": [
     {
       "src": "/api/(.*)",
