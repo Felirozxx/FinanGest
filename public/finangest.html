@@ -3531,27 +3531,8 @@
         
         // Obtener fecha actual corregida (usa el offset del servidor)
         function getCurrentDate() {
-            if (!serverTimeInitialized) {
-                // Si no se ha inicializado, usar fecha local con ajuste de timezone
-                try {
-                    const formatter = new Intl.DateTimeFormat('en-CA', {
-                        timeZone: userTimezone,
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    });
-                    const parts = formatter.formatToParts(new Date());
-                    const getPart = (type) => parts.find(p => p.type === type)?.value || '00';
-                    return new Date(`${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}:${getPart('second')}`);
-                } catch (e) {
-                    return new Date();
-                }
-            }
-            return new Date(Date.now() + serverTimeOffset);
+            // Usar siempre la fecha local del navegador
+            return new Date();
         }
         
         // Obtener fecha en formato YYYY-MM-DD (USAR ESTA EN TODO EL SISTEMA)
@@ -9363,8 +9344,7 @@
                 if (dineroAgregado[carteraKey]) {
                     Object.keys(dineroAgregado[carteraKey]).forEach(fecha => {
                         if (fecha <= ayerStr) {
-                            const valor = dineroAgregado[carteraKey][fecha] || 0;
-                            if (valor > 0) dineroHastaAyer += valor;
+                            dineroHastaAyer += dineroAgregado[carteraKey][fecha] || 0;
                         }
                     });
                 }
