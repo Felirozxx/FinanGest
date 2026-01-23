@@ -6968,7 +6968,7 @@
         // Actualizar cliente en el servidor
         async function actualizarClienteEnServidor(cliente) {
             try {
-                await fetch(API_URL + '/api/clientes/' + cliente.id, {
+                await fetch(API_URL + '/api/clientes?id=' + cliente.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(cliente)
@@ -14210,7 +14210,7 @@
                 }
                 
                 try {
-                    const res = await fetch(API_URL + '/api/clientes/' + window.clienteEditandoId, {
+                    const res = await fetch(API_URL + '/api/clientes?id=' + window.clienteEditandoId, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(clienteExistente)
@@ -14299,7 +14299,7 @@
                 
                 try {
                     // Actualizar en servidor
-                    const res = await fetch(API_URL + '/api/clientes/' + clienteRenovandoId, {
+                    const res = await fetch(API_URL + '/api/clientes?id=' + clienteRenovandoId, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(clienteExistente)
@@ -14492,7 +14492,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/clientes/' + clienteParaPago.id, {
+                const res = await fetch(API_URL + '/api/clientes?id=' + clienteParaPago.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(clienteParaPago)
@@ -15190,7 +15190,7 @@
                 });
                 
                 // Eliminar de clientes activos
-                await fetch(API_URL + '/api/clientes/' + id, { method: 'DELETE' });
+                await fetch(API_URL + '/api/clientes?id=' + id, { method: 'DELETE' });
                 
                 // Actualizar lista local
                 clientes = clientes.filter(cl => cl.id !== id);
@@ -16267,7 +16267,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/clientes/' + clienteId, {
+                const res = await fetch(API_URL + '/api/clientes?id=' + clienteId, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updates)
@@ -16308,7 +16308,7 @@
             if (!confirm('⚠️ ÚLTIMA CONFIRMACIÓN\n\n¿Estás seguro de eliminar este cliente?')) return;
             
             try {
-                const res = await fetch(API_URL + '/api/clientes/' + clienteId, {
+                const res = await fetch(API_URL + '/api/clientes?id=' + clienteId, {
                     method: 'DELETE'
                 });
                 const data = await res.json();
