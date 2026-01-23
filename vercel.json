@@ -6,6 +6,13 @@
       "maxDuration": 10
     }
   },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/finangest.html",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
