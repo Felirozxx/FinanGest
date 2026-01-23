@@ -6,6 +6,12 @@
       "maxDuration": 10
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron-updates",
+      "schedule": "0 2 * * 1"
+    }
+  ],
   "redirects": [
     {
       "source": "/",

@@ -6098,6 +6098,8 @@
                 loader.style.display = 'none';
                 // Iniciar monitoreo del sistema
                 iniciarMonitoreoSistema();
+                // Inicializar sistema (solo primera vez)
+                inicializarSistema();
             } else {
                 // Restaurar sección guardada
                 const savedSection = localStorage.getItem('finangest_section');
@@ -11316,6 +11318,23 @@
         }
         
         // ========== FIN FUNCIONES DE MONITOREO DEL SISTEMA ==========
+        
+        // Inicializar sistema (solo primera vez)
+        async function inicializarSistema() {
+            try {
+                const res = await fetch(API_URL + '/api/init-system', { method: 'POST' });
+                const data = await res.json();
+                
+                if (data.success && !data.alreadyInitialized) {
+                    console.log('✅ Sistema inicializado con configuración por defecto');
+                    console.log('   - Actualizaciones automáticas: HABILITADAS');
+                    console.log('   - Verificación: Cada lunes a las 2 AM');
+                    console.log('   - Backup automático: SÍ');
+                }
+            } catch (error) {
+                console.error('Error inicializando sistema:', error);
+            }
+        }
 
         // Admin Functions
         async function renderAdminUsuarios() {
