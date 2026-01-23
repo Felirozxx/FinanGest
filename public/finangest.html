@@ -2566,6 +2566,73 @@
                     </div>
                 </div>
                 
+                <!-- Sistema de Actualizaciones de Seguridad -->
+                <div class="card-dark mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="fas fa-shield-alt me-2" style="color: var(--accent-cyan);"></i>Actualizaciones de Seguridad</h6>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary-custom" onclick="verificarActualizacionesSeguridad()">
+                                <i class="fas fa-sync-alt me-1"></i>Verificar Ahora
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Estado de Actualizaciones Automáticas -->
+                    <div class="mb-3 p-3" style="background: var(--bg-hover); border-radius: 8px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Actualizaciones Automáticas</strong>
+                                <p class="text-secondary mb-0" style="font-size: 0.85rem;">
+                                    Verifica y aplica actualizaciones de seguridad semanalmente
+                                </p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="autoUpdatesEnabled" onchange="toggleAutoUpdates()" style="width: 50px; height: 25px;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información de Última Verificación -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <div class="p-3" style="background: var(--bg-hover); border-radius: 8px; text-align: center;">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: var(--accent-green);" id="updatesAvailable">0</div>
+                                <small class="text-secondary">Actualizaciones Disponibles</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3" style="background: var(--bg-hover); border-radius: 8px; text-align: center;">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: var(--accent-red);" id="criticalUpdates">0</div>
+                                <small class="text-secondary">Críticas</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3" style="background: var(--bg-hover); border-radius: 8px; text-align: center;">
+                                <div style="font-size: 0.9rem; font-weight: 600;" id="lastUpdateCheck">-</div>
+                                <small class="text-secondary">Última Verificación</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de Actualizaciones Pendientes -->
+                    <div id="updatesList" style="max-height: 300px; overflow-y: auto;">
+                        <div class="text-center p-4 text-secondary">
+                            <i class="fas fa-shield-alt fa-2x mb-2"></i>
+                            <p>Haz clic en "Verificar Ahora" para buscar actualizaciones</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Configuración de Actualizaciones -->
+                    <div class="mt-3 p-3" style="background: var(--bg-hover); border-radius: 8px;">
+                        <small class="text-secondary">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>Frecuencia:</strong> Semanal | 
+                            <strong>Backup automático:</strong> Sí | 
+                            <strong>Notificaciones:</strong> Email al admin
+                        </small>
+                    </div>
+                </div>
+                
                 <!-- Registro de Actividad -->
                 <div class="card-dark">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -6300,6 +6367,7 @@
                 cargarConfigSeguridad();
                 cargarEstadisticasSeguridad();
                 cargarLogSeguridad();
+                cargarEstadoActualizaciones();
             }
             if (id === 'microseguros') {
                 renderMicroseguros();
@@ -7450,6 +7518,200 @@
             };
             localStorage.setItem('finangest_seguridad_config', JSON.stringify(segConfig));
         }
+        
+        // ========== FUNCIONES DE ACTUALIZACIONES DE SEGURIDAD ==========
+        
+        // Verificar actualizaciones de seguridad disponibles
+        async function verificarActualizacionesSeguridad() {
+            try {
+                showToast('🔍 Verificando actualizaciones...', 2000);
+                
+                const res = await fetch(API_URL + '/api/security-updates?action=check');
+                const data = await res.json();
+                
+                if (data.success) {
+                    // Actualizar contadores
+                    document.getElementById('updatesAvailable').textContent = data.updates.length;
+                    document.getElementById('criticalUpdates').textContent = data.criticalUpdates;
+                    document.getElementById('lastUpdateCheck').textContent = new Date().toLocaleString('es-ES', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Renderizar lista de actualizaciones
+                    renderActualizacionesDisponibles(data.updates);
+                    
+                    if (data.criticalUpdates > 0) {
+                        showToast(`⚠️ ${data.criticalUpdates} actualización(es) crítica(s) disponible(s)`, 5000);
+                    } else if (data.updates.length > 0) {
+                        showToast(`✅ ${data.updates.length} actualización(es) disponible(s)`, 3000);
+                    } else {
+                        showToast('✅ Sistema actualizado', 3000);
+                    }
+                }
+            } catch (error) {
+                console.error('Error verificando actualizaciones:', error);
+                showToast('⚠️ Error verificando actualizaciones', 3000);
+            }
+        }
+        
+        // Renderizar lista de actualizaciones disponibles
+        function renderActualizacionesDisponibles(updates) {
+            const container = document.getElementById('updatesList');
+            if (!container) return;
+            
+            if (updates.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-4" style="color: var(--accent-green);">
+                        <i class="fas fa-check-circle fa-3x mb-3"></i>
+                        <h6>Sistema Actualizado</h6>
+                        <p class="text-secondary mb-0">No hay actualizaciones pendientes</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            updates.forEach(update => {
+                const severityColor = {
+                    'critical': 'var(--accent-red)',
+                    'high': 'var(--accent-yellow)',
+                    'moderate': 'var(--accent-cyan)',
+                    'low': 'var(--text-secondary)'
+                }[update.severity] || 'var(--text-secondary)';
+                
+                const severityText = {
+                    'critical': 'CRÍTICA',
+                    'high': 'Alta',
+                    'moderate': 'Moderada',
+                    'low': 'Baja'
+                }[update.severity] || update.severity;
+                
+                html += `
+                    <div style="background: var(--bg-hover); border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 4px solid ${severityColor};">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div style="flex: 1;">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <strong>${update.package}</strong>
+                                    <span style="background: ${severityColor}; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">
+                                        ${severityText}
+                                    </span>
+                                </div>
+                                <p class="text-secondary mb-2" style="font-size: 0.9rem;">${update.description}</p>
+                                <small class="text-secondary">
+                                    <i class="fas fa-arrow-right me-1"></i>
+                                    ${update.currentVersion} → ${update.latestVersion}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                <div class="mt-3 text-center">
+                    <button class="btn btn-success-custom" onclick="aplicarActualizaciones()">
+                        <i class="fas fa-download me-2"></i>Aplicar Todas las Actualizaciones
+                    </button>
+                    <p class="text-secondary mt-2 mb-0" style="font-size: 0.85rem;">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Se creará un backup automático antes de actualizar
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        // Aplicar actualizaciones
+        async function aplicarActualizaciones() {
+            if (!confirm('¿Aplicar todas las actualizaciones?\n\nSe creará un backup automático antes de actualizar.')) {
+                return;
+            }
+            
+            try {
+                showToast('📦 Creando backup y aplicando actualizaciones...', 3000);
+                
+                const res = await fetch(API_URL + '/api/security-updates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'apply' })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('✅ Actualizaciones programadas. Se aplicarán en el próximo despliegue.', 5000);
+                    agregarEvento('Actualizaciones de seguridad aplicadas');
+                    verificarActualizacionesSeguridad();
+                } else {
+                    showToast('⚠️ Error aplicando actualizaciones', 3000);
+                }
+            } catch (error) {
+                console.error('Error aplicando actualizaciones:', error);
+                showToast('⚠️ Error aplicando actualizaciones', 3000);
+            }
+        }
+        
+        // Toggle actualizaciones automáticas
+        async function toggleAutoUpdates() {
+            const enabled = document.getElementById('autoUpdatesEnabled').checked;
+            
+            try {
+                const res = await fetch(API_URL + '/api/security-updates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action: enabled ? 'enable' : 'disable',
+                        config: {
+                            checkFrequency: 'weekly',
+                            autoApply: 'security-only',
+                            backupBeforeUpdate: true,
+                            notifyAdmin: true
+                        }
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast(enabled ? '✅ Actualizaciones automáticas habilitadas' : '⚠️ Actualizaciones automáticas deshabilitadas', 3000);
+                    agregarEvento(`Actualizaciones automáticas ${enabled ? 'habilitadas' : 'deshabilitadas'}`);
+                }
+            } catch (error) {
+                console.error('Error toggling auto updates:', error);
+                showToast('⚠️ Error cambiando configuración', 3000);
+                // Revertir el toggle
+                document.getElementById('autoUpdatesEnabled').checked = !enabled;
+            }
+        }
+        
+        // Cargar estado de actualizaciones al entrar a la sección
+        async function cargarEstadoActualizaciones() {
+            try {
+                const res = await fetch(API_URL + '/api/security-updates?action=status');
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('autoUpdatesEnabled').checked = data.autoUpdatesEnabled;
+                    
+                    if (data.lastUpdate) {
+                        document.getElementById('lastUpdateCheck').textContent = new Date(data.lastUpdate).toLocaleString('es-ES', {
+                            day: '2-digit',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando estado de actualizaciones:', error);
+            }
+        }
+        
+        // ========== FIN FUNCIONES DE ACTUALIZACIONES DE SEGURIDAD ==========
         
         function cargarConfigSeguridad() {
             const config = JSON.parse(localStorage.getItem('finangest_seguridad_config') || '{}');
