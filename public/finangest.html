@@ -3450,6 +3450,40 @@
         let currentUser = null;
         let clientes = [];
         let gastos = [];
+        
+        // Función para limpiar todos los modales y backdrops
+        function limpiarModalesYBackdrops() {
+            try {
+                // Cerrar todos los modales de Bootstrap
+                const modals = document.querySelectorAll('.modal.show');
+                modals.forEach(modal => {
+                    const bsModal = bootstrap.Modal.getInstance(modal);
+                    if (bsModal) {
+                        bsModal.hide();
+                    }
+                });
+                
+                // Eliminar todos los backdrops manualmente
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                
+                // Restaurar scroll del body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                
+                console.log('Modales y backdrops limpiados');
+            } catch (e) {
+                console.error('Error limpiando modales:', e);
+            }
+        }
+        
+        // Agregar listener global para ESC que limpie todo
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                limpiarModalesYBackdrops();
+            }
+        });
         let allUsers = [];
         let mainChart = null;
         let lastEditKeyStatus = null; // Para detectar cambios en la llave
@@ -14225,9 +14259,13 @@
                         showToast('✅ Cliente actualizado', 2000);
                     } else {
                         alert('Error al actualizar: ' + (data.error || 'Error desconocido'));
+                        limpiarModalesYBackdrops();
                     }
                 } catch (e) {
                     alert('Error al actualizar cliente: ' + e.message);
+                    limpiarModalesYBackdrops();
+                } finally {
+                    clienteEnProceso = false;
                 }
                 return;
             }
@@ -14398,7 +14436,8 @@
                 clienteEnProceso = false; // Permitir crear otro cliente
             } catch (e) { 
                 clienteEnProceso = false; // Permitir reintentar
-                alert('Error: ' + e.message); 
+                alert('Error: ' + e.message);
+                limpiarModalesYBackdrops(); // Limpiar modales en caso de error
             }
         }
 
