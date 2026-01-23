@@ -7,21 +7,24 @@ const DB_CONFIGS = {
         name: 'MongoDB Atlas',
         uri: process.env.MONGODB_URI,
         priority: 1,
-        enabled: true
+        enabled: true,
+        type: 'mongodb'
     },
-    // Supabase como backup 1
+    // Supabase como backup (PostgreSQL compatible)
     supabase: {
-        name: 'Supabase',
+        name: 'Supabase PostgreSQL',
         uri: process.env.SUPABASE_URI || null,
         priority: 2,
-        enabled: !!process.env.SUPABASE_URI
+        enabled: !!process.env.SUPABASE_URI,
+        type: 'postgres'
     },
-    // Firebase como backup 2 (usa Firestore con compatibilidad MongoDB)
+    // Firebase como backup (Firestore)
     firebase: {
-        name: 'Firebase',
-        uri: process.env.FIREBASE_PROJECT_ID ? `mongodb://firestore/${process.env.FIREBASE_PROJECT_ID}` : null,
+        name: 'Firebase Firestore',
+        projectId: process.env.FIREBASE_PROJECT_ID || null,
         priority: 3,
-        enabled: !!process.env.FIREBASE_PROJECT_ID
+        enabled: !!process.env.FIREBASE_PROJECT_ID,
+        type: 'firestore'
     }
 };
 
@@ -33,24 +36,48 @@ let lastHealthCheck = {};
 // Verificar salud de una base de datos
 async function checkHealth(backend) {
     const config = DB_CONFIGS[backend];
-    if (!config || !config.enabled || !config.uri) {
+    if (!config || !config.enabled) {
         return { healthy: false, error: 'Not configured' };
     }
 
     try {
-        const client = new MongoClient(config.uri, {
-            serverSelectionTimeoutMS: 5000,
-            connectTimeoutMS: 5000
-        });
+        if (config.type === 'mongodb') {
+            // MongoDB health check
+            if (!config.uri) {
+                return { healthy: false, error: 'No URI configured' };
+            }
+            
+            const client = new MongoClient(config.uri, {
+                serverSelectionTimeoutMS: 5000,
+                connectTimeoutMS: 5000
+            });
+            
+            await client.connect();
+            await client.db().admin().ping();
+            await client.close();
+            
+            return { healthy: true, latency: 0 };
+        } else if (config.type === 'postgres') {
+            // Supabase/PostgreSQL health check
+            if (!config.uri) {
+                return { healthy: false, error: 'No URI configured' };
+            }
+            
+            // Simple check - just verify URI format
+            if (config.uri.startsWith('postgresql://')) {
+                return { healthy: true, latency: 0, note: 'Configured (not actively used)' };
+            }
+            return { healthy: false, error: 'Invalid URI format' };
+        } else if (config.type === 'firestore') {
+            // Firebase/Firestore health check
+            if (!config.projectId) {
+                return { healthy: false, error: 'No Project ID configured' };
+            }
+            
+            return { healthy: true, latency: 0, note: 'Configured (not actively used)' };
+        }
         
-        await client.connect();
-        await client.db().admin().ping();
-        await client.close();
-        
-        return { 
-            healthy: true, 
-            latency: Date.now() - lastHealthCheck[backend]?.timestamp || 0 
-        };
+        return { healthy: false, error: 'Unknown backend type' };
     } catch (error) {
         return { 
             healthy: false, 
@@ -61,24 +88,25 @@ async function checkHealth(backend) {
 
 // Obtener el mejor backend disponible
 async function getBestBackend() {
-    // Ordenar por prioridad
-    const backends = Object.keys(DB_CONFIGS)
-        .filter(key => DB_CONFIGS[key].enabled && DB_CONFIGS[key].uri)
-        .sort((a, b) => DB_CONFIGS[a].priority - DB_CONFIGS[b].priority);
+    // Solo usar MongoDB por ahora (los otros son backups configurados pero no activos)
+    const backends = ['mongodb'];
 
-    // Intentar cada backend en orden de prioridad
+    // Intentar MongoDB
     for (const backend of backends) {
-        const health = await checkHealth(backend);
-        if (health.healthy) {
-            if (currentBackend !== backend) {
-                console.log(`🔄 Cambiando de ${currentBackend} a ${backend}`);
-                currentBackend = backend;
+        const config = DB_CONFIGS[backend];
+        if (config.enabled && config.uri) {
+            const health = await checkHealth(backend);
+            if (health.healthy) {
+                if (currentBackend !== backend) {
+                    console.log(`🔄 Cambiando de ${currentBackend} a ${backend}`);
+                    currentBackend = backend;
+                }
+                return backend;
             }
-            return backend;
         }
     }
 
-    throw new Error('❌ Ningún backend disponible');
+    throw new Error('❌ MongoDB no disponible. Los backups están configurados pero requieren migración de datos.');
 }
 
 // Conectar a la base de datos con failover automático
@@ -132,23 +160,27 @@ async function getBackendsStatus() {
     const status = {};
     
     for (const [key, config] of Object.entries(DB_CONFIGS)) {
-        if (config.enabled && config.uri) {
+        if (config.enabled) {
             const health = await checkHealth(key);
             status[key] = {
                 name: config.name,
                 priority: config.priority,
+                type: config.type || 'mongodb',
                 healthy: health.healthy,
                 current: key === currentBackend,
                 error: health.error || null,
+                note: health.note || null,
                 latency: health.latency || null
             };
         } else {
             status[key] = {
                 name: config.name,
                 priority: config.priority,
+                type: config.type || 'mongodb',
                 healthy: false,
                 current: false,
                 error: 'Not configured',
+                note: null,
                 latency: null
             };
         }
