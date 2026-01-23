@@ -6238,6 +6238,13 @@
             if (id === 'microseguros') {
                 renderMicroseguros();
             }
+            
+            // Reinicializar Flatpickr para asegurar que todos los calendarios se vean correctamente
+            setTimeout(() => {
+                if (typeof establecerLimitesFechaTodosCalendarios === 'function') {
+                    establecerLimitesFechaTodosCalendarios();
+                }
+            }, 100);
         }
 
         function toggleSidebar() {
