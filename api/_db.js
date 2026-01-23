@@ -1,21 +1,14 @@
-const { MongoClient } = require('mongodb');
+// Sistema de base de datos con failover automático
+const dbManager = require('./_db-manager');
 
-let cachedClient = null;
-let cachedDb = null;
-
+// Exportar la función de conexión con failover
 async function connectToDatabase() {
-    if (cachedClient && cachedDb) {
-        return { client: cachedClient, db: cachedDb };
-    }
-
-    const client = new MongoClient(process.env.MONGODB_URI);
-    await client.connect();
-    const db = client.db('finangest');
-
-    cachedClient = client;
-    cachedDb = db;
-
-    return { client, db };
+    return await dbManager.connectToDatabase();
 }
 
-module.exports = { connectToDatabase };
+module.exports = { 
+    connectToDatabase,
+    getBackendsStatus: dbManager.getBackendsStatus,
+    switchBackend: dbManager.switchBackend,
+    checkHealth: dbManager.checkHealth
+};
