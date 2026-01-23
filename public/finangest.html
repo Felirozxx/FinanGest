@@ -8586,18 +8586,32 @@
                 return;
             }
             
+            // Obtener el botón y cambiar a loading
+            const btnAgregar = input.nextElementSibling;
+            const iconoOriginal = btnAgregar.innerHTML;
+            btnAgregar.disabled = true;
+            btnAgregar.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
             // Verificar si tiene contraseña de caja configurada
             try {
                 const checkRes = await fetch(API_URL + '/api/password-caja?action=tiene-password&userId=' + currentUser?.id);
                 const checkData = await checkRes.json();
                 
                 if (checkData.success && checkData.hasPassword) {
+                    // Restaurar botón antes de pedir contraseña
+                    btnAgregar.disabled = false;
+                    btnAgregar.innerHTML = iconoOriginal;
+                    
                     // Pedir contraseña
                     const password = prompt('🔐 Ingresa la contraseña de caja:');
                     if (!password) {
                         showToast('❌ Operación cancelada', 2000);
                         return;
                     }
+                    
+                    // Volver a poner loading
+                    btnAgregar.disabled = true;
+                    btnAgregar.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     
                     // Verificar contraseña
                     const res = await fetch(API_URL + '/api/password-caja?action=verificar', {
@@ -8611,11 +8625,15 @@
                     const data = await res.json();
                     
                     if (!data.success || !data.valid) {
+                        btnAgregar.disabled = false;
+                        btnAgregar.innerHTML = iconoOriginal;
                         showToast('❌ Contraseña incorrecta', 2000);
                         return;
                     }
                 } else {
                     // NO tiene contraseña configurada - OBLIGAR a crear una primero
+                    btnAgregar.disabled = false;
+                    btnAgregar.innerHTML = iconoOriginal;
                     showToast('⚠️ Debes configurar una contraseña de caja primero', 3000);
                     input.value = ''; // Limpiar el input
                     setTimeout(() => {
@@ -8625,6 +8643,8 @@
                 }
             } catch (e) {
                 console.error('Error verificando contraseña:', e);
+                btnAgregar.disabled = false;
+                btnAgregar.innerHTML = iconoOriginal;
                 showToast('❌ Error verificando contraseña. Configura una contraseña primero.', 3000);
                 return;
             }
@@ -8641,6 +8661,10 @@
             
             // Limpiar input
             input.value = '';
+            
+            // Restaurar botón
+            btnAgregar.disabled = false;
+            btnAgregar.innerHTML = iconoOriginal;
             
             // Recalcular cajas
             calcularCajaDelDia();
