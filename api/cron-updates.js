@@ -1,6 +1,7 @@
 // Cron job para verificar actualizaciones automáticamente cada semana
 // Este endpoint se ejecutará automáticamente mediante Vercel Cron
 const { connectToDatabase } = require('./_db');
+const { syncToSupabase } = require('./sync-backends');
 
 module.exports = async (req, res) => {
     // Verificar que la petición viene de Vercel Cron
@@ -24,6 +25,19 @@ module.exports = async (req, res) => {
         }
 
         console.log('🔍 Verificando actualizaciones de seguridad...');
+
+        // Sincronizar datos a Supabase (backup automático)
+        console.log('🔄 Sincronizando datos a Supabase...');
+        try {
+            const syncResult = await syncToSupabase();
+            if (syncResult.success) {
+                console.log(`✅ Backup automático: ${syncResult.synced} documentos sincronizados`);
+            } else {
+                console.log(`⚠️ Backup automático falló: ${syncResult.error}`);
+            }
+        } catch (syncError) {
+            console.error('Error en sincronización automática:', syncError);
+        }
 
         // Verificar actualizaciones disponibles
         const updates = await verificarActualizacionesNPM();
