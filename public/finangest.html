@@ -11219,7 +11219,44 @@
         
         // Cambiar manualmente de backend
         async function cambiarBackend(backend) {
-            if (!confirm(`¿Cambiar al backend ${backend}?`)) return;
+            // Advertencia especial para backends no-MongoDB
+            if (backend !== 'mongodb') {
+                const confirmar = confirm(
+                    `⚠️ ADVERTENCIA: Cambiar a ${backend}\n\n` +
+                    `Esto cambiará tu base de datos activa.\n` +
+                    `¿Quieres sincronizar los datos primero?\n\n` +
+                    `Presiona OK para sincronizar y cambiar\n` +
+                    `Presiona Cancelar para abortar`
+                );
+                
+                if (!confirmar) return;
+                
+                // Sincronizar datos primero
+                showToast('🔄 Sincronizando datos...', 5000);
+                
+                try {
+                    const syncRes = await fetch(API_URL + '/api/sync-backends?action=to-supabase', {
+                        headers: { 
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    
+                    const syncData = await syncRes.json();
+                    
+                    if (!syncData.success) {
+                        showToast(`⚠️ Error sincronizando: ${syncData.error}`, 5000);
+                        return;
+                    }
+                    
+                    showToast(`✅ ${syncData.synced} documentos sincronizados`, 3000);
+                } catch (error) {
+                    console.error('Error sincronizando:', error);
+                    showToast('⚠️ Error en sincronización', 3000);
+                    return;
+                }
+            } else {
+                if (!confirm(`¿Cambiar al backend ${backend}?`)) return;
+            }
             
             try {
                 const res = await fetch(API_URL + '/api/system-health', {
