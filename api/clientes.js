@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
             const { userId } = req.query;
             const query = userId ? { creadoPor: userId } : {};
             const clientes = await db.collection('clientes').find(query).toArray();
-            return res.json(clientes.map(c => ({ ...c, id: c._id })));
+            return res.json(clientes.map(c => ({ ...c, id: c._id.toString() })));
         }
 
         // POST - Crear cliente
@@ -30,28 +30,52 @@ module.exports = async (req, res) => {
             const result = await db.collection('clientes').insertOne(cliente);
             return res.json({ 
                 success: true, 
-                id: result.insertedId, 
-                cliente: { ...cliente, id: result.insertedId } 
+                id: result.insertedId.toString(), 
+                cliente: { ...cliente, id: result.insertedId.toString() } 
             });
         }
 
         // PUT - Actualizar cliente
         if (req.method === 'PUT') {
             const { id } = req.query;
+            
+            if (!id) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'ID de cliente requerido' 
+                });
+            }
+            
+            console.log('Actualizando cliente:', id);
+            
             const updateData = { ...req.body };
             delete updateData._id;
             delete updateData.id;
             
-            await db.collection('clientes').updateOne(
+            const result = await db.collection('clientes').updateOne(
                 { _id: new ObjectId(id) },
                 { $set: updateData }
             );
-            return res.json({ success: true });
+            
+            console.log('Resultado actualización:', result);
+            
+            return res.json({ 
+                success: result.modifiedCount > 0 || result.matchedCount > 0,
+                message: result.modifiedCount > 0 ? 'Cliente actualizado' : 'Cliente no encontrado o sin cambios'
+            });
         }
 
         // DELETE - Eliminar cliente
         if (req.method === 'DELETE') {
             const { id } = req.query;
+            
+            if (!id) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'ID de cliente requerido' 
+                });
+            }
+            
             await db.collection('clientes').deleteOne({ _id: new ObjectId(id) });
             return res.json({ success: true });
         }
@@ -59,6 +83,10 @@ module.exports = async (req, res) => {
         res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
         console.error('Error en clientes:', error);
-        res.status(500).json({ error: 'Error en operación de clientes' });
+        return res.status(500).json({ 
+            success: false,
+            error: 'Error en operación de clientes',
+            details: error.message 
+        });
     }
 };
