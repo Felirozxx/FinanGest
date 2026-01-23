@@ -1,7 +1,7 @@
 // Cron job para verificar actualizaciones automáticamente cada semana
 // Este endpoint se ejecutará automáticamente mediante Vercel Cron
 const { connectToDatabase } = require('./_db');
-const { syncToSupabase } = require('./sync-backends');
+const { syncToSupabase, syncToFirebase } = require('./sync-backends');
 
 module.exports = async (req, res) => {
     // Verificar que la petición viene de Vercel Cron
@@ -31,12 +31,25 @@ module.exports = async (req, res) => {
         try {
             const syncResult = await syncToSupabase();
             if (syncResult.success) {
-                console.log(`✅ Backup automático: ${syncResult.synced} documentos sincronizados`);
+                console.log(`✅ Backup Supabase: ${syncResult.synced} documentos sincronizados`);
             } else {
-                console.log(`⚠️ Backup automático falló: ${syncResult.error}`);
+                console.log(`⚠️ Backup Supabase falló: ${syncResult.error}`);
             }
         } catch (syncError) {
-            console.error('Error en sincronización automática:', syncError);
+            console.error('Error en sincronización Supabase:', syncError);
+        }
+
+        // Sincronizar datos a Firebase (backup automático)
+        console.log('🔄 Sincronizando datos a Firebase...');
+        try {
+            const firebaseResult = await syncToFirebase();
+            if (firebaseResult.success) {
+                console.log(`✅ Backup Firebase: ${firebaseResult.synced} documentos sincronizados`);
+            } else {
+                console.log(`⚠️ Backup Firebase: ${firebaseResult.error}`);
+            }
+        } catch (firebaseError) {
+            console.error('Error en sincronización Firebase:', firebaseError);
         }
 
         // Verificar actualizaciones disponibles

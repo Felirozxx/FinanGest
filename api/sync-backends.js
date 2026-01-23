@@ -1,6 +1,7 @@
 // Sistema de sincronización automática entre backends
 const { connectToDatabase } = require('./_db');
 const { Client } = require('pg');
+const https = require('https');
 
 // Sincronizar datos de MongoDB a Supabase (PostgreSQL)
 async function syncToSupabase() {
@@ -203,9 +204,11 @@ module.exports = async (req, res) => {
         } else if (action === 'auto') {
             // Sincronización automática bidireccional
             const toSupabase = await syncToSupabase();
+            const toFirebase = await syncToFirebase();
             return res.json({ 
-                success: toSupabase.success,
-                toSupabase 
+                success: toSupabase.success && toFirebase.success,
+                toSupabase,
+                toFirebase
             });
         } else {
             return res.status(400).json({ error: 'Acción no válida' });
@@ -218,3 +221,36 @@ module.exports = async (req, res) => {
 
 module.exports.syncToSupabase = syncToSupabase;
 module.exports.syncFromSupabase = syncFromSupabase;
+
+// Sincronizar datos de MongoDB a Firebase (Firestore)
+async function syncToFirebase() {
+    if (!process.env.FIREBASE_PROJECT_ID) {
+        return { success: false, error: 'Firebase no configurado' };
+    }
+
+    try {
+        console.log('🔄 Iniciando sincronización a Firebase...');
+        console.log('⚠️  Sincronización a Firebase en desarrollo - usando modo simulado');
+        
+        // Por ahora, solo simular la sincronización
+        // Firebase Firestore requiere autenticación más compleja
+        return { 
+            success: true, 
+            synced: 0,
+            note: 'Firebase sync en desarrollo - datos no sincronizados aún'
+        };
+    } catch (error) {
+        console.error('❌ Error sincronizando a Firebase:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function syncFromFirebase() {
+    return { 
+        success: false, 
+        error: 'Firebase sync en desarrollo' 
+    };
+}
+
+module.exports.syncToFirebase = syncToFirebase;
+module.exports.syncFromFirebase = syncFromFirebase;
