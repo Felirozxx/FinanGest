@@ -8420,16 +8420,14 @@
                             }
                         ],
                         onChange: function(selectedDates, dateStr, instance) {
-                            // Validación adicional
+                            // Validación adicional - solo evitar fechas futuras
                             if (selectedDates.length > 0) {
                                 const selected = selectedDates[0];
                                 if (selected > hoy) {
                                     instance.clear();
                                     showToast('⚠️ No puedes seleccionar fechas futuras', 3000);
-                                } else if (selected < fechaMinima) {
-                                    instance.clear();
-                                    showToast('⚠️ No puedes seleccionar fechas anteriores a tu registro', 3000);
                                 }
+                                // Permitir fechas pasadas para ver historial
                             }
                         },
                         onReady: function(selectedDates, dateStr, instance) {
