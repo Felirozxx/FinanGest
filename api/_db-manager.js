@@ -9,19 +9,19 @@ const DB_CONFIGS = {
         priority: 1,
         enabled: true
     },
-    // Supabase se agregará cuando se configure
+    // Supabase como backup 1
     supabase: {
         name: 'Supabase',
         uri: process.env.SUPABASE_URI || null,
         priority: 2,
-        enabled: false
+        enabled: !!process.env.SUPABASE_URI
     },
-    // Firebase se agregará cuando se configure
+    // Firebase como backup 2 (usa Firestore con compatibilidad MongoDB)
     firebase: {
         name: 'Firebase',
-        uri: process.env.FIREBASE_URI || null,
+        uri: process.env.FIREBASE_PROJECT_ID ? `mongodb://firestore/${process.env.FIREBASE_PROJECT_ID}` : null,
         priority: 3,
-        enabled: false
+        enabled: !!process.env.FIREBASE_PROJECT_ID
     }
 };
 
