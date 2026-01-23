@@ -15592,26 +15592,38 @@
             
             // Hoy
             const microseguroHoy = clientesConMicroseguro
-                .filter(c => c.fechaCreacion && c.fechaCreacion.split('T')[0] === hoy)
+                .filter(c => {
+                    const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                    return fechaStr && fechaStr.split('T')[0] === hoy;
+                })
                 .reduce((s, c) => s + (c.microseguro || 0), 0);
             
             // Últimos 7 días
             const hace7Dias = new Date(ahora);
             hace7Dias.setDate(hace7Dias.getDate() - 7);
             const microseguroSemana = clientesConMicroseguro
-                .filter(c => c.fechaCreacion && new Date(c.fechaCreacion) >= hace7Dias)
+                .filter(c => {
+                    const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                    return fechaStr && new Date(fechaStr) >= hace7Dias;
+                })
                 .reduce((s, c) => s + (c.microseguro || 0), 0);
             
             // Este mes
             const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
             const microseguroMes = clientesConMicroseguro
-                .filter(c => c.fechaCreacion && new Date(c.fechaCreacion) >= inicioMes)
+                .filter(c => {
+                    const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                    return fechaStr && new Date(fechaStr) >= inicioMes;
+                })
                 .reduce((s, c) => s + (c.microseguro || 0), 0);
             
             // Este año
             const inicioAnio = new Date(ahora.getFullYear(), 0, 1);
             const microseguroAnio = clientesConMicroseguro
-                .filter(c => c.fechaCreacion && new Date(c.fechaCreacion) >= inicioAnio)
+                .filter(c => {
+                    const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                    return fechaStr && new Date(fechaStr) >= inicioAnio;
+                })
                 .reduce((s, c) => s + (c.microseguro || 0), 0);
             
             // Actualizar estadísticas
@@ -15633,24 +15645,31 @@
             // Filtrar por rango de fechas si está seleccionado
             if (fechaInicio && fechaFin) {
                 clientesFiltrados = clientesFiltrados.filter(c => {
-                    if (!c.fechaCreacion) return false;
-                    const fecha = c.fechaCreacion.split('T')[0];
+                    const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                    if (!fechaStr) return false;
+                    const fecha = fechaStr.split('T')[0];
                     return fecha >= fechaInicio && fecha <= fechaFin;
                 });
             } else if (fechaInicio) {
                 clientesFiltrados = clientesFiltrados.filter(c => {
-                    if (!c.fechaCreacion) return false;
-                    return c.fechaCreacion.split('T')[0] >= fechaInicio;
+                    const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                    if (!fechaStr) return false;
+                    return fechaStr.split('T')[0] >= fechaInicio;
                 });
             } else if (fechaFin) {
                 clientesFiltrados = clientesFiltrados.filter(c => {
-                    if (!c.fechaCreacion) return false;
-                    return c.fechaCreacion.split('T')[0] <= fechaFin;
+                    const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                    if (!fechaStr) return false;
+                    return fechaStr.split('T')[0] <= fechaFin;
                 });
             }
             
             // Ordenar por fecha más reciente
-            clientesFiltrados.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+            clientesFiltrados.sort((a, b) => {
+                const fechaA = a.fechaInicio || a.fechaCreacion || a.fechaRegistro || a.fecha || '';
+                const fechaB = b.fechaInicio || b.fechaCreacion || b.fechaRegistro || b.fecha || '';
+                return new Date(fechaB) - new Date(fechaA);
+            });
             
             const container = document.getElementById('microsegurosLista');
             
@@ -15660,7 +15679,8 @@
             }
             
             container.innerHTML = clientesFiltrados.map(c => {
-                const fecha = c.fechaCreacion ? new Date(c.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A';
+                const fechaStr = c.fechaInicio || c.fechaCreacion || c.fechaRegistro || c.fecha;
+                const fecha = fechaStr ? new Date(fechaStr).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A';
                 return `
                     <tr>
                         <td>
