@@ -18316,6 +18316,46 @@
             </div>
         </div>
     </div>
+
+    <!-- Botón Scroll to Top -->
+    <button id="scrollToTopBtn" onclick="scrollToTop()" style="display: none; position: fixed; bottom: 30px; right: 30px; z-index: 9998; background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,212,255,0.4); transition: all 0.3s ease;">
+        <i class="fas fa-arrow-up" style="color: #fff; font-size: 1.2rem;"></i>
+    </button>
+
+    <script>
+        // Mostrar/ocultar botón de scroll to top
+        window.addEventListener('scroll', function() {
+            const scrollBtn = document.getElementById('scrollToTopBtn');
+            if (window.pageYOffset > 300) {
+                scrollBtn.style.display = 'block';
+            } else {
+                scrollBtn.style.display = 'none';
+            }
+        });
+
+        // Función para scroll suave hacia arriba
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Efecto hover para el botón
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollBtn = document.getElementById('scrollToTopBtn');
+            if (scrollBtn) {
+                scrollBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = '0 6px 20px rgba(0,212,255,0.6)';
+                });
+                scrollBtn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = '0 4px 15px rgba(0,212,255,0.4)';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
  
