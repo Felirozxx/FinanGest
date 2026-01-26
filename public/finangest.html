@@ -4917,7 +4917,7 @@
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            if (!email || !password) return alert('Preencha todos os campos');
+            if (!email || !password) return alert('Completa todos los campos');
             
             // Mostrar estado de carga inmediatamente
             const btn = document.getElementById('btnLogin');
@@ -5652,10 +5652,10 @@
             const recoveryEmail = document.getElementById('regRecoveryEmail').value;
             const password = document.getElementById('regPassword').value;
             const acceptTerms = document.getElementById('acceptTerms').checked;
-            if (!nombre || !username || !email || !password) return alert('Preencha todos os campos');
-            if (username.includes(' ')) return alert('O nome de usuário não pode ter espaços');
-            if (password.length < 6) return alert('A senha deve ter pelo menos 6 caracteres');
-            if (!acceptTerms) return alert('Você deve aceitar os Termos de Uso e a Política de Privacidade');
+            if (!nombre || !username || !email || !password) return alert('Completa todos los campos');
+            if (username.includes(' ')) return alert('El nombre de usuario no puede tener espacios');
+            if (password.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
+            if (!acceptTerms) return alert('Debes aceptar los Términos de Uso y la Política de Privacidad');
             // Email de recuperación es OBLIGATORIO
             if (!recoveryEmail || !recoveryEmail.includes('@')) {
                 return alert(currentLang === 'es' ? 
@@ -7171,7 +7171,7 @@
             const confirmar = document.getElementById('passConfirmar').value;
             
             if (!actual || !nueva || !confirmar) {
-                return alert('Preencha todos os campos');
+                return alert('Completa todos los campos');
             }
             if (nueva.length < 6) {
                 return alert('A nova senha deve ter pelo menos 6 caracteres');
@@ -11134,6 +11134,41 @@
         let sistemEventos = [];
         let sistemaMonitorInterval = null;
         
+        // Sincronizar datos manualmente
+        async function sincronizarDatos() {
+            const confirmar = confirm(
+                '¿Sincronizar datos de MongoDB a Supabase?\n\n' +
+                'Esto copiará todos los datos actuales a Supabase.\n' +
+                'El proceso puede tardar unos segundos.'
+            );
+            
+            if (!confirmar) return;
+            
+            showToast('🔄 Sincronizando datos a Supabase...', 5000);
+            
+            try {
+                const syncRes = await fetch(API_URL + '/api/sync-backends?action=to-supabase', {
+                    headers: { 
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const syncData = await syncRes.json();
+                
+                if (syncData.success) {
+                    showToast(`✅ ${syncData.synced} documentos sincronizados correctamente`, 4000);
+                    agregarEvento(`Sincronización exitosa: ${syncData.synced} documentos`);
+                } else {
+                    showToast(`❌ Error: ${syncData.error}`, 5000);
+                    agregarEvento(`Error en sincronización: ${syncData.error}`);
+                }
+            } catch (error) {
+                console.error('Error sincronizando:', error);
+                showToast('❌ Error en la sincronización', 3000);
+                agregarEvento(`Error en sincronización: ${error.message}`);
+            }
+        }
+        
         // Verificar estado de todos los backends
         async function verificarBackends() {
             try {
@@ -11219,44 +11254,14 @@
         
         // Cambiar manualmente de backend
         async function cambiarBackend(backend) {
-            // Advertencia especial para backends no-MongoDB
-            if (backend !== 'mongodb') {
-                const confirmar = confirm(
-                    `⚠️ ADVERTENCIA: Cambiar a ${backend}\n\n` +
-                    `Esto cambiará tu base de datos activa.\n` +
-                    `¿Quieres sincronizar los datos primero?\n\n` +
-                    `Presiona OK para sincronizar y cambiar\n` +
-                    `Presiona Cancelar para abortar`
-                );
-                
-                if (!confirmar) return;
-                
-                // Sincronizar datos primero
-                showToast('🔄 Sincronizando datos...', 5000);
-                
-                try {
-                    const syncRes = await fetch(API_URL + '/api/sync-backends?action=to-supabase', {
-                        headers: { 
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
-                    });
-                    
-                    const syncData = await syncRes.json();
-                    
-                    if (!syncData.success) {
-                        showToast(`⚠️ Error sincronizando: ${syncData.error}`, 5000);
-                        return;
-                    }
-                    
-                    showToast(`✅ ${syncData.synced} documentos sincronizados`, 3000);
-                } catch (error) {
-                    console.error('Error sincronizando:', error);
-                    showToast('⚠️ Error en sincronización', 3000);
-                    return;
-                }
-            } else {
-                if (!confirm(`¿Cambiar al backend ${backend}?`)) return;
-            }
+            // Confirmación simple
+            const confirmar = confirm(
+                `¿Cambiar al backend ${backend}?\n\n` +
+                `El sistema cambiará la base de datos activa.\n` +
+                `Puedes sincronizar los datos manualmente después.`
+            );
+            
+            if (!confirmar) return;
             
             try {
                 const res = await fetch(API_URL + '/api/system-health', {
@@ -17691,83 +17696,62 @@
                         alert('Error: ' + (data.error || 'No se pudo guardar'));
                     }
                 } else {
-                    // Crear nueva cartera
-                    const carterasActuales = carteras.length;
-                    const carterasPagadas = currentUser.carterasPagadas || 1;
+                    // Crear nueva cartera - Backend verificará el pago
+                    console.log('🔵 Intentando crear cartera:', nombre);
                     
-                    console.log('🔵 Creando cartera:', { currentUser, carterasActuales, carterasPagadas });
+                    res = await fetch(API_URL + '/api/carteras?action=crear', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: currentUser.id || currentUser._id,
+                            nombre,
+                            descripcion,
+                            color,
+                            esPrincipal: carteras.length === 0
+                        })
+                    });
                     
-                    // Si tiene carteras disponibles (pagadas pero no creadas), crear sin pago
-                    if (carterasActuales < carterasPagadas) {
-                        // Crear cartera sin pago (ya pagó por ella)
-                        res = await fetch(API_URL + '/api/carteras?action=crear', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                userId: currentUser.id || currentUser._id,
-                                nombre,
-                                descripcion,
-                                color,
-                                esPrincipal: carterasActuales === 0,
-                                pendientePago: false
-                            })
-                        });
+                    const data = await res.json();
+                    
+                    // Si el backend rechaza por falta de pago (403)
+                    if (res.status === 403 || data.needsPayment) {
+                        console.log('❌ Backend rechazó: Requiere pago');
+                        bootstrap.Modal.getInstance(document.getElementById('carteraModal')).hide();
+                        btn.innerHTML = btnTextoOriginal;
+                        btn.disabled = false;
+                        carteraEnProceso = false;
                         
-                        const data = await res.json();
-                        if (data.success) {
-                            bootstrap.Modal.getInstance(document.getElementById('carteraModal')).hide();
-                            await cargarCarteras();
-                            actualizarMenuSegunCarteras();
-                            if (data.id) {
-                                seleccionarCartera(data.id);
-                            }
-                            updateStats();
-                            renderClientes();
-                            renderChart();
-                            btn.innerHTML = btnTextoOriginal;
-                            btn.disabled = false;
-                            showToast(`✅ Cartera "${nombre}" creada (${carterasActuales + 1}/${carterasPagadas} usadas)`, 3000);
-                        } else {
-                            carteraEnProceso = false;
-                            btn.innerHTML = btnTextoOriginal;
-                            btn.disabled = false;
-                            alert('Error: ' + (data.error || 'No se pudo guardar'));
-                        }
+                        // Guardar datos para crear después del pago
+                        carteraNuevaPendiente = {
+                            nombre,
+                            descripcion,
+                            color
+                        };
+                        
+                        // Mostrar modal de pago
+                        mostrarModalPagoCarteraNueva(null, nombre);
+                        return;
+                    }
+                    
+                    // Si se creó exitosamente
+                    if (data.success) {
+                        console.log('✅ Cartera creada exitosamente');
+                        bootstrap.Modal.getInstance(document.getElementById('carteraModal')).hide();
+                        await cargarCarteras();
+                        actualizarMenuSegunCarteras();
+                        updateStats();
+                        renderClientes();
+                        renderChart();
+                        btn.innerHTML = btnTextoOriginal;
+                        btn.disabled = false;
+                        showToast(`✅ Cartera "${nombre}" creada. Selecciónala para configurar contraseña.`, 3000);
                     } else {
-                        // Cartera adicional - requiere pago
-                        // Primero crear la cartera como pendiente de pago
-                        res = await fetch(API_URL + '/api/carteras?action=crear', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                userId: currentUser.id,
-                                nombre,
-                                descripcion,
-                                color,
-                                esPrincipal: false,
-                                pendientePago: true
-                            })
-                        });
-                        
-                        const data = await res.json();
-                        if (data.success) {
-                            bootstrap.Modal.getInstance(document.getElementById('carteraModal')).hide();
-                            btn.innerHTML = btnTextoOriginal;
-                            btn.disabled = false;
-                            // Guardar datos de la cartera pendiente
-                            carteraNuevaPendiente = {
-                                id: data.id,
-                                nombre,
-                                color
-                            };
-                            // Mostrar modal de pago para esta cartera
-                            mostrarModalPagoCarteraNueva(data.id, nombre);
-                        } else {
-                            carteraEnProceso = false;
-                            btn.innerHTML = btnTextoOriginal;
-                            btn.disabled = false;
-                            alert('Error: ' + (data.error || 'No se pudo guardar'));
-                        }
+                        // Otro tipo de error
+                        console.log('❌ Error creando cartera:', data.error);
+                        carteraEnProceso = false;
+                        btn.innerHTML = btnTextoOriginal;
+                        btn.disabled = false;
+                        alert('Error: ' + (data.error || 'No se pudo guardar'));
                     }
                 }
             } catch (e) {
@@ -17790,9 +17774,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         userId: currentUser.id,
-                        carteraId: carteraId,
                         nombre: currentUser.nombre,
-                        email: currentUser.email
+                        email: currentUser.email,
+                        nombreCartera: nombreCartera
                     })
                 });
                 
@@ -17802,38 +17786,62 @@
                     document.getElementById('qrCarteraNueva').innerHTML = `<img src="data:image/png;base64,${data.qrCodeBase64}" style="width: 200px; height: 200px;">`;
                     document.getElementById('pixCodigoCartera').value = data.qrCode;
                     
+                    // Guardar paymentId para verificación
+                    carteraNuevaPendiente.paymentId = data.paymentId;
+                    
                     // Iniciar verificación automática
                     if (pagoCarteraInterval) clearInterval(pagoCarteraInterval);
-                    pagoCarteraInterval = setInterval(() => verificarPagoCarteraNueva(data.paymentId, carteraId), 5000);
+                    pagoCarteraInterval = setInterval(() => verificarPagoCarteraNueva(data.paymentId), 5000);
                 } else {
                     document.getElementById('qrCarteraNueva').innerHTML = `<p style="color: var(--accent-red);">Error: ${data.error}</p>`;
                 }
             } catch (e) {
+                console.error('Error generando PIX:', e);
                 document.getElementById('qrCarteraNueva').innerHTML = `<p style="color: var(--accent-red);">Error de conexión</p>`;
             }
         }
         
         // Verificar pago de cartera nueva
-        async function verificarPagoCarteraNueva(paymentId, carteraId) {
+        async function verificarPagoCarteraNueva(paymentId) {
             try {
                 const res = await fetch(API_URL + '/api/verificar-pago-cartera', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentId, carteraId, userId: currentUser.id })
+                    body: JSON.stringify({ 
+                        paymentId, 
+                        userId: currentUser.id
+                    })
                 });
                 
                 const data = await res.json();
                 if (data.paid) {
                     if (pagoCarteraInterval) clearInterval(pagoCarteraInterval);
-                    cerrarModalPagoCartera();
-                    showToast('✅ ¡Cartera activada! Expira en 30 días.', 4000);
-                    await cargarCarteras();
-                    actualizarMenuSegunCarteras();
-                    if (carteraNuevaPendiente && carteraNuevaPendiente.id) {
-                        seleccionarCartera(carteraNuevaPendiente.id);
+                    
+                    // Crear la cartera ahora que se pagó
+                    const crearRes = await fetch(API_URL + '/api/carteras?action=crear', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: currentUser.id,
+                            nombre: carteraNuevaPendiente.nombre,
+                            descripcion: carteraNuevaPendiente.descripcion,
+                            color: carteraNuevaPendiente.color,
+                            esPrincipal: false
+                        })
+                    });
+                    
+                    const crearData = await crearRes.json();
+                    if (crearData.success) {
+                        cerrarModalPagoCartera();
+                        showToast('✅ ¡Cartera creada! Selecciónala para configurar contraseña.', 4000);
+                        await cargarCarteras();
+                        actualizarMenuSegunCarteras();
+                        // NO seleccionar automáticamente - dejar que el usuario la seleccione manualmente
+                        // if (crearData.id) {
+                        //     seleccionarCartera(crearData.id);
+                        // }
+                        carteraNuevaPendiente = null;
                     }
-                    carteraNuevaPendiente = null;
-                    carteraEnProceso = false;
                 }
             } catch (e) {
                 console.error('Error verificando pago:', e);

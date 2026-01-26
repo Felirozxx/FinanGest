@@ -56,17 +56,59 @@ module.exports = async (req, res) => {
 
         // POST - Crear nueva cartera
         if (req.method === 'POST' && action === 'crear') {
+            const userId = body.userId || body.creadoPor;
+            
+            // VERIFICAR PAGO: Obtener usuario y contar carteras existentes
+            const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+            if (!user) {
+                return res.status(404).json({ 
+                    success: false, 
+                    error: 'Usuario no encontrado' 
+                });
+            }
+            
+            // Contar TODAS las carteras activas del usuario (no eliminadas)
+            const carterasActuales = await db.collection('carteras').countDocuments({ 
+                creadoPor: userId, 
+                eliminada: false
+            });
+            
+            // Verificar si tiene carteras pagadas disponibles
+            const carterasPagadas = user.carterasPagadas || 0; // Por defecto 0 - TODAS requieren pago
+            
+            console.log('🔵 Verificación de pago:', { 
+                userId, 
+                userName: user.nombre,
+                carterasActuales, 
+                carterasPagadas,
+                intentandoCrear: body.nombre
+            });
+            
+            // RECHAZAR si ya alcanzó el límite de carteras pagadas
+            if (carterasActuales >= carterasPagadas) {
+                console.log('❌ RECHAZADO: Usuario ya tiene', carterasActuales, 'carteras pero solo pagó por', carterasPagadas);
+                return res.status(403).json({ 
+                    success: false, 
+                    error: 'Debes pagar R$ 51,41 para crear una cartera',
+                    needsPayment: true,
+                    carterasDisponibles: carterasPagadas,
+                    carterasCreadas: carterasActuales
+                });
+            }
+            
+            // Crear cartera (siempre activa si pasó la verificación)
             const cartera = { 
                 ...body,
-                creadoPor: body.userId || body.creadoPor,
+                creadoPor: userId,
                 fechaCreacion: new Date(),
                 eliminada: false,
-                activa: true
+                activa: true,
+                pendientePago: false
             };
             
-            console.log('Creando cartera:', cartera);
+            console.log('✅ APROBADO: Creando cartera:', cartera.nombre);
             const result = await db.collection('carteras').insertOne(cartera);
-            console.log('Cartera creada con ID:', result.insertedId);
+            console.log('✅ Cartera creada con ID:', result.insertedId);
             
             return res.json({ 
                 success: true, 
