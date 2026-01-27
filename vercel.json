@@ -15,11 +15,36 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/finangest.html",
+      "destination": "/app.html",
+      "permanent": false
+    },
+    {
+      "source": "/finangest.html",
+      "destination": "/app.html",
       "permanent": false
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/system-health",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/security-updates",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/usage-stats",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/archive-data",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/sync-backends",
+      "destination": "/api/admin"
+    },
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
