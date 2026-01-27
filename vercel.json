@@ -15,12 +15,12 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/index.html",
+      "destination": "/main.html",
       "permanent": false
     },
     {
       "source": "/finangest.html",
-      "destination": "/app2.html",
+      "destination": "/main.html",
       "permanent": false
     }
   ],
