@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanGest - Login</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0e17;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-box {
+            background: #1a1f2e;
+            padding: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #00d4ff;
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #0a0e17;
+            border: 1px solid #2d3548;
+            border-radius: 5px;
+            color: white;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00d4ff;
+            border: none;
+            border-radius: 5px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #00b8e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>FinanGest</h1>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="login()">Iniciar Sesión</button>
+        <p id="mensaje" style="margin-top: 20px; color: #ff4757;"></p>
+    </div>
+
+    <script>
+        const API_URL = 'https://finangest.vercel.app';
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const mensaje = document.getElementById('mensaje');
+            
+            if (!email || !password) {
+                mensaje.textContent = 'Por favor completa todos los campos';
+                return;
+            }
+            
+            try {
+                const res = await fetch(API_URL + '/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    mensaje.style.color = '#2ecc71';
+                    mensaje.textContent = '✅ Login exitoso! Redirigiendo...';
+                    setTimeout(() => {
+                        window.location.href = '/index.html';
+                    }, 1000);
+                } else {
+                    mensaje.style.color = '#ff4757';
+                    mensaje.textContent = '❌ ' + (data.error || 'Error al iniciar sesión');
+                }
+            } catch (error) {
+                mensaje.style.color = '#ff4757';
+                mensaje.textContent = '❌ Error de conexión';
+            }
+        }
+        
+        // Enter para login
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
