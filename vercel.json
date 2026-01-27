@@ -15,12 +15,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/fix.html",
-      "permanent": false
-    },
-    {
-      "source": "/finangest.html",
-      "destination": "/fix.html",
+      "destination": "/emergency.html",
       "permanent": false
     }
   ],
