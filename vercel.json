@@ -17,6 +17,11 @@
       "source": "/",
       "destination": "/index.html",
       "permanent": false
+    },
+    {
+      "source": "/finangest.html",
+      "destination": "/app2.html",
+      "permanent": false
     }
   ],
   "rewrites": [
