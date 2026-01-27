@@ -15,12 +15,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/app.html",
-      "permanent": false
-    },
-    {
-      "source": "/finangest.html",
-      "destination": "/app.html",
+      "destination": "/index.html",
       "permanent": false
     }
   ],
