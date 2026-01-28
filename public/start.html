@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanGest - Login</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0e17;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-box {
+            background: #1a1f2e;
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #00d4ff;
+            text-align: center;
+            margin: 0 0 10px 0;
+        }
+        p {
+            color: #8892b0;
+            text-align: center;
+            margin: 0 0 30px 0;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #0a0e17;
+            border: 2px solid #2d3548;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #00d4ff;
+            border: none;
+            border-radius: 10px;
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #00b8e6;
+        }
+        #msg {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>FinanGest</h1>
+        <p>Sistema de Gestión Financiera</p>
+        
+        <form onsubmit="login(event)">
+            <input type="email" id="email" placeholder="Email" value="fzuluaga548@gmail.com" required>
+            <input type="password" id="password" placeholder="Contraseña" value="Pipe16137356" required>
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+        
+        <div id="msg"></div>
+    </div>
+
+    <script>
+        async function login(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('msg');
+            
+            msg.style.display = 'block';
+            msg.style.background = 'rgba(230,167,0,0.15)';
+            msg.style.color = '#e6a700';
+            msg.textContent = '⏳ Conectando...';
+            
+            try {
+                const res = await fetch('https://finangest.vercel.app/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    msg.style.background = 'rgba(46,204,113,0.15)';
+                    msg.style.color = '#2ecc71';
+                    msg.textContent = '✅ Bienvenido ' + data.user.nombre;
+                    localStorage.setItem('finangest_user', JSON.stringify(data.user));
+                    setTimeout(() => {
+                        window.location.href = '/app-v2.html';
+                    }, 1500);
+                } else {
+                    msg.style.background = 'rgba(255,71,87,0.15)';
+                    msg.style.color = '#ff4757';
+                    msg.textContent = '❌ ' + (data.error || 'Error al iniciar sesión');
+                }
+            } catch (error) {
+                msg.style.background = 'rgba(255,71,87,0.15)';
+                msg.style.color = '#ff4757';
+                msg.textContent = '❌ Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
