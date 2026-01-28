@@ -1,0 +1,2 @@
+Cache invalidation timestamp: 2025-01-27 23:45:00
+This file forces Vercel to redeploy everything.
