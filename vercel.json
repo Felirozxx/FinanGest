@@ -12,10 +12,16 @@
       "schedule": "0 2 * * 1"
     }
   ],
-  "redirects": [
+  "redirects": [],
+  "headers": [
     {
-      "source": "/",
-      "destination": "/login.html"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
     }
   ],
   "rewrites": [
