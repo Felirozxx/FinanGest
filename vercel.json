@@ -12,13 +12,7 @@
       "schedule": "0 2 * * 1"
     }
   ],
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/app-v2.html",
-      "permanent": false
-    }
-  ],
+  "redirects": [],
   "rewrites": [
     {
       "source": "/api/system-health",
