@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanGest</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0a0e17;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .box {
+            background: #1a1f2e;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 { color: #00d4ff; text-align: center; margin: 0 0 30px; }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #0a0e17;
+            border: 2px solid #2d3548;
+            color: white;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #00d4ff;
+            border: none;
+            border-radius: 10px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #msg { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>FinanGest</h1>
+        <input type="email" id="e" placeholder="Email" value="fzuluaga548@gmail.com">
+        <input type="password" id="p" placeholder="Contraseña" value="Pipe16137356">
+        <button onclick="login()">Entrar</button>
+        <div id="msg"></div>
+    </div>
+    <script>
+    async function login(){
+        const m=document.getElementById('msg');
+        m.style.display='block';
+        m.style.background='#e6a700';
+        m.textContent='Conectando...';
+        try{
+            const r=await fetch('https://finangest.vercel.app/api/login',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    email:document.getElementById('e').value,
+                    password:document.getElementById('p').value
+                })
+            });
+            const d=await r.json();
+            if(d.success){
+                m.style.background='#2ecc71';
+                m.textContent='✅ Bienvenido '+d.user.nombre;
+                localStorage.setItem('finangest_user',JSON.stringify(d.user));
+                setTimeout(()=>location.href='/app-v2.html',1500);
+            }else{
+                m.style.background='#ff4757';
+                m.textContent='❌ '+d.error;
+            }
+        }catch(e){
+            m.style.background='#ff4757';
+            m.textContent='❌ Error';
+        }
+    }
+    </script>
+</body>
+</html>
