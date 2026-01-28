@@ -1640,24 +1640,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Detectar API_URL automáticamente
-        const API_URL = (() => {
-            const host = window.location.hostname;
-            const protocol = window.location.protocol;
-            
-            // En desarrollo local
-            if (host === 'localhost' || host === '127.0.0.1') {
-                return 'http://localhost:3000';
-            }
-            
-            // En producción (Vercel, Netlify, etc)
-            if (host.includes('vercel.app') || host.includes('netlify.app') || host.includes('pages.dev')) {
-                // Intenta usar el backend de Vercel
-                return 'https://finangest-backend.vercel.app';
-            }
-            
-            // Si se sirve desde dominio personalizado, usa mismo dominio
-            return `${protocol}//${host}`;
-        })();
+        const API_URL = 'https://finangest.vercel.app';
         
         let currentUser = null;
         let clientes = [];
