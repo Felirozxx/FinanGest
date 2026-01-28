@@ -15,7 +15,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/emergency.html",
+      "destination": "/login2025.html",
       "permanent": false
     }
   ],

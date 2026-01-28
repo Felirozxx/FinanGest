@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanGest Login</title>
+</head>
+<body style="margin:0;padding:0;background:#667eea;font-family:Arial;display:flex;align-items:center;justify-content:center;min-height:100vh;">
+    <div style="background:white;padding:40px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-width:400px;width:90%;">
+        <h1 style="color:#667eea;text-align:center;margin:0 0 10px 0;">🚀 FinanGest</h1>
+        <p style="color:#666;text-align:center;margin:0 0 30px 0;">Sistema de Gestión Financiera</p>
+        
+        <form onsubmit="login(event)">
+            <input type="email" id="email" placeholder="Email" value="fzuluaga548@gmail.com" required
+                   style="width:100%;padding:15px;margin-bottom:15px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;box-sizing:border-box;">
+            
+            <input type="password" id="password" placeholder="Contraseña" value="Pipe16137356" required
+                   style="width:100%;padding:15px;margin-bottom:15px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;box-sizing:border-box;">
+            
+            <button type="submit" style="width:100%;padding:15px;background:#667eea;color:white;border:none;border-radius:10px;font-size:18px;font-weight:bold;cursor:pointer;">
+                Iniciar Sesión
+            </button>
+        </form>
+        
+        <div id="msg" style="margin-top:20px;padding:15px;border-radius:10px;text-align:center;display:none;"></div>
+    </div>
+
+    <script>
+        async function login(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('msg');
+            
+            msg.style.display = 'block';
+            msg.style.background = '#fef9e7';
+            msg.style.color = '#f39c12';
+            msg.textContent = '⏳ Conectando...';
+            
+            try {
+                const res = await fetch('https://finangest.vercel.app/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    msg.style.background = '#d4edda';
+                    msg.style.color = '#155724';
+                    msg.textContent = '✅ Login exitoso! Bienvenido ' + data.user.nombre;
+                    localStorage.setItem('finangest_user', JSON.stringify(data.user));
+                    setTimeout(() => { window.location.href = '/fix.html'; }, 1500);
+                } else {
+                    msg.style.background = '#f8d7da';
+                    msg.style.color = '#721c24';
+                    msg.textContent = '❌ ' + (data.error || 'Error al iniciar sesión');
+                }
+            } catch (error) {
+                msg.style.background = '#f8d7da';
+                msg.style.color = '#721c24';
+                msg.textContent = '❌ Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
