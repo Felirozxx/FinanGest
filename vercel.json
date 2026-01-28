@@ -12,7 +12,12 @@
       "schedule": "0 2 * * 1"
     }
   ],
-  "redirects": [],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/login.html"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/system-health",
