@@ -35,6 +35,18 @@
       "destination": "/api/admin"
     },
     {
+      "source": "/api/auto-backup",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/cron-updates",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/init-system",
+      "destination": "/api/admin"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     }
