@@ -15,7 +15,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/login2025.html",
+      "destination": "/app-v2.html",
       "permanent": false
     }
   ],
