@@ -12,12 +12,8 @@ async function connectToDatabase() {
         return { client: cachedClient, db: cachedDb };
     }
 
-    // Crear nueva conexión
-    const client = await MongoClient.connect(MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
-
+    // Crear nueva conexión (sin opciones obsoletas)
+    const client = await MongoClient.connect(MONGODB_URI);
     const db = client.db('finangest');
 
     // Cachear para reutilizar
