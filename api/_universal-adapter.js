@@ -1,4 +1,4 @@
-// Adaptador universal para MongoDB y Supabase
+// Adaptador universal para MongoDB, Supabase y Firebase
 const { ObjectId } = require('mongodb');
 
 class UniversalAdapter {
@@ -12,8 +12,7 @@ class UniversalAdapter {
     async findOne(collection, query) {
         if (this.type === 'mongodb') {
             return await this.db.collection(collection).findOne(query);
-        } else {
-            // Supabase
+        } else if (this.type === 'supabase') {
             const { data, error } = await this.client
                 .from(collection)
                 .select('*')
@@ -22,6 +21,13 @@ class UniversalAdapter {
                 .single();
             if (error) throw error;
             return data;
+        } else {
+            // Firebase
+            const snapshot = await this.db.collection(collection)
+                .where(Object.keys(query)[0], '==', Object.values(query)[0])
+                .limit(1)
+                .get();
+            return snapshot.empty ? null : { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
         }
     }
 

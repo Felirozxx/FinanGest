@@ -1,14 +1,17 @@
-// Sistema de failover automático SIMPLE entre MongoDB y Supabase
+// Sistema de failover automático: MongoDB -> Supabase -> Firebase
 const { MongoClient } = require('mongodb');
 const { createClient } = require('@supabase/supabase-js');
+const admin = require('firebase-admin');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tqbddnjzgaifeoidtswt.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'finangest-2';
 
 let mongoClient = null;
 let supabaseClient = null;
-let currentBackend = 'mongodb'; // 'mongodb' o 'supabase'
+let firebaseInitialized = false;
+let currentBackend = 'mongodb'; // 'mongodb', 'supabase', o 'firebase'
 let lastHealthCheck = Date.now();
 
 // Inicializar clientes
@@ -18,6 +21,16 @@ function initClients() {
     }
     if (!supabaseClient && SUPABASE_KEY) {
         supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+    if (!firebaseInitialized && FIREBASE_PROJECT_ID) {
+        try {
+            admin.initializeApp({
+                projectId: FIREBASE_PROJECT_ID
+            });
+            firebaseInitialized = true;
+        } catch (error) {
+            // Ya inicializado
+        }
     }
 }
 
@@ -46,16 +59,29 @@ async function checkSupabaseHealth() {
     }
 }
 
+// Verificar salud de Firebase
+async function checkFirebaseHealth() {
+    try {
+        if (!firebaseInitialized) return false;
+        const db = admin.firestore();
+        await db.collection('users').limit(1).get();
+        return true;
+    } catch (error) {
+        console.error('Firebase health check failed:', error.message);
+        return false;
+    }
+}
+
 // Determinar backend activo
 async function determineActiveBackend() {
     // Solo verificar cada 30 segundos
     if (Date.now() - lastHealthCheck < 30000) {
         return currentBackend;
     }
-
+    
     lastHealthCheck = Date.now();
     
-    // Intentar MongoDB primero
+    // Nivel 1: Intentar MongoDB primero
     const mongoHealthy = await checkMongoHealth();
     if (mongoHealthy) {
         if (currentBackend !== 'mongodb') {
@@ -65,7 +91,7 @@ async function determineActiveBackend() {
         return 'mongodb';
     }
     
-    // Si MongoDB falla, usar Supabase
+    // Nivel 2: Si MongoDB falla, usar Supabase
     const supabaseHealthy = await checkSupabaseHealth();
     if (supabaseHealthy) {
         if (currentBackend !== 'supabase') {
@@ -75,8 +101,18 @@ async function determineActiveBackend() {
         return 'supabase';
     }
     
-    // Si ambos fallan, intentar MongoDB de todos modos
-    console.error('❌ Both backends down, trying MongoDB anyway');
+    // Nivel 3: Si ambos fallan, usar Firebase
+    const firebaseHealthy = await checkFirebaseHealth();
+    if (firebaseHealthy) {
+        if (currentBackend !== 'firebase') {
+            console.log('🔥 MongoDB & Supabase down, switching to Firebase');
+        }
+        currentBackend = 'firebase';
+        return 'firebase';
+    }
+    
+    // Si todos fallan, intentar MongoDB de todos modos
+    console.error('❌ All backends down, trying MongoDB anyway');
     return 'mongodb';
 }
 
@@ -88,8 +124,10 @@ async function getConnection() {
     if (backend === 'mongodb') {
         await mongoClient.connect();
         return { type: 'mongodb', db: mongoClient.db('finangest') };
-    } else {
+    } else if (backend === 'supabase') {
         return { type: 'supabase', client: supabaseClient };
+    } else {
+        return { type: 'firebase', db: admin.firestore() };
     }
 }
 
