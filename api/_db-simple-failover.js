@@ -62,17 +62,17 @@ async function checkSupabaseHealth() {
 // Verificar salud de Firebase
 async function checkFirebaseHealth() {
     try {
-        if (!firebaseInitialized) return false;
+        if (!firebaseInitialized || !FIREBASE_PROJECT_ID) return false;
         const db = admin.firestore();
         await db.collection('users').limit(1).get();
         return true;
     } catch (error) {
-        console.error('Firebase health check failed:', error.message);
+        // Firebase es opcional, no mostrar error si no está configurado
         return false;
     }
 }
 
-// Determinar backend activo
+// Determinar backend activo - usa el que esté mejor
 async function determineActiveBackend() {
     // Solo verificar cada 30 segundos
     if (Date.now() - lastHealthCheck < 30000) {
@@ -81,31 +81,33 @@ async function determineActiveBackend() {
     
     lastHealthCheck = Date.now();
     
-    // Nivel 1: Intentar MongoDB primero
-    const mongoHealthy = await checkMongoHealth();
+    // Verificar todos en paralelo para encontrar el más rápido
+    const [mongoHealthy, supabaseHealthy, firebaseHealthy] = await Promise.all([
+        checkMongoHealth(),
+        checkSupabaseHealth(),
+        checkFirebaseHealth()
+    ]);
+    
+    // Prioridad: MongoDB > Supabase > Firebase (pero solo si están funcionando)
     if (mongoHealthy) {
         if (currentBackend !== 'mongodb') {
-            console.log('✅ Switching back to MongoDB');
+            console.log('✅ Using MongoDB (primary)');
         }
         currentBackend = 'mongodb';
         return 'mongodb';
     }
     
-    // Nivel 2: Si MongoDB falla, usar Supabase
-    const supabaseHealthy = await checkSupabaseHealth();
     if (supabaseHealthy) {
         if (currentBackend !== 'supabase') {
-            console.log('⚠️ MongoDB down, switching to Supabase');
+            console.log('⚠️ MongoDB down, using Supabase');
         }
         currentBackend = 'supabase';
         return 'supabase';
     }
     
-    // Nivel 3: Si ambos fallan, usar Firebase
-    const firebaseHealthy = await checkFirebaseHealth();
     if (firebaseHealthy) {
         if (currentBackend !== 'firebase') {
-            console.log('🔥 MongoDB & Supabase down, switching to Firebase');
+            console.log('🔥 MongoDB & Supabase down, using Firebase');
         }
         currentBackend = 'firebase';
         return 'firebase';
@@ -113,6 +115,7 @@ async function determineActiveBackend() {
     
     // Si todos fallan, intentar MongoDB de todos modos
     console.error('❌ All backends down, trying MongoDB anyway');
+    currentBackend = 'mongodb';
     return 'mongodb';
 }
 
