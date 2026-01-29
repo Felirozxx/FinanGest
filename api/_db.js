@@ -8,8 +8,12 @@ let cachedClient = null;
 let cachedDb = null;
 
 async function connectToDatabase() {
-    // Si el failover está activado, intentar usarlo
-    if (USE_FAILOVER) {
+    // TEMPORALMENTE DESACTIVADO - Sistema de failover causa errores
+    // TODO: Arreglar y reactivar
+    const FAILOVER_DISABLED = true;
+    
+    // Si el failover está activado Y no está desactivado manualmente
+    if (USE_FAILOVER && !FAILOVER_DISABLED) {
         try {
             const { getConnection } = require('./_db-simple-failover');
             const UniversalAdapter = require('./_universal-adapter');
