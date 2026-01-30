@@ -1,4 +1,4 @@
-const { connectToDatabase } = require('./_db');
+const { connectToDatabase, getSystemStatus } = require('./_db');
 const { ObjectId } = require('mongodb');
 
 // Endpoint consolidado para todas las operaciones de administración
@@ -13,7 +13,6 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { db } = await connectToDatabase();
         const { action } = req.query;
         
         // Parsear el body si es string
@@ -34,24 +33,40 @@ module.exports = async (req, res) => {
         // ============================================
         
         if (isSystemHealth && req.method === 'GET' && !action) {
-            // Estado básico del sistema
-            return res.json({
-                success: true,
-                systemStatus: 'operational',
-                backends: {
-                    mongodb: {
-                        name: 'MongoDB Atlas',
-                        priority: 1,
-                        type: 'mongodb',
-                        healthy: true,
-                        current: true,
-                        error: null,
-                        note: null,
-                        latency: null
-                    }
-                },
-                timestamp: new Date().toISOString()
-            });
+            try {
+                const status = await getSystemStatus();
+                
+                // Formatear para respuesta
+                const backends = {};
+                for (const [key, value] of Object.entries(status.backends)) {
+                    backends[key] = {
+                        name: key === 'mongodb' ? 'MongoDB Atlas' : 'Supabase PostgreSQL',
+                        priority: key === 'mongodb' ? 1 : 2,
+                        type: key === 'mongodb' ? 'mongodb' : 'postgres',
+                        healthy: value.healthy,
+                        current: status.current === key,
+                        error: value.error,
+                        lastCheck: value.lastCheck,
+                        note: null
+                    };
+                }
+                
+                return res.json({
+                    success: true,
+                    systemStatus: status.current ? 'operational' : 'degraded',
+                    failoverEnabled: status.failoverEnabled !== false,
+                    currentBackend: status.current,
+                    backends,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                return res.json({
+                    success: false,
+                    systemStatus: 'error',
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                });
+            }
         }
 
         // ============================================
@@ -92,6 +107,8 @@ module.exports = async (req, res) => {
         
         if (isUsageStats) {
             try {
+                const { db } = await connectToDatabase();
+                
                 // Contar documentos en las colecciones principales
                 const usersCount = await db.collection('users').estimatedDocumentCount();
                 const clientesCount = await db.collection('clientes').estimatedDocumentCount();
@@ -126,15 +143,6 @@ module.exports = async (req, res) => {
                             status: 'healthy',
                             note: 'Configurado como backup'
                         },
-                        firebase: {
-                            name: 'Firebase Firestore',
-                            used: '0MB',
-                            limit: '1GB',
-                            remaining: '1GB',
-                            percentUsed: 0,
-                            status: 'healthy',
-                            note: 'Configurado como backup'
-                        },
                         vercel: {
                             name: 'Vercel',
                             plan: 'Hobby (Free)',
@@ -143,7 +151,7 @@ module.exports = async (req, res) => {
                                 serverless: '100GB-Hrs'
                             },
                             current: {
-                                functions: '11/12'
+                                functions: '8/12'
                             },
                             dashboardUrl: 'https://vercel.com/dashboard'
                         }
