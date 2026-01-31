@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Servidores - FinanGest</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-hover: #1e2538;
+            --accent-cyan: #00d4ff;
+            --accent-green: #2ecc71;
+            --accent-yellow: #e6a700;
+            --accent-red: #ff4757;
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --border-color: #2d3548;
+        }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            padding: 30px;
+        }
+        .header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .card-dark {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .server-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-cyan);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .server-card.healthy {
+            border-left-color: var(--accent-green);
+        }
+        .server-card.unhealthy {
+            border-left-color: var(--accent-red);
+        }
+        .server-card.active {
+            box-shadow: 0 0 20px rgba(0,212,255,0.3);
+        }
+        .badge-custom {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .badge-active {
+            background: var(--accent-cyan);
+            color: #000;
+        }
+        .badge-healthy {
+            background: rgba(46,204,113,0.15);
+            color: var(--accent-green);
+        }
+        .badge-unhealthy {
+            background: rgba(255,71,87,0.15);
+            color: var(--accent-red);
+        }
+        .btn-refresh {
+            background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,212,255,0.3);
+        }
+        .system-status {
+            background: var(--bg-hover);
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-server me-3" style="color: var(--accent-cyan);"></i>Monitor de Servidores</h1>
+                    <p style="color: var(--text-secondary); margin: 0;">Estado en tiempo real de los servidores de respaldo</p>
+                </div>
+                <button class="btn-refresh" onclick="refreshStatus()">
+                    <i class="fas fa-sync-alt me-2"></i>Actualizar
+                </button>
+            </div>
+        </div>
+
+        <div id="statusContainer">
+            <div class="text-center py-5">
+                <i class="fas fa-spinner fa-spin fa-3x mb-3" style="color: var(--accent-cyan);"></i>
+                <p style="color: var(--text-secondary);">Cargando estado de servidores...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://finangest.vercel.app';
+
+        async function refreshStatus() {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = '<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-3x mb-3" style="color: var(--accent-cyan);"></i><p style="color: var(--text-secondary);">Actualizando...</p></div>';
+
+            try {
+                const res = await fetch(API_URL + '/api/system-health');
+                const data = await res.json();
+
+                if (!data.success) throw new Error(data.error || 'Error al obtener estado');
+
+                const backends = data.backends || {};
+                const currentBackend = data.currentBackend || 'mongodb';
+
+                let html = '<div class="row">';
+
+                // MongoDB
+                const mongo = backends.mongodb || {};
+                const mongoActive = currentBackend === 'mongodb';
+                html += `
+                    <div class="col-md-4">
+                        <div class="server-card ${mongo.healthy ? 'healthy' : 'unhealthy'} ${mongoActive ? 'active' : ''}">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h4 class="mb-1">MongoDB Atlas</h4>
+                                    <small style="color: var(--text-secondary);">Prioridad 1 - Base de datos principal</small>
+                                </div>
+                                <i class="fas ${mongo.healthy ? 'fa-check-circle' : 'fa-times-circle'} fa-2x" style="color: ${mongo.healthy ? 'var(--accent-green)' : 'var(--accent-red)'};"></i>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge-custom ${mongo.healthy ? 'badge-healthy' : 'badge-unhealthy'}">
+                                    ${mongo.healthy ? '✓ Operativo' : '✗ Fuera de línea'}
+                                </span>
+                                ${mongoActive ? '<span class="badge-custom badge-active ms-2">ACTIVO</span>' : ''}
+                            </div>
+                            ${mongo.error ? `<div class="mt-2"><small style="color: var(--accent-red);">${mongo.error}</small></div>` : ''}
+                            <div class="mt-3" style="font-size: 0.85rem; color: var(--text-secondary);">
+                                <div><i class="fas fa-clock me-2"></i>Última verificación: ${mongo.lastCheck ? new Date(mongo.lastCheck).toLocaleString('es-ES') : 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Supabase
+                const supabase = backends.supabase || {};
+                const supabaseActive = currentBackend === 'supabase';
+                html += `
+                    <div class="col-md-4">
+                        <div class="server-card ${supabase.healthy ? 'healthy' : 'unhealthy'} ${supabaseActive ? 'active' : ''}">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h4 class="mb-1">Supabase PostgreSQL</h4>
+                                    <small style="color: var(--text-secondary);">Prioridad 2 - Servidor de respaldo</small>
+                                </div>
+                                <i class="fas ${supabase.healthy ? 'fa-check-circle' : 'fa-times-circle'} fa-2x" style="color: ${supabase.healthy ? 'var(--accent-green)' : 'var(--accent-red)'};"></i>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge-custom ${supabase.healthy ? 'badge-healthy' : 'badge-unhealthy'}">
+                                    ${supabase.healthy ? '✓ Operativo' : '✗ Fuera de línea'}
+                                </span>
+                                ${supabaseActive ? '<span class="badge-custom badge-active ms-2">ACTIVO</span>' : ''}
+                            </div>
+                            ${supabase.error ? `<div class="mt-2"><small style="color: var(--accent-red);">${supabase.error}</small></div>` : ''}
+                            <div class="mt-3" style="font-size: 0.85rem; color: var(--text-secondary);">
+                                <div><i class="fas fa-clock me-2"></i>Última verificación: ${supabase.lastCheck ? new Date(supabase.lastCheck).toLocaleString('es-ES') : 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Firebase
+                const firebase = backends.firebase || {};
+                const firebaseActive = currentBackend === 'firebase';
+                html += `
+                    <div class="col-md-4">
+                        <div class="server-card ${firebase.healthy ? 'healthy' : 'unhealthy'} ${firebaseActive ? 'active' : ''}">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h4 class="mb-1">Firebase Firestore</h4>
+                                    <small style="color: var(--text-secondary);">Prioridad 3 - Servidor de seguridad</small>
+                                </div>
+                                <i class="fas ${firebase.healthy ? 'fa-check-circle' : 'fa-times-circle'} fa-2x" style="color: ${firebase.healthy ? 'var(--accent-green)' : 'var(--accent-red)'};"></i>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge-custom ${firebase.healthy ? 'badge-healthy' : 'badge-unhealthy'}">
+                                    ${firebase.healthy ? '✓ Operativo' : '✗ Fuera de línea'}
+                                </span>
+                                ${firebaseActive ? '<span class="badge-custom badge-active ms-2">ACTIVO</span>' : ''}
+                            </div>
+                            ${firebase.error ? `<div class="mt-2"><small style="color: var(--accent-red);">${firebase.error}</small></div>` : ''}
+                            <div class="mt-3" style="font-size: 0.85rem; color: var(--text-secondary);">
+                                <div><i class="fas fa-clock me-2"></i>Última verificación: ${firebase.lastCheck ? new Date(firebase.lastCheck).toLocaleString('es-ES') : 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                html += '</div>';
+
+                // Estado general del sistema
+                const allHealthy = mongo.healthy && supabase.healthy && firebase.healthy;
+                const systemStatus = allHealthy ? 'Todos los servidores operativos' :
+                                    mongo.healthy ? 'Sistema operativo (servidor principal activo)' :
+                                    supabase.healthy ? 'Sistema operativo (usando servidor de respaldo)' :
+                                    firebase.healthy ? 'Sistema operativo (usando servidor de seguridad)' :
+                                    'Sistema degradado - Todos los servidores fuera de línea';
+                const systemColor = allHealthy ? 'var(--accent-green)' :
+                                   (mongo.healthy || supabase.healthy || firebase.healthy) ? 'var(--accent-yellow)' :
+                                   'var(--accent-red)';
+
+                html += `
+                    <div class="system-status mt-4" style="border-left-color: ${systemColor};">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <i class="fas fa-info-circle fa-2x" style="color: ${systemColor};"></i>
+                            <div>
+                                <h5 class="mb-1" style="color: ${systemColor};">${systemStatus}</h5>
+                                <small style="color: var(--text-secondary);">Última actualización: ${new Date().toLocaleString('es-ES')}</small>
+                            </div>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            <p class="mb-2"><i class="fas fa-shield-alt me-2"></i>El sistema verifica automáticamente el estado de los servidores cada 30 segundos</p>
+                            <p class="mb-0"><i class="fas fa-sync-alt me-2"></i>En caso de falla, el sistema cambia automáticamente al siguiente servidor disponible</p>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = `
+                    <div class="card-dark">
+                        <div class="alert alert-danger mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error al cargar el estado de los servidores: ${error.message}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Cargar al inicio
+        refreshStatus();
+
+        // Auto-refresh cada 30 segundos
+        setInterval(refreshStatus, 30000);
+    </script>
+</body>
+</html>
