@@ -21,6 +21,16 @@ module.exports = async (req, res) => {
         const idFromUrl = urlParts[urlParts.length - 1];
         const carteraId = id || (idFromUrl !== 'carteras' && idFromUrl !== '' ? idFromUrl : null);
         
+        console.log('🔵 API Carteras:', {
+            method: req.method,
+            url: req.url,
+            action,
+            userId,
+            id,
+            carteraId,
+            hasBody: !!req.body
+        });
+        
         // Parsear el body si es string
         let body = req.body || {};
         if (typeof body === 'string') {
@@ -192,9 +202,16 @@ module.exports = async (req, res) => {
             });
         }
 
+        console.log('❌ Operación no válida:', {
+            method: req.method,
+            action,
+            carteraId,
+            url: req.url
+        });
+        
         return res.status(400).json({ 
             success: false, 
-            error: 'Operación no válida. Método: ' + req.method + ', Action: ' + (action || 'ninguna')
+            error: 'Operación no válida. Método: ' + req.method + ', Action: ' + (action || 'ninguna') + ', URL: ' + req.url
         });
 
     } catch (error) {
