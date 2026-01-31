@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -3388,7 +3388,7 @@
             
             try {
                 // Registrar service worker
-                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                const registration = await // DISABLED: navigator.serviceWorker.register('/firebase-messaging-sw.js');
                 console.log('Service Worker registrado:', registration);
                 
                 // Solicitar permiso
@@ -16013,7 +16013,7 @@
                     registrations.forEach(reg => reg.unregister());
                 });
                 // Registrar nuevo Service Worker
-                navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+                // DISABLED: navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
                     .then(reg => {
                         reg.update();
                         console.log('Service Worker actualizado');
@@ -17743,3 +17743,4 @@
 </body>
 </html>
  
+
