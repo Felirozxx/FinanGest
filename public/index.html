@@ -17526,7 +17526,7 @@
         async function cargarCarterasEliminadas() {
             try {
                 console.log('Cargando carteras eliminadas para userId:', currentUser.id);
-                const res = await fetch(API_URL + '/api/carteras?action=eliminadas&userId= + currentUser.id);
+                const res = await fetch(API_URL + '/api/carteras?action=eliminadas&userId=' + currentUser.id);
                 const data = await res.json();
                 console.log('Carteras eliminadas recibidas:', data);
                 carterasEliminadas = data.error ? [] : data;

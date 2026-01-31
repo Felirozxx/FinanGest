@@ -16,6 +16,11 @@ module.exports = async (req, res) => {
         const { db } = await connectToDatabase();
         const { action, userId, id } = req.query;
         
+        // Extraer ID de la URL si está en formato /api/carteras/ID
+        const urlParts = req.url.split('?')[0].split('/');
+        const idFromUrl = urlParts[urlParts.length - 1];
+        const carteraId = id || (idFromUrl !== 'carteras' && idFromUrl !== '' ? idFromUrl : null);
+        
         // Parsear el body si es string
         let body = req.body || {};
         if (typeof body === 'string') {
@@ -126,8 +131,8 @@ module.exports = async (req, res) => {
         }
 
         // PUT - Actualizar cartera
-        if (req.method === 'PUT' && (action === 'actualizar' || id)) {
-            const targetId = id || req.query.id;
+        if (req.method === 'PUT' && (action === 'actualizar' || carteraId)) {
+            const targetId = carteraId || id || req.query.id;
             
             if (!targetId) {
                 return res.status(400).json({ 
@@ -152,8 +157,8 @@ module.exports = async (req, res) => {
         }
 
         // DELETE - Eliminar cartera (soft delete)
-        if ((req.method === 'DELETE' || req.method === 'POST') && (action === 'eliminar' || id)) {
-            const targetId = id || req.query.id;
+        if ((req.method === 'DELETE' || req.method === 'POST') && (action === 'eliminar' || carteraId)) {
+            const targetId = carteraId || id || req.query.id;
             
             if (!targetId) {
                 return res.status(400).json({ 
@@ -174,9 +179,10 @@ module.exports = async (req, res) => {
         }
 
         // POST - Restablecer cartera eliminada
-        if (req.method === 'POST' && action === 'restablecer' && id) {
+        if (req.method === 'POST' && action === 'restablecer' && (carteraId || id)) {
+            const targetId = carteraId || id;
             const result = await db.collection('carteras').updateOne(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(targetId) },
                 { $set: { eliminada: false }, $unset: { fechaEliminacion: "" } }
             );
             
