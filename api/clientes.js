@@ -37,9 +37,11 @@ module.exports = async (req, res) => {
 
         // PUT - Actualizar cliente
         if (req.method === 'PUT') {
-            const { id } = req.query;
+            const { pathname } = new URL(req.url, `http://${req.headers.host}`);
+            const pathParts = pathname.split('/');
+            const id = req.query.id || pathParts[pathParts.length - 1];
             
-            if (!id) {
+            if (!id || id === 'clientes') {
                 return res.status(400).json({ 
                     success: false, 
                     error: 'ID de cliente requerido' 

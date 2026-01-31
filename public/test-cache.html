@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Cache</title>
+    <style>
+        body {
+            background: #0a0e17;
+            color: white;
+            font-family: Arial;
+            padding: 50px;
+            text-align: center;
+        }
+        h1 {
+            color: #00d4ff;
+            font-size: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>✅ CACHE LIMPIO</h1>
+    <p>Si ves esto, el cache está funcionando correctamente</p>
+    <p>Versión: <?php echo time(); ?> - <?php echo date('Y-m-d H:i:s'); ?></p>
+    <script>
+        document.body.innerHTML += '<p>Timestamp: ' + new Date().toISOString() + '</p>';
+    </script>
+</body>
+</html>

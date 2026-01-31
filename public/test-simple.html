@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanGest - Test</title>
+    <style>
+        body {
+            background: #0a0e17;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .btn {
+            background: #00d4ff;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FinanGest - Test Simple</h1>
+        <p>Si ves esto, el deployment funciona correctamente.</p>
+        
+        <button class="btn" onclick="testAPI()">Test API Carteras</button>
+        <button class="btn" onclick="window.location.href='/app-nueva.html'">Ir a App Completa</button>
+        
+        <div id="result" style="margin-top: 20px; padding: 10px; background: #1a1f2e; border-radius: 5px;"></div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Probando API...';
+            
+            try {
+                // Test básico de la API
+                const response = await fetch('/api/carteras?action=por-usuario&userId=test123');
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <h3>Resultado del Test:</h3>
+                    <p>Status: ${response.status}</p>
+                    <p>Response: ${JSON.stringify(data, null, 2)}</p>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <h3>Error:</h3>
+                    <p style="color: #ff4757;">${error.message}</p>
+                `;
+            }
+        }
+        
+        console.log('Test page loaded successfully');
+    </script>
+</body>
+</html>

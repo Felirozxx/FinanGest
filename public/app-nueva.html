@@ -3362,15 +3362,35 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Firebase SDK DISABLED -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script> -->
+    <!-- Firebase SDK DESACTIVADO temporalmente -->
+    <!-- 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    -->
     <script>
-        // Firebase DISABLED
+        // Firebase DESACTIVADO - comentado para evitar errores
+        /*
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfq8kCrmGxLNpWaxxGHq2VzKLIN3Jq_t4",
+            authDomain: "finangest-8b9f5.firebaseapp.com",
+            projectId: "finangest-8b9f5",
+            storageBucket: "finangest-8b9f5.firebasestorage.app",
+            messagingSenderId: "826547494608",
+            appId: "1:826547494608:web:ead7a874d1e410229f88d5"
+        };
+        
+        // Inicializar Firebase
         let firebaseApp = null;
         let firebaseMessaging = null;
         
-        console.log('⚠️ Firebase DISABLED - No push notifications');
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            firebaseMessaging = firebase.messaging();
+            console.log('✅ Firebase inicializado correctamente');
+        } catch (e) {
+            console.error('Error inicializando Firebase:', e);
+        }
         
         // Función para suscribirse a notificaciones push
         async function subscribeToPushNotifications() {
@@ -3380,9 +3400,10 @@
             }
             
             try {
-                // Service Worker DISABLED - No registration
+                // Service Worker DISABLED - comentado
+                // const registration = await navigator.serviceWorker.register('/sw.js');
                 const registration = null;
-                console.log('Service Worker DISABLED');
+                console.log('Service Worker registrado:', registration);
                 
                 // Solicitar permiso
                 const permission = await Notification.requestPermission();
@@ -3448,6 +3469,8 @@
                 }
             });
         }
+        */
+        console.log('Firebase desactivado temporalmente');
     </script>
     
     <script>
@@ -11744,7 +11767,7 @@
             
             try {
                 // Cargar carteras del usuario
-                const carterasRes = await fetch(API_URL + '/api/carteras?userId=' + userId);
+                const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                 
@@ -11925,7 +11948,7 @@
                 verTodoGastos = Array.isArray(gastosData) ? gastosData : [];
                 
                 // Cargar carteras del usuario
-                const carterasRes = await fetch(API_URL + '/api/carteras?userId=' + userId);
+                const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                 
@@ -12954,7 +12977,7 @@
                     
                     try {
                         // Cargar carteras del usuario
-                        const carterasRes = await fetch(API_URL + '/api/carteras?userId=' + userId);
+                        const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
                         const carterasData = await carterasRes.json();
                         const carteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                         
@@ -16583,7 +16606,7 @@
         async function cargarCarteras() {
             if (!currentUser) return;
             try {
-                const res = await fetch(API_URL + '/api/carteras?userId=' + currentUser.id);
+                const res = await fetch(API_URL + '/api/carteras/' + currentUser.id);
                 const data = await res.json();
                 if (data.success) {
                     carteras = data.carteras || [];
@@ -17820,7 +17843,6 @@
             </div>
         </div>
     </div>
-<script src='/auto-inject-monitor.js'></script>
 </body>
 </html>
  

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanGest - Test Rápido</title>
+    <style>
+        body {
+            background: #0a0e17;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #1a1f2e;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #2d3548;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #00d4ff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #0f1419;
+            border: 2px solid #2d3548;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background: rgba(46,204,113,0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46,204,113,0.3);
+        }
+        .error {
+            background: rgba(255,71,87,0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255,71,87,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 FinanGest</h1>
+        <h3 style="color: #8892b0; text-align: center; margin-bottom: 30px;">Test de Conexión</h3>
+        
+        <input type="email" id="email" placeholder="Email" value="fzuluaga548@gmail.com">
+        <input type="password" id="password" placeholder="Contraseña" value="Pipe16137356">
+        <button onclick="login()">Iniciar Sesión</button>
+        
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://finangest.vercel.app';
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('message');
+            
+            msg.style.display = 'block';
+            msg.className = 'message';
+            msg.textContent = '⏳ Conectando...';
+            
+            try {
+                const res = await fetch(API_URL + '/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success && data.user) {
+                    msg.className = 'message success';
+                    msg.textContent = '✅ Login exitoso! Redirigiendo...';
+                    localStorage.setItem('finangest_user', JSON.stringify(data.user));
+                    setTimeout(() => {
+                        window.location.href = '/sistema.html';
+                    }, 1000);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = '❌ ' + (data.error || 'Error al iniciar sesión');
+                }
+            } catch (error) {
+                msg.className = 'message error';
+                msg.textContent = '❌ Error de conexión: ' + error.message;
+            }
+        }
+        
+        // Auto-login si ya hay sesión
+        const user = localStorage.getItem('finangest_user');
+        if (user) {
+            document.getElementById('message').style.display = 'block';
+            document.getElementById('message').className = 'message success';
+            document.getElementById('message').textContent = '✅ Sesión activa, redirigiendo...';
+            setTimeout(() => {
+                window.location.href = '/sistema.html';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

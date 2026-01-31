@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnóstico FinanGest</title>
+    <style>
+        body {
+            background: #0a0e17;
+            color: white;
+            font-family: Arial;
+            padding: 20px;
+        }
+        .test {
+            background: #1a1f2e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+        }
+        .ok { border-left-color: #2ecc71; }
+        .error { border-left-color: #ff4757; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnóstico de FinanGest</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addTest(name, status, message) {
+            const div = document.createElement('div');
+            div.className = 'test ' + (status ? 'ok' : 'error');
+            div.innerHTML = `
+                <strong>${status ? '✅' : '❌'} ${name}</strong><br>
+                <small>${message}</small>
+            `;
+            results.appendChild(div);
+        }
+        
+        // Test 1: JavaScript funciona
+        addTest('JavaScript', true, 'JavaScript está funcionando correctamente');
+        
+        // Test 2: LocalStorage
+        try {
+            localStorage.setItem('test', '1');
+            localStorage.removeItem('test');
+            addTest('LocalStorage', true, 'LocalStorage disponible');
+        } catch(e) {
+            addTest('LocalStorage', false, 'Error: ' + e.message);
+        }
+        
+        // Test 3: Fetch API
+        fetch('https://finangest.vercel.app/test-cache.html')
+            .then(r => addTest('Fetch API', true, 'Puede hacer peticiones HTTP'))
+            .catch(e => addTest('Fetch API', false, 'Error: ' + e.message));
+        
+        // Test 4: Service Workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations()
+                .then(regs => {
+                    if (regs.length > 0) {
+                        addTest('Service Workers', false, `${regs.length} Service Workers activos bloqueando la app`);
+                    } else {
+                        addTest('Service Workers', true, 'No hay Service Workers activos');
+                    }
+                });
+        } else {
+            addTest('Service Workers', true, 'Service Workers no soportados');
+        }
+        
+        // Test 5: Cache Storage
+        if ('caches' in window) {
+            caches.keys().then(keys => {
+                if (keys.length > 0) {
+                    addTest('Cache Storage', false, `${keys.length} caches activos: ${keys.join(', ')}`);
+                } else {
+                    addTest('Cache Storage', true, 'No hay caches activos');
+                }
+            });
+        }
+        
+        // Test 6: Cookies
+        document.cookie = 'test=1';
+        const cookiesEnabled = document.cookie.indexOf('test=') !== -1;
+        addTest('Cookies', cookiesEnabled, cookiesEnabled ? 'Cookies habilitadas' : 'Cookies bloqueadas');
+        
+        // Test 7: User Agent
+        addTest('Navegador', true, navigator.userAgent);
+        
+        // Test 8: Conexión a API
+        fetch('https://finangest.vercel.app/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: 'test', password: 'test'})
+        })
+        .then(r => r.json())
+        .then(data => addTest('API Backend', true, 'API responde correctamente'))
+        .catch(e => addTest('API Backend', false, 'Error: ' + e.message));
+    </script>
+</body>
+</html>

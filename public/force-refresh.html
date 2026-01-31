@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>FinanGest - Cargando...</title>
+    <style>
+        body {
+            background: #0a0e17;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .loader {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #1a1f2e;
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <h2>FinanGest</h2>
+        <p>Cargando versión actualizada...</p>
+    </div>
+    
+    <script>
+        // Forzar limpieza de cache y redirección
+        const timestamp = new Date().getTime();
+        const randomId = Math.random().toString(36).substring(7);
+        
+        // Limpiar cualquier cache existente
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => caches.delete(name));
+            });
+        }
+        
+        // Redirigir con parámetros únicos para evitar cache
+        setTimeout(() => {
+            window.location.href = 'https://finangest-haq3yl39i-felirozxxs-projects.vercel.app';
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -23,9 +23,10 @@ module.exports = async (req, res) => {
         }
 
         // GET - Obtener carteras por usuario
-        if (req.method === 'GET' && action === 'por-usuario' && userId) {
+        if (req.method === 'GET' && (action === 'por-usuario' || userId)) {
+            const targetUserId = userId || req.query.userId;
             const carteras = await db.collection('carteras')
-                .find({ creadoPor: userId, eliminada: false })
+                .find({ creadoPor: targetUserId, eliminada: false })
                 .toArray();
             
             // Convertir _id a id para compatibilidad con frontend
@@ -54,9 +55,16 @@ module.exports = async (req, res) => {
             return res.json({ success: true, carteras: carterasConId });
         }
 
-        // POST - Crear nueva cartera
-        if (req.method === 'POST' && action === 'crear') {
+        // POST - Crear nueva cartera (con o sin action=crear)
+        if (req.method === 'POST' && (action === 'crear' || !action)) {
             const userId = body.userId || body.creadoPor;
+            
+            if (!userId) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'userId requerido' 
+                });
+            }
             
             // VERIFICAR PAGO: Obtener usuario y contar carteras existentes
             const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
@@ -74,7 +82,7 @@ module.exports = async (req, res) => {
             });
             
             // Verificar si tiene carteras pagadas disponibles
-            const carterasPagadas = user.carterasPagadas || 0; // Por defecto 0 - TODAS requieren pago
+            const carterasPagadas = user.carterasPagadas || 1; // Por defecto 1 cartera gratis
             
             console.log('🔵 Verificación de pago:', { 
                 userId, 
@@ -89,7 +97,7 @@ module.exports = async (req, res) => {
                 console.log('❌ RECHAZADO: Usuario ya tiene', carterasActuales, 'carteras pero solo pagó por', carterasPagadas);
                 return res.status(403).json({ 
                     success: false, 
-                    error: 'Debes pagar R$ 51,41 para crear una cartera',
+                    error: 'Debes pagar R$ 51,41 para crear una cartera adicional',
                     needsPayment: true,
                     carterasDisponibles: carterasPagadas,
                     carterasCreadas: carterasActuales
@@ -118,13 +126,22 @@ module.exports = async (req, res) => {
         }
 
         // PUT - Actualizar cartera
-        if (req.method === 'PUT' && action === 'actualizar' && id) {
+        if (req.method === 'PUT' && (action === 'actualizar' || id)) {
+            const targetId = id || req.query.id;
+            
+            if (!targetId) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'ID de cartera requerido' 
+                });
+            }
+            
             const updateData = { ...body };
             delete updateData._id;
             delete updateData.id;
             
             const result = await db.collection('carteras').updateOne(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(targetId) },
                 { $set: updateData }
             );
             
@@ -135,9 +152,18 @@ module.exports = async (req, res) => {
         }
 
         // DELETE - Eliminar cartera (soft delete)
-        if ((req.method === 'DELETE' || req.method === 'POST') && action === 'eliminar' && id) {
+        if ((req.method === 'DELETE' || req.method === 'POST') && (action === 'eliminar' || id)) {
+            const targetId = id || req.query.id;
+            
+            if (!targetId) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'ID de cartera requerido' 
+                });
+            }
+            
             const result = await db.collection('carteras').updateOne(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(targetId) },
                 { $set: { eliminada: true, fechaEliminacion: new Date() } }
             );
             
@@ -162,7 +188,7 @@ module.exports = async (req, res) => {
 
         return res.status(400).json({ 
             success: false, 
-            error: 'Invalid request - missing action or parameters' 
+            error: 'Operación no válida. Método: ' + req.method + ', Action: ' + (action || 'ninguna')
         });
 
     } catch (error) {
