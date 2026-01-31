@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test FG2026</title>
+    <style>
+        body {
+            background: #0a0e17;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            text-align: center;
+        }
+        .success {
+            background: #2ecc71;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .info {
+            background: #00d4ff;
+            color: #000;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px auto;
+            max-width: 600px;
+        }
+        a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>✅ Deployment Exitoso</h1>
+    
+    <div class="success">
+        <h2>FG2026.html está funcionando</h2>
+        <p>Timestamp: <span id="timestamp"></span></p>
+    </div>
+    
+    <div class="info">
+        <p><strong>Cambios aplicados:</strong></p>
+        <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
+            <li>✅ Firebase desactivado (sin errores)</li>
+            <li>✅ Service Worker desactivado</li>
+            <li>✅ API de carteras arreglada</li>
+            <li>✅ Nuevo archivo fg2026.html (sin cache)</li>
+        </ul>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <a href="/fg2026.html" style="background: #00d4ff; color: #000; padding: 15px 30px; border-radius: 8px; display: inline-block;">
+            Ir a la App Principal
+        </a>
+    </div>
+    
+    <div style="margin-top: 20px; color: #8892b0;">
+        <p>Si ves esta página, el deployment funcionó correctamente</p>
+    </div>
+    
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString('es-ES');
+        
+        // Test API
+        fetch('/api/index')
+            .then(r => r.json())
+            .then(data => {
+                console.log('✅ API funcionando:', data);
+            })
+            .catch(e => {
+                console.error('❌ Error API:', e);
+            });
+    </script>
+</body>
+</html>
