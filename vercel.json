@@ -65,7 +65,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/fg2026.html"
+      "destination": "/index.html"
     },
     {
       "source": "/api/system-health",
