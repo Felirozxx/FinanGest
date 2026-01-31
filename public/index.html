@@ -3372,7 +3372,7 @@
             
             try {
                 // Registrar service worker
-                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                const registration = await // Service Worker DISABLED
                 console.log('Service Worker registrado:', registration);
                 
                 // Solicitar permiso
@@ -15936,7 +15936,7 @@
                     registrations.forEach(reg => reg.unregister());
                 });
                 // Registrar nuevo Service Worker
-                navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+                // Service Worker DISABLED
                     .then(reg => {
                         reg.update();
                         console.log('Service Worker actualizado');
