@@ -77,12 +77,12 @@ module.exports = async (req, res) => {
             return res.json({ success: true, carteras: carterasConId });
         }
 
-        // POST - Crear nueva cartera (con o sin action=crear)
-        if (req.method === 'POST') {
-            console.log('🟡 POST detectado, verificando body:', { 
+        // POST - Crear nueva cartera (sin action ni carteraId)
+        if (req.method === 'POST' && !action && !carteraId) {
+            console.log('🟡 POST detectado para crear cartera, verificando body:', { 
                 hasUserId: !!body.userId, 
                 hasCreadoPor: !!body.creadoPor,
-                action 
+                body
             });
             
             const userId = body.userId || body.creadoPor;
