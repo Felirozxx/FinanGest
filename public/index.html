@@ -3370,13 +3370,6 @@
 
         // Firebase removed - MongoDB only
 
-                html += '</div>';
-
-                // Estado general del sistema
-                const allHealthy = mongo.healthy;
-                const systemStatus = mongo.healthy ? 'MongoDB operativo' : 'MongoDB fuera de línea';
-                const systemColor = mongo.healthy ? 'var(--accent-green)' : 'var(--accent-red)';
-
                 html += `
                     <div class="card-dark mt-4" style="border-left: 4px solid ${systemColor};">
                         <div class="d-flex align-items-center gap-3 mb-3">
