@@ -3369,37 +3369,7 @@
         console.log('🔵 FinanGest Version:', '2026-02-01T00:52:46.950Z', 'Commit: 65bd30f');
 
         // Firebase removed - MongoDB only
-
-                html += `
-                    <div class="card-dark mt-4" style="border-left: 4px solid ${systemColor};">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <i class="fas fa-info-circle fa-2x" style="color: ${systemColor};"></i>
-                            <div>
-                                <h5 class="mb-1" style="color: ${systemColor};">${systemStatus}</h5>
-                                <small class="text-secondary">Última actualización: ${new Date().toLocaleString('es-ES')}</small>
-                            </div>
-                        </div>
-                        <div class="text-secondary" style="font-size: 0.9rem;">
-                            <p class="mb-2"><i class="fas fa-shield-alt me-2"></i>El sistema verifica automáticamente el estado de los servidores cada 30 segundos</p>
-                            <p class="mb-0"><i class="fas fa-sync-alt me-2"></i>En caso de falla, el sistema cambia automáticamente al siguiente servidor disponible</p>
-                        </div>
-                    </div>
-                `;
-
-                container.innerHTML = html;
-
-            } catch (error) {
-                console.error('Error:', error);
-                container.innerHTML = `
-                    <div class="card-dark">
-                        <div class="alert alert-danger mb-0">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Error al cargar el estado de los servidores: ${error.message}
-                        </div>
-                    </div>
-                `;
-            }
-        }
+        // Server monitor code removed
         // ============ FIN FUNCIONES DE MONITOR DE SERVIDORES ============
 
         async function renderAdminClientes() {
