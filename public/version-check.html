@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FinanGest - Version Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔍 FinanGest - Verificación de Deployment</h1>
+        
+        <div id="status"></div>
+        
+        <button onclick="checkVersion()">🔄 Verificar Versión</button>
+        <button onclick="testAPI()">🧪 Probar API Carteras</button>
+        <button onclick="location.href='/'">🏠 Ir a la App</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status ' + type;
+            statusDiv.innerHTML = message;
+        }
+        
+        function showResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h3>Resultados:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+        
+        async function checkVersion() {
+            showStatus('🔍 Verificando versión...', 'info');
+            
+            try {
+                // Check if the version log appears in console
+                console.clear();
+                console.log('🔵 Checking deployment version...');
+                console.log('Expected: 2026-02-01T00:52:46.950Z or later');
+                console.log('Commit: 95fd972 or later');
+                
+                showStatus('✅ Versión esperada: 2026-02-01 00:52 UTC o posterior<br>Commit: 95fd972<br><br>Revisa la consola del navegador (F12) para ver el log de versión.', 'success');
+                
+                showResults({
+                    message: 'Abre la consola del navegador (F12) y busca el log que dice:',
+                    expected: '🔵 FinanGest Version: 2026-02-01T00:52:46.950Z Commit: 65bd30f',
+                    note: 'Si ves una fecha/hora anterior, Vercel NO ha desplegado la última versión'
+                });
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function testAPI() {
+            showStatus('🧪 Probando API /api/carteras-v2...', 'info');
+            
+            try {
+                // Test the API endpoint
+                const response = await fetch(API_URL + '/api/carteras-v2?userId=test123');
+                const data = await response.json();
+                
+                console.log('🟢 API Response:', data);
+                
+                if (response.ok) {
+                    showStatus('✅ API /api/carteras-v2 está respondiendo correctamente', 'success');
+                } else {
+                    showStatus('⚠️ API respondió con error: ' + (data.error || 'Unknown'), 'error');
+                }
+                
+                showResults({
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data,
+                    note: 'Revisa la consola para ver si aparece el log 🟢 Carteras API v2.0 called'
+                });
+                
+            } catch (error) {
+                showStatus('❌ Error al llamar API: ' + error.message, 'error');
+                showResults({ error: error.message });
+            }
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            showStatus('✅ Página cargada. Haz click en los botones para verificar.', 'info');
+        });
+    </script>
+</body>
+</html>
