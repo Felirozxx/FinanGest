@@ -11744,7 +11744,7 @@
             
             try {
                 // Cargar carteras del usuario
-                const carterasRes = await fetch(API_URL + '/api/carteras?userId=' + userId);
+                const carterasRes = await fetch(API_URL + '/api/carteras-v2?userId=' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                 
@@ -11925,7 +11925,7 @@
                 verTodoGastos = Array.isArray(gastosData) ? gastosData : [];
                 
                 // Cargar carteras del usuario
-                const carterasRes = await fetch(API_URL + '/api/carteras?userId=' + userId);
+                const carterasRes = await fetch(API_URL + '/api/carteras-v2?userId=' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                 
@@ -12954,7 +12954,7 @@
                     
                     try {
                         // Cargar carteras del usuario
-                        const carterasRes = await fetch(API_URL + '/api/carteras?userId=' + userId);
+                        const carterasRes = await fetch(API_URL + '/api/carteras-v2?userId=' + userId);
                         const carterasData = await carterasRes.json();
                         const carteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
                         
@@ -16583,7 +16583,7 @@
         async function cargarCarteras() {
             if (!currentUser) return;
             try {
-                const res = await fetch(API_URL + '/api/carteras?userId=' + currentUser.id);
+                const res = await fetch(API_URL + '/api/carteras-v2?userId=' + currentUser.id);
                 const data = await res.json();
                 if (data.success) {
                     carteras = data.carteras || [];
@@ -16899,7 +16899,7 @@
             try {
                 // Guardar contraseña en la cartera (solo enviar password)
                 console.log('Guardando contraseña para cartera:', carteraPasswordPendiente);
-                const res = await fetch(API_URL + '/api/carteras/' + carteraPasswordPendiente, {
+                const res = await fetch(API_URL + '/api/carteras-v2/' + carteraPasswordPendiente, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
@@ -17035,7 +17035,7 @@
             if (!cartera) return;
             
             try {
-                const res = await fetch(API_URL + '/api/carteras/' + carteraPasswordPendiente, {
+                const res = await fetch(API_URL + '/api/carteras-v2/' + carteraPasswordPendiente, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ...cartera, password: nuevaPassword })
@@ -17175,7 +17175,7 @@
                 let res;
                 if (editandoCarteraId) {
                     // Editar cartera existente
-                    res = await fetch(API_URL + '/api/carteras/' + editandoCarteraId, {
+                    res = await fetch(API_URL + '/api/carteras-v2/' + editandoCarteraId, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ nombre, descripcion, color })
@@ -17204,7 +17204,7 @@
                     // Si tiene carteras disponibles (pagadas pero no creadas), crear sin pago
                     if (carterasActuales < carterasPagadas) {
                         // Crear cartera sin pago (ya pagó por ella)
-                        res = await fetch(API_URL + '/api/carteras', {
+                        res = await fetch(API_URL + '/api/carteras-v2', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -17240,7 +17240,7 @@
                     } else {
                         // Cartera adicional - requiere pago
                         // Primero crear la cartera como pendiente de pago
-                        res = await fetch(API_URL + '/api/carteras', {
+                        res = await fetch(API_URL + '/api/carteras-v2', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -17364,7 +17364,7 @@
             if (carteraNuevaPendiente && carteraNuevaPendiente.id) {
                 try {
                     // Eliminar la cartera pendiente
-                    await fetch(API_URL + '/api/carteras/' + carteraNuevaPendiente.id, {
+                    await fetch(API_URL + '/api/carteras-v2/' + carteraNuevaPendiente.id, {
                         method: 'DELETE',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ userId: currentUser.id })
@@ -17453,7 +17453,7 @@
             try {
                 // Mover a carteras eliminadas (soft delete)
                 console.log('Eliminando cartera:', carteraAEliminar);
-                const res = await fetch(API_URL + '/api/carteras/' + carteraAEliminar + '/eliminar', {
+                const res = await fetch(API_URL + '/api/carteras-v2?action=eliminar&id=' + carteraAEliminar, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUser.id })
@@ -17650,7 +17650,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/carteras/' + carteraId + '/restablecer', {
+                const res = await fetch(API_URL + '/api/carteras-v2?action=restablecer&id=' + carteraId, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUser.id })
