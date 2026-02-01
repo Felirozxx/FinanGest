@@ -2,8 +2,9 @@ const { connectToDatabase } = require('./_db');
 const { ObjectId } = require('mongodb');
 
 // Endpoint consolidado para todas las operaciones de carteras
+// Version: 2.0 - Fixed POST condition
 module.exports = async (req, res) => {
-    console.log('🟢 Carteras API called:', {
+    console.log('🟢 Carteras API v2.0 called:', {
         method: req.method,
         url: req.url,
         hasBody: !!req.body,
