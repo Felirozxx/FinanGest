@@ -78,7 +78,13 @@ module.exports = async (req, res) => {
         }
 
         // POST - Crear nueva cartera (con o sin action=crear)
-        if (req.method === 'POST' && (action === 'crear' || !action)) {
+        if (req.method === 'POST') {
+            console.log('🟡 POST detectado, verificando body:', { 
+                hasUserId: !!body.userId, 
+                hasCreadoPor: !!body.creadoPor,
+                action 
+            });
+            
             const userId = body.userId || body.creadoPor;
             
             if (!userId) {
