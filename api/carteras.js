@@ -226,7 +226,7 @@ module.exports = async (req, res) => {
         
         return res.status(400).json({ 
             success: false, 
-            error: 'Operación no válida. Método: ' + req.method + ', Action: ' + (action || 'ninguna') + ', URL: ' + req.url
+            error: 'Operación no válida - Método: ' + req.method + ' - Action: ' + (action || 'ninguna') + ' - URL: ' + req.url + ' - v2.0'
         });
 
     } catch (error) {
