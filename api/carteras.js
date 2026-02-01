@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
             return res.json({ success: true, carteras: carterasConId });
         }
 
-        // POST - Crear nueva cartera (sin action ni carteraId)
+        // POST - Crear nueva cartera
         if (req.method === 'POST' && !action && !carteraId) {
             console.log('🟡 POST detectado para crear cartera, verificando body:', { 
                 hasUserId: !!body.userId, 
@@ -88,6 +88,7 @@ module.exports = async (req, res) => {
             const userId = body.userId || body.creadoPor;
             
             if (!userId) {
+                console.log('❌ Error: userId no encontrado en body');
                 return res.status(400).json({ 
                     success: false, 
                     error: 'userId requerido' 
