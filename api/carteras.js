@@ -3,6 +3,13 @@ const { ObjectId } = require('mongodb');
 
 // Endpoint consolidado para todas las operaciones de carteras
 module.exports = async (req, res) => {
+    console.log('🟢 Carteras API called:', {
+        method: req.method,
+        url: req.url,
+        hasBody: !!req.body,
+        bodyType: typeof req.body
+    });
+    
     // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
