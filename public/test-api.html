@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Carteras</title>
+    <style>
+        body {
+            background: #0a0e17;
+            color: white;
+            font-family: monospace;
+            padding: 20px;
+        }
+        .test {
+            background: #1a1f2e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+        }
+        .success { border-left-color: #2ecc71; }
+        .error { border-left-color: #ff4757; }
+        button {
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        pre {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test API Carteras</h1>
+    
+    <div class="test">
+        <h3>1. Test GET - Obtener carteras</h3>
+        <button onclick="testGet()">Probar GET</button>
+        <pre id="result-get">Esperando...</pre>
+    </div>
+    
+    <div class="test">
+        <h3>2. Test POST - Crear cartera</h3>
+        <button onclick="testPost()">Probar POST</button>
+        <pre id="result-post">Esperando...</pre>
+    </div>
+    
+    <div class="test">
+        <h3>3. Test con userId real</h3>
+        <input type="text" id="userId" placeholder="Pega tu userId aquí" style="width: 300px; padding: 8px; background: #000; color: #fff; border: 1px solid #00d4ff;">
+        <button onclick="testWithUserId()">Probar con userId</button>
+        <pre id="result-userid">Esperando...</pre>
+    </div>
+
+    <script>
+        async function testGet() {
+            const result = document.getElementById('result-get');
+            result.textContent = 'Probando...';
+            
+            try {
+                const res = await fetch('/api/carteras?userId=test123');
+                const data = await res.json();
+                result.textContent = JSON.stringify(data, null, 2);
+                result.parentElement.className = data.success ? 'test success' : 'test error';
+            } catch (e) {
+                result.textContent = 'ERROR: ' + e.message;
+                result.parentElement.className = 'test error';
+            }
+        }
+        
+        async function testPost() {
+            const result = document.getElementById('result-post');
+            result.textContent = 'Probando...';
+            
+            try {
+                const res = await fetch('/api/carteras', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: 'test123',
+                        nombre: 'Cartera Test',
+                        descripcion: 'Test desde diagnóstico',
+                        color: '#00d4ff'
+                    })
+                });
+                const data = await res.json();
+                result.textContent = JSON.stringify(data, null, 2);
+                result.parentElement.className = data.success ? 'test success' : 'test error';
+            } catch (e) {
+                result.textContent = 'ERROR: ' + e.message;
+                result.parentElement.className = 'test error';
+            }
+        }
+        
+        async function testWithUserId() {
+            const userId = document.getElementById('userId').value;
+            const result = document.getElementById('result-userid');
+            
+            if (!userId) {
+                result.textContent = 'ERROR: Ingresa un userId';
+                return;
+            }
+            
+            result.textContent = 'Probando...';
+            
+            try {
+                const res = await fetch('/api/carteras', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: userId,
+                        nombre: 'Mi Cartera',
+                        descripcion: 'Test real',
+                        color: '#00d4ff'
+                    })
+                });
+                const data = await res.json();
+                result.textContent = JSON.stringify(data, null, 2);
+                result.parentElement.className = data.success ? 'test success' : 'test error';
+            } catch (e) {
+                result.textContent = 'ERROR: ' + e.message;
+                result.parentElement.className = 'test error';
+            }
+        }
+    </script>
+</body>
+</html>

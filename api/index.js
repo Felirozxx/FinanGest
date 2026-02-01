@@ -52,11 +52,36 @@ module.exports = async (req, res) => {
         }
 
         // ============ HEARTBEAT ============
-        if (pathname === '/api/heartbeat' && req.method === 'POST') {
-            return res.json({
-                success: true,
-                timestamp: new Date().toISOString(),
-                message: 'Heartbeat received'
+        if (pathname === '/api/heartbeat') {
+            if (req.method === 'POST') {
+                return res.json({
+                    success: true,
+                    timestamp: new Date().toISOString(),
+                    message: 'Heartbeat received'
+                });
+            }
+            if (req.method === 'GET') {
+                return res.json({
+                    success: true,
+                    timestamp: new Date().toISOString(),
+                    message: 'Heartbeat OK'
+                });
+            }
+        }
+
+        // ============ CARTERAS-ELIMINADAS ============
+        if (pathname === '/api/carteras-eliminadas' && req.method === 'GET') {
+            const { userId } = req.query;
+            const carteras = await db.collection('carteras')
+                .find({ creadoPor: userId, eliminada: true })
+                .toArray();
+            
+            return res.json({ 
+                success: true, 
+                carteras: carteras.map(c => ({
+                    ...c,
+                    id: c._id.toString()
+                }))
             });
         }
 
