@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FinanGest - Test Login</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 { text-align: center; margin-bottom: 30px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #0f3460;
+            border: 1px solid #00d4ff;
+            border-radius: 5px;
+            color: white;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00d4ff;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover { background: #00b8e6; }
+        .error { color: #ff4444; margin-top: 10px; }
+        .success { color: #00ff00; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🔐 FinanGest Login</h1>
+        <input type="email" id="email" placeholder="Email" value="fzuluaga548@gmail.com">
+        <input type="password" id="password" placeholder="Password" value="Pipe16137356">
+        <button onclick="login()">Iniciar Sesión</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            messageDiv.innerHTML = '⏳ Iniciando sesión...';
+            messageDiv.className = '';
+            
+            try {
+                const res = await fetch(API_URL + '/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    messageDiv.innerHTML = '✅ Login exitoso! Usuario: ' + data.user.nombre;
+                    messageDiv.className = 'success';
+                    
+                    // Redirect to main app
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    messageDiv.innerHTML = '❌ Error: ' + (data.error || 'Login failed');
+                    messageDiv.className = 'error';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '❌ Error de conexión: ' + error.message;
+                messageDiv.className = 'error';
+            }
+        }
+        
+        // Allow Enter key
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
