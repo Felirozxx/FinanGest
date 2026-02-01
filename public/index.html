@@ -17453,7 +17453,7 @@
             try {
                 // Mover a carteras eliminadas (soft delete)
                 console.log('Eliminando cartera:', carteraAEliminar);
-                const res = await fetch(API_URL + '/api/carteras-v2/' + carteraAEliminar + '/eliminar', {
+                const res = await fetch(API_URL + '/api/carteras-v2?action=eliminar&id=' + carteraAEliminar, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUser.id })
@@ -17526,7 +17526,7 @@
         async function cargarCarterasEliminadas() {
             try {
                 console.log('Cargando carteras eliminadas para userId:', currentUser.id);
-                const res = await fetch(API_URL + '/api/carteras-v2-eliminadas?userId=' + currentUser.id);
+                const res = await fetch(API_URL + '/api/carteras-v2?action=eliminadas&userId=' + currentUser.id);
                 const data = await res.json();
                 console.log('Carteras eliminadas recibidas:', data);
                 carterasEliminadas = data.error ? [] : data;
@@ -17650,7 +17650,7 @@
             }
             
             try {
-                const res = await fetch(API_URL + '/api/carteras-v2/' + carteraId + '/restablecer', {
+                const res = await fetch(API_URL + '/api/carteras-v2?action=restablecer&id=' + carteraId, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUser.id })
