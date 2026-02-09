@@ -1,5 +1,6 @@
 const { connectToDatabase, getSystemStatus } = require('./_db');
 const { ObjectId } = require('mongodb');
+const bcrypt = require('bcryptjs');
 
 // Endpoint consolidado para todas las operaciones de administración
 module.exports = async (req, res) => {
@@ -290,7 +291,6 @@ module.exports = async (req, res) => {
             }
             
             // Verificar contraseña del admin
-            const bcrypt = require('bcryptjs');
             const passwordValid = await bcrypt.compare(adminPassword, admin.password);
             if (!passwordValid) {
                 return res.status(403).json({
