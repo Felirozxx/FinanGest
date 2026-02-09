@@ -1,6 +1,6 @@
 const { connectToDatabase, getSystemStatus } = require('./_db');
 const { ObjectId } = require('mongodb');
-const bcrypt = require('bcryptjs');
+const { verifyPassword } = require('./_crypto-hash');
 
 // Endpoint consolidado para todas las operaciones de administración
 module.exports = async (req, res) => {
@@ -310,19 +310,9 @@ module.exports = async (req, res) => {
                 console.log('🔵 Admin encontrado:', admin.email);
                 console.log('🔵 Password en DB:', admin.password ? admin.password.substring(0, 20) + '...' : 'NO PASSWORD');
                 
-                // Verificar contraseña
-                let passwordValid = false;
-                
-                // Intentar con bcrypt primero
-                try {
-                    passwordValid = await bcrypt.compare(adminPassword, admin.password);
-                    console.log('🔵 Verificación bcrypt:', passwordValid);
-                } catch (bcryptError) {
-                    console.log('⚠️ Error en bcrypt, intentando comparación directa:', bcryptError.message);
-                    // Si falla bcrypt, comparar directamente (para contraseñas no hasheadas)
-                    passwordValid = (adminPassword === admin.password);
-                    console.log('🔵 Verificación directa:', passwordValid);
-                }
+                // Verificar contraseña usando el mismo método que login
+                const passwordValid = verifyPassword(adminPassword, admin.password);
+                console.log('🔵 Verificación de contraseña:', passwordValid);
                 
                 if (!passwordValid) {
                     console.log('❌ Contraseña incorrecta');

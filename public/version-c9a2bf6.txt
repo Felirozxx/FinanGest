@@ -1,0 +1,3 @@
+Deployment c9a2bf6 - Fixed delete user endpoint
+Timestamp: 2026-02-01 02:15:00
+This forces Vercel to deploy the latest API changes
