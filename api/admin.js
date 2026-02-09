@@ -279,8 +279,9 @@ module.exports = async (req, res) => {
                 const carterasCount = await db.collection('carteras').estimatedDocumentCount();
                 const gastosCount = await db.collection('gastos').estimatedDocumentCount();
                 const sessionsCount = await db.collection('sessions').estimatedDocumentCount();
+                const backupsCount = await db.collection('backups').estimatedDocumentCount();
                 
-                const totalDocs = usersCount + clientesCount + carterasCount + gastosCount + sessionsCount;
+                const totalDocs = usersCount + clientesCount + carterasCount + gastosCount + sessionsCount + backupsCount;
                 
                 // Estimación de uso (cada documento ~1KB promedio)
                 const usedMB = Math.round((totalDocs * 1) / 1024);
@@ -293,6 +294,29 @@ module.exports = async (req, res) => {
                 const apiCallsLimit = 100000; // Vercel Hobby limit
                 const apiCallsPercent = Math.min(100, Math.round((estimatedApiCalls / apiCallsLimit) * 100));
                 
+                // Determinar estado
+                let estado = 'ok';
+                let recomendaciones = [];
+                
+                if (percentUsed > 80) {
+                    estado = 'critical';
+                    recomendaciones.push('⚠️ Almacenamiento crítico (>80%). Considera archivar datos antiguos.');
+                } else if (percentUsed > 60) {
+                    estado = 'warning';
+                    recomendaciones.push('⚠️ Almacenamiento alto (>60%). Monitorea el crecimiento.');
+                } else {
+                    recomendaciones.push('✅ Almacenamiento en niveles óptimos.');
+                }
+                
+                if (apiCallsPercent > 80) {
+                    recomendaciones.push('⚠️ Alto uso de API calls. Considera optimizar las consultas.');
+                } else {
+                    recomendaciones.push('✅ Uso de API calls dentro de límites normales.');
+                }
+                
+                // Calcular duración estimada del plan
+                const diasRestantes = Math.floor((limitMB - usedMB) / (usedMB / 30)); // Estimación basada en crecimiento mensual
+                
                 return res.json({
                     success: true,
                     stats: {
@@ -300,25 +324,27 @@ module.exports = async (req, res) => {
                         storageUsedMB: usedMB,
                         storageLimitMB: limitMB,
                         storagePercent: percentUsed,
-                        totalDocuments: totalDocs,
-                        collections: {
-                            users: usersCount,
-                            clientes: clientesCount,
-                            carteras: carterasCount,
-                            gastos: gastosCount,
-                            sessions: sessionsCount
-                        },
                         
-                        // Vercel
-                        apiCallsEstimated: estimatedApiCalls,
-                        apiCallsLimit: apiCallsLimit,
+                        // Vercel API Calls
+                        apiCallsEstimadas: estimatedApiCalls,
+                        apiCallsLimite: apiCallsLimit,
                         apiCallsPercent: apiCallsPercent,
                         
-                        // GitHub
-                        repoUrl: 'https://github.com/Felirozxx/FinanGest',
-                        branch: 'main',
+                        // Contadores
+                        totalTrabajadores: usersCount - 1, // Excluir admin
+                        totalClientes: clientesCount,
+                        totalGastos: gastosCount,
+                        totalBackups: backupsCount,
+                        totalCarteras: carterasCount,
+                        totalDocumentos: totalDocs,
                         
-                        // Servicios
+                        // Estado
+                        estado: estado,
+                        recomendaciones: recomendaciones,
+                        planActual: 'free',
+                        diasRestantes: Math.max(0, diasRestantes),
+                        
+                        // Servicios detallados
                         services: {
                             mongodb: {
                                 name: 'MongoDB Atlas',
@@ -327,7 +353,15 @@ module.exports = async (req, res) => {
                                 limit: '512 MB',
                                 used: `${usedMB} MB`,
                                 percent: percentUsed,
-                                url: 'https://cloud.mongodb.com'
+                                url: 'https://cloud.mongodb.com',
+                                collections: {
+                                    users: usersCount,
+                                    clientes: clientesCount,
+                                    carteras: carterasCount,
+                                    gastos: gastosCount,
+                                    sessions: sessionsCount,
+                                    backups: backupsCount
+                                }
                             },
                             vercel: {
                                 name: 'Vercel',
@@ -338,6 +372,10 @@ module.exports = async (req, res) => {
                                     functions: '100 GB-Hrs',
                                     invocations: '100,000/día'
                                 },
+                                estimated: {
+                                    apiCalls: estimatedApiCalls,
+                                    percent: apiCallsPercent
+                                },
                                 url: 'https://vercel.com/dashboard'
                             },
                             github: {
@@ -345,6 +383,7 @@ module.exports = async (req, res) => {
                                 status: 'operational',
                                 plan: 'Free',
                                 repo: 'Felirozxx/FinanGest',
+                                branch: 'main',
                                 url: 'https://github.com/Felirozxx/FinanGest'
                             }
                         }
