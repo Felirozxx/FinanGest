@@ -54,13 +54,55 @@ module.exports = async (req, res) => {
                 // Usar estadísticas REALES de MongoDB (datos + índices)
                 const usedBytes = dbStats.dataSize + dbStats.indexSize;
                 const usedMB = parseFloat((usedBytes / 1024 / 1024).toFixed(2));
-                const limitMB = 512; // MongoDB Atlas Free Tier
+                
+                // DETECTAR PLAN DE MONGODB AUTOMÁTICAMENTE
+                // MongoDB Atlas Free (M0): 512 MB
+                // M10 Shared: 10 GB = 10,240 MB
+                // M20: 20 GB = 20,480 MB
+                // M30: 40 GB = 40,960 MB
+                let mongodbPlan = 'Free Tier (M0)';
+                let limitMB = 512;
+                
+                // Intentar detectar el plan basado en el tamaño del cluster
+                // Si el storage size es mayor a 512 MB, probablemente es un plan pagado
+                const storageSizeMB = dbStats.storageSize / 1024 / 1024;
+                if (storageSizeMB > 512) {
+                    if (storageSizeMB <= 10240) {
+                        mongodbPlan = 'M10 Shared';
+                        limitMB = 10240;
+                    } else if (storageSizeMB <= 20480) {
+                        mongodbPlan = 'M20';
+                        limitMB = 20480;
+                    } else if (storageSizeMB <= 40960) {
+                        mongodbPlan = 'M30';
+                        limitMB = 40960;
+                    } else {
+                        mongodbPlan = 'M40+';
+                        limitMB = 81920; // 80 GB estimado
+                    }
+                }
+                
                 const percentUsed = parseFloat(((usedMB / limitMB) * 100).toFixed(2));
+                
+                // DETECTAR PLAN DE VERCEL AUTOMÁTICAMENTE
+                // Vercel Hobby: 100,000 invocations/día
+                // Vercel Pro: 1,000,000 invocations/día
+                // Vercel Enterprise: Ilimitado
+                const vercelPlan = process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PLAN ? process.env.VERCEL_PLAN : 'hobby';
+                let apiCallsLimit = 100000;
+                let vercelPlanName = 'Hobby (Free)';
+                
+                if (vercelPlan === 'pro') {
+                    apiCallsLimit = 1000000;
+                    vercelPlanName = 'Pro ($20/mes)';
+                } else if (vercelPlan === 'enterprise') {
+                    apiCallsLimit = 10000000; // Prácticamente ilimitado
+                    vercelPlanName = 'Enterprise';
+                }
                 
                 // Estadísticas de API calls (estimado basado en usuarios activos)
                 const activeUsers = await db.collection('users').countDocuments({ activo: true });
                 const estimatedApiCalls = activeUsers * 100; // Estimación: 100 calls por usuario activo al día
-                const apiCallsLimit = 100000; // Vercel Hobby limit
                 const apiCallsPercent = Math.min(100, Math.round((estimatedApiCalls / apiCallsLimit) * 100));
                 
                 // Determinar estado
@@ -69,23 +111,22 @@ module.exports = async (req, res) => {
                 
                 if (percentUsed > 80) {
                     estado = 'critical';
-                    recomendaciones.push('⚠️ Almacenamiento crítico (>80%). Considera archivar datos antiguos.');
+                    recomendaciones.push(`⚠️ Almacenamiento crítico (${percentUsed}%). ${mongodbPlan === 'Free Tier (M0)' ? 'Considera upgrade a M10 ($57/mes) para 10 GB.' : 'Considera archivar datos antiguos o upgrade de plan.'}`);
                 } else if (percentUsed > 60) {
                     estado = 'warning';
-                    recomendaciones.push('⚠️ Almacenamiento alto (>60%). Monitorea el crecimiento.');
+                    recomendaciones.push(`⚠️ Almacenamiento alto (${percentUsed}%). Monitorea el crecimiento.`);
                 } else {
                     recomendaciones.push('✅ Almacenamiento en niveles óptimos.');
                 }
                 
                 if (apiCallsPercent > 80) {
-                    recomendaciones.push('⚠️ Alto uso de API calls. Considera optimizar las consultas.');
+                    recomendaciones.push(`⚠️ Alto uso de API calls (${apiCallsPercent}%). ${vercelPlan === 'hobby' ? 'Considera upgrade a Vercel Pro ($20/mes) para 1M invocations.' : 'Considera optimizar las consultas.'}`);
                 } else {
                     recomendaciones.push('✅ Uso de API calls dentro de límites normales.');
                 }
                 
                 // Calcular duración estimada del plan (basado en crecimiento)
-                // Si usedMB es muy pequeño, asumir crecimiento mínimo de 0.1 MB/mes
-                const growthPerMonth = Math.max(0.1, usedMB / Math.max(1, totalDocs / 10)); // Estimación conservadora
+                const growthPerMonth = Math.max(0.1, usedMB / Math.max(1, totalDocs / 10));
                 const diasRestantes = Math.max(0, Math.floor((limitMB - usedMB) / growthPerMonth * 30));
                 const mesesRestantes = Math.floor(diasRestantes / 30);
                 const aniosRestantes = Math.floor(mesesRestantes / 12);
@@ -93,15 +134,17 @@ module.exports = async (req, res) => {
                 return res.json({
                     success: true,
                     stats: {
-                        // MongoDB (estadísticas REALES)
+                        // MongoDB (estadísticas REALES con detección de plan)
                         storageUsedMB: usedMB,
                         storageLimitMB: limitMB,
                         storagePercent: percentUsed,
+                        mongodbPlan: mongodbPlan,
                         
-                        // Vercel API Calls
+                        // Vercel API Calls (con detección de plan)
                         apiCallsEstimadas: estimatedApiCalls,
                         apiCallsLimite: apiCallsLimit,
                         apiCallsPercent: apiCallsPercent,
+                        vercelPlan: vercelPlanName,
                         
                         // Contadores
                         totalTrabajadores: usersCount - 1, // Excluir admin
@@ -114,7 +157,7 @@ module.exports = async (req, res) => {
                         // Estado
                         estado: estado,
                         recomendaciones: recomendaciones,
-                        planActual: 'free',
+                        planActual: mongodbPlan === 'Free Tier (M0)' ? 'free' : 'paid',
                         diasRestantes: diasRestantes,
                         mesesRestantes: mesesRestantes,
                         aniosRestantes: aniosRestantes,
@@ -124,11 +167,13 @@ module.exports = async (req, res) => {
                             mongodb: {
                                 name: 'MongoDB Atlas',
                                 status: 'operational',
-                                plan: 'Free Tier (M0)',
-                                limit: '512 MB',
+                                plan: mongodbPlan,
+                                limit: `${limitMB >= 1024 ? (limitMB / 1024).toFixed(0) + ' GB' : limitMB + ' MB'}`,
                                 used: `${usedMB} MB`,
                                 percent: percentUsed,
                                 url: 'https://cloud.mongodb.com',
+                                isPaid: mongodbPlan !== 'Free Tier (M0)',
+                                upgradeUrl: mongodbPlan === 'Free Tier (M0)' ? 'https://cloud.mongodb.com/v2#/org/YOUR_ORG/billing/overview' : null,
                                 stats: {
                                     dataSize: parseFloat((dbStats.dataSize / 1024 / 1024).toFixed(2)),
                                     indexSize: parseFloat((dbStats.indexSize / 1024 / 1024).toFixed(2)),
@@ -147,16 +192,18 @@ module.exports = async (req, res) => {
                             vercel: {
                                 name: 'Vercel',
                                 status: 'operational',
-                                plan: 'Hobby (Free)',
+                                plan: vercelPlanName,
                                 limits: {
-                                    bandwidth: '100 GB/mes',
-                                    functions: '100 GB-Hrs',
-                                    invocations: '100,000/día'
+                                    bandwidth: vercelPlan === 'hobby' ? '100 GB/mes' : vercelPlan === 'pro' ? '1 TB/mes' : 'Ilimitado',
+                                    functions: vercelPlan === 'hobby' ? '100 GB-Hrs' : vercelPlan === 'pro' ? '1,000 GB-Hrs' : 'Ilimitado',
+                                    invocations: `${(apiCallsLimit / 1000).toFixed(0)}K/día`
                                 },
                                 estimated: {
                                     apiCalls: estimatedApiCalls,
                                     percent: apiCallsPercent
                                 },
+                                isPaid: vercelPlan !== 'hobby',
+                                upgradeUrl: vercelPlan === 'hobby' ? 'https://vercel.com/dashboard/upgrade' : null,
                                 url: 'https://vercel.com/dashboard'
                             },
                             github: {
