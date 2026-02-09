@@ -62,6 +62,218 @@
       "destination": "/api/admin"
     },
     {
+      "source": "/api/admin/backup",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/backup-trabajador/:id",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/backups",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/backups-trabajador/:id",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/delete-backup-trabajador/:id",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/gasto/:id",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/recuperar-cuenta",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/restore-sistema/:id",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/restore-trabajador/:id",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/restore/:id",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin/system-stats",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/carteras-eliminadas",
+      "destination": "/api/carteras"
+    },
+    {
+      "source": "/api/carteras/:id",
+      "destination": "/api/carteras"
+    },
+    {
+      "source": "/api/clientes-eliminados",
+      "destination": "/api/clientes"
+    },
+    {
+      "source": "/api/clientes-eliminados/:id",
+      "destination": "/api/clientes"
+    },
+    {
+      "source": "/api/clientes/:id",
+      "destination": "/api/clientes"
+    },
+    {
+      "source": "/api/gastos/:id",
+      "destination": "/api/gastos"
+    },
+    {
+      "source": "/api/users/:id",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/users/:id/toggle-edit-key",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/sessions/:id",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/sessions/admin/close-all-users",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/sessions/user/:id",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/caja",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/caja-inicial",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/caja-password-confirm",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/caja-password-reset",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/cambiar-password-caja",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/configurar-password-caja",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/eliminar-password-caja",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/tiene-password-caja",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/verificar-password-caja",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/limpiar-cajas-anteriores",
+      "destination": "/api/password-caja"
+    },
+    {
+      "source": "/api/heartbeat",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/server-time",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/pending-users",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/rechazar-usuario-pendiente",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/solicitar-acceso-admin",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/reset-datos-usuario",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/reset-todo",
+      "destination": "/api/users"
+    },
+    {
+      "source": "/api/dinero-agregado",
+      "destination": "/api/gastos"
+    },
+    {
+      "source": "/api/dinero-agregado-todo",
+      "destination": "/api/gastos"
+    },
+    {
+      "source": "/api/confirmar-pago-manual",
+      "destination": "/api/carteras"
+    },
+    {
+      "source": "/api/crear-pago-cartera",
+      "destination": "/api/carteras"
+    },
+    {
+      "source": "/api/verificar-pago-cartera",
+      "destination": "/api/carteras"
+    },
+    {
+      "source": "/api/renovar-carteras",
+      "destination": "/api/carteras"
+    },
+    {
+      "source": "/api/crear-pago-pix",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/verificar-pago",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/push-token",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/forgot-password",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/reset-password",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/send-code",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/send-recovery-code",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/verify-code",
+      "destination": "/api/index"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     }

@@ -36,6 +36,102 @@ module.exports = async (req, res) => {
             });
         }
 
+        // ============ HEARTBEAT ============
+        if (pathname === '/api/heartbeat') {
+            return res.json({ 
+                success: true, 
+                timestamp: new Date().toISOString(),
+                status: 'alive'
+            });
+        }
+
+        // ============ SERVER TIME ============
+        if (pathname === '/api/server-time') {
+            const { timezone } = req.query;
+            return res.json({ 
+                success: true, 
+                serverTime: new Date().toISOString(),
+                timestamp: Date.now(),
+                timezone: timezone || 'UTC'
+            });
+        }
+
+        // ============ PUSH TOKEN ============
+        if (pathname === '/api/push-token' && req.method === 'POST') {
+            // Placeholder para notificaciones push
+            return res.json({ 
+                success: true, 
+                message: 'Push token registrado (funcionalidad en desarrollo)'
+            });
+        }
+
+        // ============ FORGOT PASSWORD ============
+        if (pathname === '/api/forgot-password' && req.method === 'POST') {
+            // Placeholder para recuperación de contraseña
+            return res.json({ 
+                success: true, 
+                message: 'Código de recuperación enviado (funcionalidad en desarrollo)'
+            });
+        }
+
+        // ============ RESET PASSWORD ============
+        if (pathname === '/api/reset-password' && req.method === 'POST') {
+            // Placeholder para reset de contraseña
+            return res.json({ 
+                success: true, 
+                message: 'Contraseña restablecida (funcionalidad en desarrollo)'
+            });
+        }
+
+        // ============ SEND CODE ============
+        if (pathname === '/api/send-code' && req.method === 'POST') {
+            // Placeholder para envío de código de verificación
+            return res.json({ 
+                success: true, 
+                message: 'Código enviado (funcionalidad en desarrollo)'
+            });
+        }
+
+        // ============ SEND RECOVERY CODE ============
+        if (pathname === '/api/send-recovery-code' && req.method === 'POST') {
+            // Placeholder para envío de código de recuperación
+            return res.json({ 
+                success: true, 
+                message: 'Código de recuperación enviado (funcionalidad en desarrollo)'
+            });
+        }
+
+        // ============ VERIFY CODE ============
+        if (pathname === '/api/verify-code' && req.method === 'POST') {
+            // Placeholder para verificación de código
+            return res.json({ 
+                success: true, 
+                message: 'Código verificado (funcionalidad en desarrollo)'
+            });
+        }
+
+        // ============ CREAR PAGO PIX ============
+        if (pathname === '/api/crear-pago-pix' && req.method === 'POST') {
+            // Placeholder para crear pago PIX
+            return res.json({ 
+                success: true, 
+                pixKey: 'placeholder@pix.com',
+                qrCode: 'data:image/png;base64,placeholder',
+                amount: req.body.amount || 0,
+                message: 'Pago PIX creado (funcionalidad en desarrollo)'
+            });
+        }
+
+        // ============ VERIFICAR PAGO ============
+        if (pathname === '/api/verificar-pago' && req.method === 'POST') {
+            // Placeholder para verificar pago
+            return res.json({ 
+                success: true, 
+                paid: false,
+                message: 'Verificación de pago (funcionalidad en desarrollo)'
+            });
+        }
+
         const db = await connectToDatabase();
 
         // ============ CARTERAS ============
