@@ -54,8 +54,8 @@ module.exports = async (req, res) => {
             return res.json({ success: true, carteras: carterasConId });
         }
 
-        // POST - Crear nueva cartera
-        if (req.method === 'POST' && action === 'crear') {
+        // POST - Crear nueva cartera (sin action o con action=crear)
+        if (req.method === 'POST' && (!action || action === 'crear')) {
             const userId = body.userId || body.creadoPor;
             
             // VERIFICAR PAGO: Obtener usuario y contar carteras existentes
