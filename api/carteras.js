@@ -87,12 +87,36 @@ module.exports = async (req, res) => {
             // RECHAZAR si ya alcanzó el límite de carteras pagadas
             if (carterasActuales >= carterasPagadas) {
                 console.log('❌ RECHAZADO: Usuario ya tiene', carterasActuales, 'carteras pero solo pagó por', carterasPagadas);
-                return res.status(403).json({ 
-                    success: false, 
-                    error: 'Debes pagar R$ 51,41 para crear una cartera',
+                
+                // Generar clave PIX aleatoria (simulada - deberías usar tu API de pago real)
+                const pixKey = `pix-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const amount = 51.41;
+                
+                // Crear cartera pendiente de pago
+                const carteraPendiente = { 
+                    ...body,
+                    creadoPor: userId,
+                    fechaCreacion: new Date(),
+                    eliminada: false,
+                    activa: false,
+                    pendientePago: true,
+                    pixKey: pixKey,
+                    montoPago: amount
+                };
+                
+                const result = await db.collection('carteras').insertOne(carteraPendiente);
+                
+                return res.status(200).json({ 
+                    success: false,
                     needsPayment: true,
-                    carterasDisponibles: carterasPagadas,
-                    carterasCreadas: carterasActuales
+                    carteraId: result.insertedId.toString(),
+                    paymentInfo: {
+                        pixKey: pixKey,
+                        amount: amount,
+                        currency: 'BRL',
+                        description: `Pago por cartera: ${body.nombre}`
+                    },
+                    message: 'Cartera creada. Completa el pago para activarla.'
                 });
             }
             
@@ -157,6 +181,34 @@ module.exports = async (req, res) => {
             return res.json({ 
                 success: result.modifiedCount > 0,
                 message: result.modifiedCount > 0 ? 'Cartera restablecida' : 'No se encontró la cartera'
+            });
+        }
+
+        // POST - Confirmar pago de cartera
+        if (req.method === 'POST' && action === 'confirmar-pago' && id) {
+            const result = await db.collection('carteras').updateOne(
+                { _id: new ObjectId(id), pendientePago: true },
+                { 
+                    $set: { 
+                        activa: true, 
+                        pendientePago: false,
+                        fechaPago: new Date()
+                    } 
+                }
+            );
+            
+            if (result.modifiedCount > 0) {
+                // Incrementar contador de carteras pagadas del usuario
+                const cartera = await db.collection('carteras').findOne({ _id: new ObjectId(id) });
+                await db.collection('users').updateOne(
+                    { _id: new ObjectId(cartera.creadoPor) },
+                    { $inc: { carterasPagadas: 1 } }
+                );
+            }
+            
+            return res.json({ 
+                success: result.modifiedCount > 0,
+                message: result.modifiedCount > 0 ? 'Pago confirmado. Cartera activada.' : 'No se encontró la cartera o ya fue pagada'
             });
         }
 
