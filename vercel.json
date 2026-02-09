@@ -58,6 +58,10 @@
       "destination": "/api/admin"
     },
     {
+      "source": "/api/admin/eliminar-datos-trabajador",
+      "destination": "/api/admin"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     }
