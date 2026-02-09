@@ -266,6 +266,100 @@ module.exports = async (req, res) => {
         }
 
         // ============================================
+        // SYSTEM STATS - Estadísticas del sistema
+        // ============================================
+        
+        if (req.url.includes('/api/admin/system-stats')) {
+            try {
+                const { db } = await connectToDatabase();
+                
+                // Contar documentos
+                const usersCount = await db.collection('users').estimatedDocumentCount();
+                const clientesCount = await db.collection('clientes').estimatedDocumentCount();
+                const carterasCount = await db.collection('carteras').estimatedDocumentCount();
+                const gastosCount = await db.collection('gastos').estimatedDocumentCount();
+                const sessionsCount = await db.collection('sessions').estimatedDocumentCount();
+                
+                const totalDocs = usersCount + clientesCount + carterasCount + gastosCount + sessionsCount;
+                
+                // Estimación de uso (cada documento ~1KB promedio)
+                const usedMB = Math.round((totalDocs * 1) / 1024);
+                const limitMB = 512; // MongoDB Atlas Free Tier
+                const percentUsed = Math.min(100, Math.round((usedMB / limitMB) * 100));
+                
+                // Estadísticas de API calls (estimado basado en usuarios activos)
+                const activeUsers = await db.collection('users').countDocuments({ activo: true });
+                const estimatedApiCalls = activeUsers * 100; // Estimación: 100 calls por usuario activo al día
+                const apiCallsLimit = 100000; // Vercel Hobby limit
+                const apiCallsPercent = Math.min(100, Math.round((estimatedApiCalls / apiCallsLimit) * 100));
+                
+                return res.json({
+                    success: true,
+                    stats: {
+                        // MongoDB
+                        storageUsedMB: usedMB,
+                        storageLimitMB: limitMB,
+                        storagePercent: percentUsed,
+                        totalDocuments: totalDocs,
+                        collections: {
+                            users: usersCount,
+                            clientes: clientesCount,
+                            carteras: carterasCount,
+                            gastos: gastosCount,
+                            sessions: sessionsCount
+                        },
+                        
+                        // Vercel
+                        apiCallsEstimated: estimatedApiCalls,
+                        apiCallsLimit: apiCallsLimit,
+                        apiCallsPercent: apiCallsPercent,
+                        
+                        // GitHub
+                        repoUrl: 'https://github.com/Felirozxx/FinanGest',
+                        branch: 'main',
+                        
+                        // Servicios
+                        services: {
+                            mongodb: {
+                                name: 'MongoDB Atlas',
+                                status: 'operational',
+                                plan: 'Free Tier (M0)',
+                                limit: '512 MB',
+                                used: `${usedMB} MB`,
+                                percent: percentUsed,
+                                url: 'https://cloud.mongodb.com'
+                            },
+                            vercel: {
+                                name: 'Vercel',
+                                status: 'operational',
+                                plan: 'Hobby (Free)',
+                                limits: {
+                                    bandwidth: '100 GB/mes',
+                                    functions: '100 GB-Hrs',
+                                    invocations: '100,000/día'
+                                },
+                                url: 'https://vercel.com/dashboard'
+                            },
+                            github: {
+                                name: 'GitHub',
+                                status: 'operational',
+                                plan: 'Free',
+                                repo: 'Felirozxx/FinanGest',
+                                url: 'https://github.com/Felirozxx/FinanGest'
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error obteniendo estadísticas:', error);
+                return res.json({
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+
+        // ============================================
         // ELIMINAR DATOS TRABAJADOR - Eliminar usuario y todos sus datos
         // ============================================
         
