@@ -269,41 +269,73 @@ module.exports = async (req, res) => {
         // ============================================
         
         if (req.url.includes('/api/admin/eliminar-datos-trabajador') && req.method === 'POST') {
-            const { userId, password } = body;
+            const { adminPassword, trabajadorId, adminId } = body;
             
-            if (!userId || !password) {
+            if (!trabajadorId || !adminPassword) {
                 return res.status(400).json({
                     success: false,
-                    error: 'userId y password requeridos'
+                    error: 'trabajadorId y adminPassword requeridos'
                 });
             }
             
             const { db } = await connectToDatabase();
             
+            // Verificar que el admin existe y la contraseña es correcta
+            const admin = await db.collection('users').findOne({ _id: new ObjectId(adminId) });
+            if (!admin || admin.role !== 'admin') {
+                return res.status(403).json({
+                    success: false,
+                    error: 'No tienes permisos de administrador'
+                });
+            }
+            
+            // Verificar contraseña del admin
+            const bcrypt = require('bcryptjs');
+            const passwordValid = await bcrypt.compare(adminPassword, admin.password);
+            if (!passwordValid) {
+                return res.status(403).json({
+                    success: false,
+                    error: 'Contraseña incorrecta'
+                });
+            }
+            
             // Eliminar todos los datos del trabajador
-            const userIdObj = new ObjectId(userId);
+            const trabajadorIdObj = new ObjectId(trabajadorId);
+            
+            // Contar antes de eliminar
+            const clientesCount = await db.collection('clientes').countDocuments({ creadoPor: trabajadorId });
+            const gastosCount = await db.collection('gastos').countDocuments({ userId: trabajadorId });
+            const sesionesCount = await db.collection('sessions').countDocuments({ userId: trabajadorId });
+            const backupsCount = await db.collection('backups').countDocuments({ userId: trabajadorId });
             
             // 1. Eliminar clientes
-            await db.collection('clientes').deleteMany({ creadoPor: userId });
+            await db.collection('clientes').deleteMany({ creadoPor: trabajadorId });
             
             // 2. Eliminar gastos
-            await db.collection('gastos').deleteMany({ userId: userId });
+            await db.collection('gastos').deleteMany({ userId: trabajadorId });
             
             // 3. Eliminar sesiones
-            await db.collection('sessions').deleteMany({ userId: userId });
+            await db.collection('sessions').deleteMany({ userId: trabajadorId });
             
             // 4. Eliminar carteras
-            await db.collection('carteras').deleteMany({ creadoPor: userId });
+            await db.collection('carteras').deleteMany({ creadoPor: trabajadorId });
             
             // 5. Eliminar backups
-            await db.collection('backups').deleteMany({ userId: userId });
+            await db.collection('backups').deleteMany({ userId: trabajadorId });
             
             // 6. Eliminar usuario
-            await db.collection('users').deleteOne({ _id: userIdObj });
+            const deleteResult = await db.collection('users').deleteOne({ _id: trabajadorIdObj });
             
             return res.json({
                 success: true,
-                message: 'Usuario y todos sus datos eliminados correctamente'
+                message: 'Usuario y todos sus datos eliminados correctamente',
+                deleted: {
+                    clientes: clientesCount,
+                    gastos: gastosCount,
+                    sesiones: sesionesCount,
+                    backups: backupsCount,
+                    cuenta: deleteResult.deletedCount > 0
+                }
             });
         }
 
