@@ -123,7 +123,15 @@ module.exports = async (req, res) => {
                 { $set: { editKeyEnabled: newStatus } }
             );
             
-            return res.json({ success: true, editKeyEnabled: newStatus });
+            const message = newStatus 
+                ? '✅ Acceso de llave ACTIVADO - El usuario puede editar préstamos e información de clientes'
+                : '🔒 Acceso de llave DESACTIVADO - El usuario NO puede editar préstamos ni información de clientes';
+            
+            return res.json({ 
+                success: true, 
+                editKeyEnabled: newStatus,
+                message: message
+            });
         }
 
         // GET - Sessions
