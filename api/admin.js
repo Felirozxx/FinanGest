@@ -23,12 +23,146 @@ module.exports = async (req, res) => {
         }
 
         // Detectar qué endpoint se está llamando basado en la URL
-        const isSystemHealth = req.url.includes('/api/system-health') || req.url.includes('/api/admin');
+        const isSystemStats = req.url.includes('/api/admin/system-stats');
+        const isSystemHealth = req.url.includes('/api/system-health') || (req.url.includes('/api/admin') && !isSystemStats && !action);
         const isSecurityUpdates = req.url.includes('/api/security-updates');
         const isUsageStats = req.url.includes('/api/usage-stats');
         const isArchiveData = req.url.includes('/api/archive-data');
         const isSyncBackends = req.url.includes('/api/sync-backends');
 
+        // ============================================
+        // SYSTEM STATS - Estadísticas del sistema (DEBE IR PRIMERO)
+        // ============================================
+        
+        if (isSystemStats) {
+            try {
+                const { db } = await connectToDatabase();
+                
+                // Contar documentos
+                const usersCount = await db.collection('users').estimatedDocumentCount();
+                const clientesCount = await db.collection('clientes').estimatedDocumentCount();
+                const carterasCount = await db.collection('carteras').estimatedDocumentCount();
+                const gastosCount = await db.collection('gastos').estimatedDocumentCount();
+                const sessionsCount = await db.collection('sessions').estimatedDocumentCount();
+                const backupsCount = await db.collection('backups').estimatedDocumentCount();
+                
+                const totalDocs = usersCount + clientesCount + carterasCount + gastosCount + sessionsCount + backupsCount;
+                
+                // Estimación de uso (cada documento ~1KB promedio)
+                const usedMB = Math.round((totalDocs * 1) / 1024);
+                const limitMB = 512; // MongoDB Atlas Free Tier
+                const percentUsed = Math.min(100, Math.round((usedMB / limitMB) * 100));
+                
+                // Estadísticas de API calls (estimado basado en usuarios activos)
+                const activeUsers = await db.collection('users').countDocuments({ activo: true });
+                const estimatedApiCalls = activeUsers * 100; // Estimación: 100 calls por usuario activo al día
+                const apiCallsLimit = 100000; // Vercel Hobby limit
+                const apiCallsPercent = Math.min(100, Math.round((estimatedApiCalls / apiCallsLimit) * 100));
+                
+                // Determinar estado
+                let estado = 'ok';
+                let recomendaciones = [];
+                
+                if (percentUsed > 80) {
+                    estado = 'critical';
+                    recomendaciones.push('⚠️ Almacenamiento crítico (>80%). Considera archivar datos antiguos.');
+                } else if (percentUsed > 60) {
+                    estado = 'warning';
+                    recomendaciones.push('⚠️ Almacenamiento alto (>60%). Monitorea el crecimiento.');
+                } else {
+                    recomendaciones.push('✅ Almacenamiento en niveles óptimos.');
+                }
+                
+                if (apiCallsPercent > 80) {
+                    recomendaciones.push('⚠️ Alto uso de API calls. Considera optimizar las consultas.');
+                } else {
+                    recomendaciones.push('✅ Uso de API calls dentro de límites normales.');
+                }
+                
+                // Calcular duración estimada del plan
+                const diasRestantes = Math.floor((limitMB - usedMB) / (usedMB / 30)); // Estimación basada en crecimiento mensual
+                
+                return res.json({
+                    success: true,
+                    stats: {
+                        // MongoDB
+                        storageUsedMB: usedMB,
+                        storageLimitMB: limitMB,
+                        storagePercent: percentUsed,
+                        
+                        // Vercel API Calls
+                        apiCallsEstimadas: estimatedApiCalls,
+                        apiCallsLimite: apiCallsLimit,
+                        apiCallsPercent: apiCallsPercent,
+                        
+                        // Contadores
+                        totalTrabajadores: usersCount - 1, // Excluir admin
+                        totalClientes: clientesCount,
+                        totalGastos: gastosCount,
+                        totalBackups: backupsCount,
+                        totalCarteras: carterasCount,
+                        totalDocumentos: totalDocs,
+                        
+                        // Estado
+                        estado: estado,
+                        recomendaciones: recomendaciones,
+                        planActual: 'free',
+                        diasRestantes: Math.max(0, diasRestantes),
+                        
+                        // Servicios detallados
+                        services: {
+                            mongodb: {
+                                name: 'MongoDB Atlas',
+                                status: 'operational',
+                                plan: 'Free Tier (M0)',
+                                limit: '512 MB',
+                                used: `${usedMB} MB`,
+                                percent: percentUsed,
+                                url: 'https://cloud.mongodb.com',
+                                collections: {
+                                    users: usersCount,
+                                    clientes: clientesCount,
+                                    carteras: carterasCount,
+                                    gastos: gastosCount,
+                                    sessions: sessionsCount,
+                                    backups: backupsCount
+                                }
+                            },
+                            vercel: {
+                                name: 'Vercel',
+                                status: 'operational',
+                                plan: 'Hobby (Free)',
+                                limits: {
+                                    bandwidth: '100 GB/mes',
+                                    functions: '100 GB-Hrs',
+                                    invocations: '100,000/día'
+                                },
+                                estimated: {
+                                    apiCalls: estimatedApiCalls,
+                                    percent: apiCallsPercent
+                                },
+                                url: 'https://vercel.com/dashboard'
+                            },
+                            github: {
+                                name: 'GitHub',
+                                status: 'operational',
+                                plan: 'Free',
+                                repo: 'Felirozxx/FinanGest',
+                                branch: 'main',
+                                url: 'https://github.com/Felirozxx/FinanGest'
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error obteniendo estadísticas:', error);
+                return res.json({
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
         // ============================================
         // SYSTEM HEALTH - Estado del sistema
         // ============================================
@@ -263,139 +397,6 @@ module.exports = async (req, res) => {
                 message: 'System initialized',
                 autoUpdateEnabled: true
             });
-        }
-
-        // ============================================
-        // SYSTEM STATS - Estadísticas del sistema
-        // ============================================
-        
-        if (req.url.includes('/api/admin/system-stats')) {
-            try {
-                const { db } = await connectToDatabase();
-                
-                // Contar documentos
-                const usersCount = await db.collection('users').estimatedDocumentCount();
-                const clientesCount = await db.collection('clientes').estimatedDocumentCount();
-                const carterasCount = await db.collection('carteras').estimatedDocumentCount();
-                const gastosCount = await db.collection('gastos').estimatedDocumentCount();
-                const sessionsCount = await db.collection('sessions').estimatedDocumentCount();
-                const backupsCount = await db.collection('backups').estimatedDocumentCount();
-                
-                const totalDocs = usersCount + clientesCount + carterasCount + gastosCount + sessionsCount + backupsCount;
-                
-                // Estimación de uso (cada documento ~1KB promedio)
-                const usedMB = Math.round((totalDocs * 1) / 1024);
-                const limitMB = 512; // MongoDB Atlas Free Tier
-                const percentUsed = Math.min(100, Math.round((usedMB / limitMB) * 100));
-                
-                // Estadísticas de API calls (estimado basado en usuarios activos)
-                const activeUsers = await db.collection('users').countDocuments({ activo: true });
-                const estimatedApiCalls = activeUsers * 100; // Estimación: 100 calls por usuario activo al día
-                const apiCallsLimit = 100000; // Vercel Hobby limit
-                const apiCallsPercent = Math.min(100, Math.round((estimatedApiCalls / apiCallsLimit) * 100));
-                
-                // Determinar estado
-                let estado = 'ok';
-                let recomendaciones = [];
-                
-                if (percentUsed > 80) {
-                    estado = 'critical';
-                    recomendaciones.push('⚠️ Almacenamiento crítico (>80%). Considera archivar datos antiguos.');
-                } else if (percentUsed > 60) {
-                    estado = 'warning';
-                    recomendaciones.push('⚠️ Almacenamiento alto (>60%). Monitorea el crecimiento.');
-                } else {
-                    recomendaciones.push('✅ Almacenamiento en niveles óptimos.');
-                }
-                
-                if (apiCallsPercent > 80) {
-                    recomendaciones.push('⚠️ Alto uso de API calls. Considera optimizar las consultas.');
-                } else {
-                    recomendaciones.push('✅ Uso de API calls dentro de límites normales.');
-                }
-                
-                // Calcular duración estimada del plan
-                const diasRestantes = Math.floor((limitMB - usedMB) / (usedMB / 30)); // Estimación basada en crecimiento mensual
-                
-                return res.json({
-                    success: true,
-                    stats: {
-                        // MongoDB
-                        storageUsedMB: usedMB,
-                        storageLimitMB: limitMB,
-                        storagePercent: percentUsed,
-                        
-                        // Vercel API Calls
-                        apiCallsEstimadas: estimatedApiCalls,
-                        apiCallsLimite: apiCallsLimit,
-                        apiCallsPercent: apiCallsPercent,
-                        
-                        // Contadores
-                        totalTrabajadores: usersCount - 1, // Excluir admin
-                        totalClientes: clientesCount,
-                        totalGastos: gastosCount,
-                        totalBackups: backupsCount,
-                        totalCarteras: carterasCount,
-                        totalDocumentos: totalDocs,
-                        
-                        // Estado
-                        estado: estado,
-                        recomendaciones: recomendaciones,
-                        planActual: 'free',
-                        diasRestantes: Math.max(0, diasRestantes),
-                        
-                        // Servicios detallados
-                        services: {
-                            mongodb: {
-                                name: 'MongoDB Atlas',
-                                status: 'operational',
-                                plan: 'Free Tier (M0)',
-                                limit: '512 MB',
-                                used: `${usedMB} MB`,
-                                percent: percentUsed,
-                                url: 'https://cloud.mongodb.com',
-                                collections: {
-                                    users: usersCount,
-                                    clientes: clientesCount,
-                                    carteras: carterasCount,
-                                    gastos: gastosCount,
-                                    sessions: sessionsCount,
-                                    backups: backupsCount
-                                }
-                            },
-                            vercel: {
-                                name: 'Vercel',
-                                status: 'operational',
-                                plan: 'Hobby (Free)',
-                                limits: {
-                                    bandwidth: '100 GB/mes',
-                                    functions: '100 GB-Hrs',
-                                    invocations: '100,000/día'
-                                },
-                                estimated: {
-                                    apiCalls: estimatedApiCalls,
-                                    percent: apiCallsPercent
-                                },
-                                url: 'https://vercel.com/dashboard'
-                            },
-                            github: {
-                                name: 'GitHub',
-                                status: 'operational',
-                                plan: 'Free',
-                                repo: 'Felirozxx/FinanGest',
-                                branch: 'main',
-                                url: 'https://github.com/Felirozxx/FinanGest'
-                            }
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('Error obteniendo estadísticas:', error);
-                return res.json({
-                    success: false,
-                    error: error.message
-                });
-            }
         }
 
         // ============================================
