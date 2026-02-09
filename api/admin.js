@@ -270,73 +270,124 @@ module.exports = async (req, res) => {
         // ============================================
         
         if (req.url.includes('/api/admin/eliminar-datos-trabajador') && req.method === 'POST') {
-            const { adminPassword, trabajadorId, adminId } = body;
-            
-            if (!trabajadorId || !adminPassword) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'trabajadorId y adminPassword requeridos'
-                });
-            }
-            
-            const { db } = await connectToDatabase();
-            
-            // Verificar que el admin existe y la contraseña es correcta
-            const admin = await db.collection('users').findOne({ _id: new ObjectId(adminId) });
-            if (!admin || admin.role !== 'admin') {
-                return res.status(403).json({
-                    success: false,
-                    error: 'No tienes permisos de administrador'
-                });
-            }
-            
-            // Verificar contraseña del admin
-            const passwordValid = await bcrypt.compare(adminPassword, admin.password);
-            if (!passwordValid) {
-                return res.status(403).json({
-                    success: false,
-                    error: 'Contraseña incorrecta'
-                });
-            }
-            
-            // Eliminar todos los datos del trabajador
-            const trabajadorIdObj = new ObjectId(trabajadorId);
-            
-            // Contar antes de eliminar
-            const clientesCount = await db.collection('clientes').countDocuments({ creadoPor: trabajadorId });
-            const gastosCount = await db.collection('gastos').countDocuments({ userId: trabajadorId });
-            const sesionesCount = await db.collection('sessions').countDocuments({ userId: trabajadorId });
-            const backupsCount = await db.collection('backups').countDocuments({ userId: trabajadorId });
-            
-            // 1. Eliminar clientes
-            await db.collection('clientes').deleteMany({ creadoPor: trabajadorId });
-            
-            // 2. Eliminar gastos
-            await db.collection('gastos').deleteMany({ userId: trabajadorId });
-            
-            // 3. Eliminar sesiones
-            await db.collection('sessions').deleteMany({ userId: trabajadorId });
-            
-            // 4. Eliminar carteras
-            await db.collection('carteras').deleteMany({ creadoPor: trabajadorId });
-            
-            // 5. Eliminar backups
-            await db.collection('backups').deleteMany({ userId: trabajadorId });
-            
-            // 6. Eliminar usuario
-            const deleteResult = await db.collection('users').deleteOne({ _id: trabajadorIdObj });
-            
-            return res.json({
-                success: true,
-                message: 'Usuario y todos sus datos eliminados correctamente',
-                deleted: {
-                    clientes: clientesCount,
-                    gastos: gastosCount,
-                    sesiones: sesionesCount,
-                    backups: backupsCount,
-                    cuenta: deleteResult.deletedCount > 0
+            try {
+                console.log('🔵 Iniciando eliminación de trabajador');
+                console.log('Body recibido:', JSON.stringify(body));
+                
+                const { adminPassword, trabajadorId, adminId } = body;
+                
+                if (!trabajadorId || !adminPassword || !adminId) {
+                    console.log('❌ Faltan parámetros:', { trabajadorId, adminPassword: !!adminPassword, adminId });
+                    return res.status(400).json({
+                        success: false,
+                        error: 'trabajadorId, adminPassword y adminId son requeridos'
+                    });
                 }
-            });
+                
+                console.log('🔵 Conectando a base de datos...');
+                const { db } = await connectToDatabase();
+                
+                // Verificar que el admin existe
+                console.log('🔵 Verificando admin con ID:', adminId);
+                const admin = await db.collection('users').findOne({ _id: new ObjectId(adminId) });
+                
+                if (!admin) {
+                    console.log('❌ Admin no encontrado');
+                    return res.status(403).json({
+                        success: false,
+                        error: 'Usuario administrador no encontrado'
+                    });
+                }
+                
+                if (admin.role !== 'admin') {
+                    console.log('❌ Usuario no es admin, role:', admin.role);
+                    return res.status(403).json({
+                        success: false,
+                        error: 'No tienes permisos de administrador'
+                    });
+                }
+                
+                console.log('🔵 Admin encontrado:', admin.email);
+                console.log('🔵 Password en DB:', admin.password ? admin.password.substring(0, 20) + '...' : 'NO PASSWORD');
+                
+                // Verificar contraseña
+                let passwordValid = false;
+                
+                // Intentar con bcrypt primero
+                try {
+                    passwordValid = await bcrypt.compare(adminPassword, admin.password);
+                    console.log('🔵 Verificación bcrypt:', passwordValid);
+                } catch (bcryptError) {
+                    console.log('⚠️ Error en bcrypt, intentando comparación directa:', bcryptError.message);
+                    // Si falla bcrypt, comparar directamente (para contraseñas no hasheadas)
+                    passwordValid = (adminPassword === admin.password);
+                    console.log('🔵 Verificación directa:', passwordValid);
+                }
+                
+                if (!passwordValid) {
+                    console.log('❌ Contraseña incorrecta');
+                    return res.status(403).json({
+                        success: false,
+                        error: 'Contraseña incorrecta'
+                    });
+                }
+                
+                console.log('✅ Admin verificado, procediendo a eliminar trabajador:', trabajadorId);
+                
+                // Eliminar todos los datos del trabajador
+                const trabajadorIdObj = new ObjectId(trabajadorId);
+                
+                // Contar antes de eliminar
+                console.log('🔵 Contando documentos a eliminar...');
+                const clientesCount = await db.collection('clientes').countDocuments({ creadoPor: trabajadorId });
+                const gastosCount = await db.collection('gastos').countDocuments({ userId: trabajadorId });
+                const sesionesCount = await db.collection('sessions').countDocuments({ userId: trabajadorId });
+                const backupsCount = await db.collection('backups').countDocuments({ userId: trabajadorId });
+                
+                console.log('📊 Documentos a eliminar:', { clientesCount, gastosCount, sesionesCount, backupsCount });
+                
+                // 1. Eliminar clientes
+                await db.collection('clientes').deleteMany({ creadoPor: trabajadorId });
+                console.log('✅ Clientes eliminados');
+                
+                // 2. Eliminar gastos
+                await db.collection('gastos').deleteMany({ userId: trabajadorId });
+                console.log('✅ Gastos eliminados');
+                
+                // 3. Eliminar sesiones
+                await db.collection('sessions').deleteMany({ userId: trabajadorId });
+                console.log('✅ Sesiones eliminadas');
+                
+                // 4. Eliminar carteras
+                await db.collection('carteras').deleteMany({ creadoPor: trabajadorId });
+                console.log('✅ Carteras eliminadas');
+                
+                // 5. Eliminar backups
+                await db.collection('backups').deleteMany({ userId: trabajadorId });
+                console.log('✅ Backups eliminados');
+                
+                // 6. Eliminar usuario
+                const deleteResult = await db.collection('users').deleteOne({ _id: trabajadorIdObj });
+                console.log('✅ Usuario eliminado:', deleteResult.deletedCount > 0);
+                
+                return res.json({
+                    success: true,
+                    message: 'Usuario y todos sus datos eliminados correctamente',
+                    deleted: {
+                        clientes: clientesCount,
+                        gastos: gastosCount,
+                        sesiones: sesionesCount,
+                        backups: backupsCount,
+                        cuenta: deleteResult.deletedCount > 0
+                    }
+                });
+            } catch (innerError) {
+                console.error('❌ Error en eliminación de trabajador:', innerError);
+                return res.status(500).json({
+                    success: false,
+                    error: 'Error al eliminar trabajador: ' + innerError.message
+                });
+            }
         }
 
         return res.status(400).json({ 
