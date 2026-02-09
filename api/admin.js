@@ -38,20 +38,24 @@ module.exports = async (req, res) => {
             try {
                 const { db } = await connectToDatabase();
                 
-                // Contar documentos
-                const usersCount = await db.collection('users').estimatedDocumentCount();
-                const clientesCount = await db.collection('clientes').estimatedDocumentCount();
-                const carterasCount = await db.collection('carteras').estimatedDocumentCount();
-                const gastosCount = await db.collection('gastos').estimatedDocumentCount();
-                const sessionsCount = await db.collection('sessions').estimatedDocumentCount();
-                const backupsCount = await db.collection('backups').estimatedDocumentCount();
+                // Obtener estadísticas REALES de MongoDB
+                const dbStats = await db.stats();
+                
+                // Contar documentos por colección
+                const usersCount = await db.collection('users').countDocuments();
+                const clientesCount = await db.collection('clientes').countDocuments();
+                const carterasCount = await db.collection('carteras').countDocuments();
+                const gastosCount = await db.collection('gastos').countDocuments();
+                const sessionsCount = await db.collection('sessions').countDocuments();
+                const backupsCount = await db.collection('backups').countDocuments();
                 
                 const totalDocs = usersCount + clientesCount + carterasCount + gastosCount + sessionsCount + backupsCount;
                 
-                // Estimación de uso (cada documento ~1KB promedio)
-                const usedMB = Math.round((totalDocs * 1) / 1024);
+                // Usar estadísticas REALES de MongoDB (datos + índices)
+                const usedBytes = dbStats.dataSize + dbStats.indexSize;
+                const usedMB = parseFloat((usedBytes / 1024 / 1024).toFixed(2));
                 const limitMB = 512; // MongoDB Atlas Free Tier
-                const percentUsed = Math.min(100, Math.round((usedMB / limitMB) * 100));
+                const percentUsed = parseFloat(((usedMB / limitMB) * 100).toFixed(2));
                 
                 // Estadísticas de API calls (estimado basado en usuarios activos)
                 const activeUsers = await db.collection('users').countDocuments({ activo: true });
@@ -79,13 +83,17 @@ module.exports = async (req, res) => {
                     recomendaciones.push('✅ Uso de API calls dentro de límites normales.');
                 }
                 
-                // Calcular duración estimada del plan
-                const diasRestantes = Math.floor((limitMB - usedMB) / (usedMB / 30)); // Estimación basada en crecimiento mensual
+                // Calcular duración estimada del plan (basado en crecimiento)
+                // Si usedMB es muy pequeño, asumir crecimiento mínimo de 0.1 MB/mes
+                const growthPerMonth = Math.max(0.1, usedMB / Math.max(1, totalDocs / 10)); // Estimación conservadora
+                const diasRestantes = Math.max(0, Math.floor((limitMB - usedMB) / growthPerMonth * 30));
+                const mesesRestantes = Math.floor(diasRestantes / 30);
+                const aniosRestantes = Math.floor(mesesRestantes / 12);
                 
                 return res.json({
                     success: true,
                     stats: {
-                        // MongoDB
+                        // MongoDB (estadísticas REALES)
                         storageUsedMB: usedMB,
                         storageLimitMB: limitMB,
                         storagePercent: percentUsed,
@@ -107,7 +115,9 @@ module.exports = async (req, res) => {
                         estado: estado,
                         recomendaciones: recomendaciones,
                         planActual: 'free',
-                        diasRestantes: Math.max(0, diasRestantes),
+                        diasRestantes: diasRestantes,
+                        mesesRestantes: mesesRestantes,
+                        aniosRestantes: aniosRestantes,
                         
                         // Servicios detallados
                         services: {
@@ -119,6 +129,12 @@ module.exports = async (req, res) => {
                                 used: `${usedMB} MB`,
                                 percent: percentUsed,
                                 url: 'https://cloud.mongodb.com',
+                                stats: {
+                                    dataSize: parseFloat((dbStats.dataSize / 1024 / 1024).toFixed(2)),
+                                    indexSize: parseFloat((dbStats.indexSize / 1024 / 1024).toFixed(2)),
+                                    storageSize: parseFloat((dbStats.storageSize / 1024 / 1024).toFixed(2)),
+                                    collections: dbStats.collections
+                                },
                                 collections: {
                                     users: usersCount,
                                     clientes: clientesCount,
