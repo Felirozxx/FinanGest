@@ -24,6 +24,9 @@ module.exports = async (req, res) => {
 
         // GET - Obtener carteras por usuario (path parameter: /api/carteras/:userId)
         if (req.method === 'GET' && !action && !id && req.url) {
+            console.log('🔍 GET request URL:', req.url);
+            console.log('🔍 Query params:', req.query);
+            
             // Extraer userId del path: /api/carteras/USER_ID
             const match = req.url.match(/\/api\/carteras\/([^?]+)/);
             if (match && match[1]) {
@@ -35,6 +38,7 @@ module.exports = async (req, res) => {
                     .toArray();
                 
                 console.log('📊 Carteras encontradas:', carteras.length);
+                console.log('📊 Carteras:', carteras.map(c => ({ nombre: c.nombre, creadoPor: c.creadoPor })));
                 
                 const carterasConId = carteras.map(c => ({
                     ...c,
