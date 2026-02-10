@@ -23,13 +23,13 @@ module.exports = async (req, res) => {
         }
 
         // GET - Obtener carteras por usuario (path parameter: /api/carteras/:userId)
-        if (req.method === 'GET' && !action && !id && req.url) {
+        if (req.method === 'GET' && req.url) {
             console.log('🔍 GET request URL:', req.url);
             console.log('🔍 Query params:', req.query);
             
             // Extraer userId del path: /api/carteras/USER_ID
             const match = req.url.match(/\/api\/carteras\/([^?]+)/);
-            if (match && match[1]) {
+            if (match && match[1] && !action) {
                 const userIdFromPath = match[1];
                 console.log('🔵 Buscando carteras para userId:', userIdFromPath);
                 
