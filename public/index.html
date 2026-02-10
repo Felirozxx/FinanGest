@@ -10753,7 +10753,7 @@
                     return;
                 }
                 container.innerHTML = usuariosActivos.map(u => {
-                    const userClients = allClients.filter(c => c.creadoPor === u.id);
+                    const userClients = allClients.filter(c => c.creadoPor === u.id || c.creadoPor?.toString() === u.id?.toString() || c.userId === u.id || c.userId?.toString() === u.id?.toString());
                     const userPrestado = userClients.reduce((s, c) => s + (c.montoTotal || 0), 0);
                     const userCobrado = userClients.reduce((s, c) => s + (c.montoPagado || 0), 0);
                     const bloqueado = u.blocked || u.bloqueado || false;
