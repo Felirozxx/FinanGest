@@ -38,6 +38,21 @@ module.exports = async (req, res) => {
             try {
                 const { db } = await connectToDatabase();
                 
+                // LIMPIEZA AUTOMÁTICA: Eliminar backups con más de 30 días
+                try {
+                    const fechaLimite = new Date();
+                    fechaLimite.setDate(fechaLimite.getDate() - 30);
+                    const cleanResult = await db.collection('backups').deleteMany({
+                        fecha: { $lt: fechaLimite }
+                    });
+                    if (cleanResult.deletedCount > 0) {
+                        console.log(`🗑️ Auto-limpieza: ${cleanResult.deletedCount} backups eliminados (>30 días)`);
+                    }
+                } catch (cleanError) {
+                    console.error('Error en auto-limpieza de backups:', cleanError);
+                    // No detener el proceso si falla la limpieza
+                }
+                
                 // Obtener estadísticas REALES de MongoDB
                 const dbStats = await db.stats();
                 
@@ -444,6 +459,40 @@ module.exports = async (req, res) => {
                 message: 'Backup system configured',
                 nextBackup: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
             });
+        }
+
+        // ============================================
+        // LIMPIAR BACKUPS VIEJOS - Mantener solo últimos 30 días
+        // ============================================
+        
+        if (req.url.includes('/api/admin/limpiar-backups-viejos') && req.method === 'POST') {
+            try {
+                const db = await connectDB();
+                
+                // Calcular fecha límite (30 días atrás)
+                const fechaLimite = new Date();
+                fechaLimite.setDate(fechaLimite.getDate() - 30);
+                
+                // Eliminar backups más viejos de 30 días
+                const result = await db.collection('backups').deleteMany({
+                    fecha: { $lt: fechaLimite }
+                });
+                
+                console.log(`🗑️ Backups eliminados: ${result.deletedCount} (más de 30 días)`);
+                
+                return res.json({
+                    success: true,
+                    eliminados: result.deletedCount,
+                    fechaLimite: fechaLimite.toISOString(),
+                    message: `Se eliminaron ${result.deletedCount} backups con más de 30 días`
+                });
+            } catch (error) {
+                console.error('Error limpiando backups:', error);
+                return res.json({
+                    success: false,
+                    error: error.message
+                });
+            }
         }
 
         // ============================================

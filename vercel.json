@@ -62,6 +62,10 @@
       "destination": "/api/admin"
     },
     {
+      "source": "/api/admin/limpiar-backups-viejos",
+      "destination": "/api/admin"
+    },
+    {
       "source": "/api/admin/eliminar-datos-trabajador",
       "destination": "/api/admin"
     },
