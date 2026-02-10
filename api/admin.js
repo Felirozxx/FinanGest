@@ -105,6 +105,14 @@ module.exports = async (req, res) => {
                 const estimatedApiCalls = activeUsers * 100; // Estimación: 100 calls por usuario activo al día
                 const apiCallsPercent = Math.min(100, Math.round((estimatedApiCalls / apiCallsLimit) * 100));
                 
+                // Contar trabajadores (usuarios que no son admin)
+                const totalWorkers = await db.collection('users').countDocuments({ 
+                    $and: [
+                        { role: { $ne: 'admin' } },
+                        { isAdmin: { $ne: true } }
+                    ]
+                });
+                
                 // Determinar estado
                 let estado = 'ok';
                 let recomendaciones = [];
@@ -147,7 +155,7 @@ module.exports = async (req, res) => {
                         vercelPlan: vercelPlanName,
                         
                         // Contadores
-                        totalTrabajadores: usersCount - 1, // Excluir admin
+                        totalTrabajadores: totalWorkers,
                         totalClientes: clientesCount,
                         totalGastos: gastosCount,
                         totalBackups: backupsCount,
