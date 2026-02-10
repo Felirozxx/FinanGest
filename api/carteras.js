@@ -22,7 +22,27 @@ module.exports = async (req, res) => {
             body = JSON.parse(body);
         }
 
-        // GET - Obtener carteras por usuario
+        // GET - Obtener carteras por usuario (path parameter: /api/carteras/:userId)
+        if (req.method === 'GET' && !action && !id && req.url) {
+            // Extraer userId del path: /api/carteras/USER_ID
+            const match = req.url.match(/\/api\/carteras\/([^?]+)/);
+            if (match && match[1]) {
+                const userIdFromPath = match[1];
+                const carteras = await db.collection('carteras')
+                    .find({ creadoPor: userIdFromPath, eliminada: false })
+                    .toArray();
+                
+                const carterasConId = carteras.map(c => ({
+                    ...c,
+                    id: c._id.toString(),
+                    _id: c._id
+                }));
+                
+                return res.json({ success: true, carteras: carterasConId });
+            }
+        }
+
+        // GET - Obtener carteras por usuario (query parameter)
         if (req.method === 'GET' && action === 'por-usuario' && userId) {
             const carteras = await db.collection('carteras')
                 .find({ creadoPor: userId, eliminada: false })
