@@ -16,6 +16,15 @@ module.exports = async (req, res) => {
         const { db } = await connectToDatabase();
         const { action, userId, id } = req.query;
         
+        console.log('🔍 Request details:', {
+            method: req.method,
+            url: req.url,
+            query: req.query,
+            action,
+            userId,
+            id
+        });
+        
         // Parsear el body si es string
         let body = req.body || {};
         if (typeof body === 'string') {
@@ -23,31 +32,24 @@ module.exports = async (req, res) => {
         }
 
         // GET - Obtener carteras por usuario (path parameter: /api/carteras/:userId)
-        if (req.method === 'GET' && req.url) {
-            console.log('🔍 GET request URL:', req.url);
-            console.log('🔍 Query params:', req.query);
+        // Vercel rewrite convierte /api/carteras/USER_ID en query param "id"
+        if (req.method === 'GET' && id && !action && !userId) {
+            console.log('🔵 Buscando carteras para userId (from id param):', id);
             
-            // Extraer userId del path: /api/carteras/USER_ID
-            const match = req.url.match(/\/api\/carteras\/([^?]+)/);
-            if (match && match[1] && !action) {
-                const userIdFromPath = match[1];
-                console.log('🔵 Buscando carteras para userId:', userIdFromPath);
-                
-                const carteras = await db.collection('carteras')
-                    .find({ creadoPor: userIdFromPath, eliminada: false })
-                    .toArray();
-                
-                console.log('📊 Carteras encontradas:', carteras.length);
-                console.log('📊 Carteras:', carteras.map(c => ({ nombre: c.nombre, creadoPor: c.creadoPor })));
-                
-                const carterasConId = carteras.map(c => ({
-                    ...c,
-                    id: c._id.toString(),
-                    _id: c._id
-                }));
-                
-                return res.json({ success: true, carteras: carterasConId });
-            }
+            const carteras = await db.collection('carteras')
+                .find({ creadoPor: id, eliminada: false })
+                .toArray();
+            
+            console.log('📊 Carteras encontradas:', carteras.length);
+            console.log('📊 Carteras:', carteras.map(c => ({ nombre: c.nombre, creadoPor: c.creadoPor })));
+            
+            const carterasConId = carteras.map(c => ({
+                ...c,
+                id: c._id.toString(),
+                _id: c._id
+            }));
+            
+            return res.json({ success: true, carteras: carterasConId });
         }
 
         // GET - Obtener carteras por usuario (query parameter)
