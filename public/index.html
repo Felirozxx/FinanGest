@@ -1021,7 +1021,7 @@
                 </div>
                 <div class="user-info">
                     <!-- Selector de Cartera -->
-                    <div class="cartera-selector" style="position: relative; margin-right: 15px;">
+                    <div id="carteraSelectorContainer" class="cartera-selector" style="position: relative; margin-right: 15px; display: none;">
                         <button id="carteraBtn" onclick="toggleCarteraDropdown()" style="background: var(--bg-hover); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 14px; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: all 0.3s;">
                             <i class="fas fa-wallet" style="color: var(--accent-cyan);"></i>
                             <span id="carteraActualNombre">Cartera Principal</span>
@@ -5972,6 +5972,12 @@
             loadTheme();
             initIdioma(); // Inicializar idioma
             buildNavMenu();
+
+            // Mostrar/ocultar selector de carteras segun el rol
+            const carteraSelector = document.getElementById('carteraSelectorContainer');
+            if (carteraSelector) {
+                carteraSelector.style.display = isAdmin ? 'none' : 'block';
+            }
             
             // Iniciar reloj del servidor UTC
             iniciarRelojServidor();
