@@ -28,9 +28,13 @@ module.exports = async (req, res) => {
             const match = req.url.match(/\/api\/carteras\/([^?]+)/);
             if (match && match[1]) {
                 const userIdFromPath = match[1];
+                console.log('🔵 Buscando carteras para userId:', userIdFromPath);
+                
                 const carteras = await db.collection('carteras')
                     .find({ creadoPor: userIdFromPath, eliminada: false })
                     .toArray();
+                
+                console.log('📊 Carteras encontradas:', carteras.length);
                 
                 const carterasConId = carteras.map(c => ({
                     ...c,
