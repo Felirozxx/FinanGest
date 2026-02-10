@@ -19,7 +19,8 @@ module.exports = async (req, res) => {
         // GET - Obtener clientes
         if (req.method === 'GET') {
             const { userId } = req.query;
-            const query = userId ? { creadoPor: userId } : {};
+            // Si userId es 'admin', devolver todos los clientes
+            const query = (userId && userId !== 'admin') ? { creadoPor: userId } : {};
             const clientes = await db.collection('clientes').find(query).toArray();
             return res.json(clientes.map(c => ({ ...c, id: c._id.toString() })));
         }
