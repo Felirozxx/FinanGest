@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -7217,7 +7217,7 @@
                     <div class="p-3" style="background: rgba(138,43,226,0.1); border-radius: 8px; border-left: 4px solid var(--accent-purple);">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="mb-0"><i class="fas fa-layer-group me-2" style="color: var(--accent-purple);"></i>Capacidad del Plan ${s.planActual ? s.planActual.toUpperCase() : 'FREE'}</h6>
-                            ${s.planActual !== 'enterprise' ? '<button onclick="mostrarModalUpgradePlan()" class="btn btn-sm" style="background: var(--accent-purple); color: #fff;"><i class="fas fa-rocket me-1"></i>Mejorar</button>' : ''}
+                            
                         </div>
                         <div class="row g-2">
                             <div class="col-md-4">
@@ -7254,16 +7254,12 @@
                                 ${parseFloat(s.storagePercent) >= 80 ? 'Almacenamiento al ' + s.storagePercent + '%. ' : ''}
                                 ${parseFloat(s.apiCallsPercent) >= 80 ? 'API Calls al ' + s.apiCallsPercent + '%. ' : ''}
                                 Mejora tu plan para aumentar los límites.
-                            </p>
-                            <button onclick="mostrarModalUpgradePlan()" class="btn w-100" style="background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; font-weight: 600; padding: 12px;">
-                                <i class="fas fa-rocket me-2"></i>Mejorar Plan - Aumentar Límites
-                            </button>
                         </div>
                         ` : ''}
                         
                         <p class="mt-2 mb-0 text-secondary" style="font-size: 0.8rem;">
                             <i class="fas fa-info-circle me-1"></i>
-                            Si superas estos límites, revisa el uso mensual en <a href="https://app.netlify.com" target="_blank" style="color: var(--accent-cyan);">Netlify</a> y <a href="https://cloud.mongodb.com" target="_blank" style="color: var(--accent-cyan);">MongoDB Atlas</a>
+                            Si superas estos límites, revisa el uso mensual en <a href="https://app.netlify.com" target="_blank" style="color: var(--accent-cyan);">Vercel</a> (<a href="https://vercel.com/dashboard" target="_blank" style="color: var(--accent-cyan);">Dashboard</a>) y <a href="https://cloud.mongodb.com" target="_blank" style="color: var(--accent-cyan);">MongoDB Atlas</a>
                         </p>
                     </div>
                     
@@ -7276,90 +7272,6 @@
             }
         }
         
-        // Modal para mejorar plan cuando se acercan a los límites
-        function mostrarModalUpgradePlan() {
-            const modal = document.createElement('div');
-            modal.id = 'modalUpgradePlan';
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;';
-            modal.innerHTML = `
-                <div style="background: var(--bg-card); border-radius: 20px; padding: 30px; max-width: 500px; width: 100%; border: 1px solid var(--border-color); box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; position: relative;">
-                    <!-- Botón X para cerrar -->
-                    <button onclick="cerrarModalUpgrade()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 5px 10px; line-height: 1;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    
-                    <div class="text-center mb-4">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #00d4ff, #0099cc); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-rocket fa-2x" style="color: #000;"></i>
-                        </div>
-                        <h3 style="color: #fff; margin-bottom: 10px;">Mejorar Plan</h3>
-                        <p style="color: var(--text-secondary);">Aumenta los límites de tu sistema</p>
-                    </div>
-                    
-                    <!-- Plan Pro -->
-                    <div style="background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(138,43,226,0.1)); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 style="color: var(--accent-cyan); margin: 0;"><i class="fas fa-crown me-2"></i>Plan Pro</h5>
-                            <span style="background: var(--accent-cyan); color: #000; padding: 4px 12px; border-radius: 20px; font-weight: bold;">R$ 149/mes</span>
-                        </div>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="color: #fff; margin-bottom: 8px;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>2 GB de almacenamiento</li>
-                            <li style="color: #fff; margin-bottom: 8px;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>500,000 API calls/mes</li>
-                            <li style="color: #fff; margin-bottom: 8px;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>200 trabajadores</li>
-                            <li style="color: #fff; margin-bottom: 8px;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>500 clientes por trabajador</li>
-                            <li style="color: #fff;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>Soporte prioritario</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Plan Enterprise -->
-                    <div style="background: rgba(138,43,226,0.1); border: 1px solid var(--accent-purple); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 style="color: var(--accent-purple); margin: 0;"><i class="fas fa-building me-2"></i>Plan Enterprise</h5>
-                            <span style="background: var(--accent-purple); color: #fff; padding: 4px 12px; border-radius: 20px; font-weight: bold;">Contactar</span>
-                        </div>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="color: #fff; margin-bottom: 8px;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>10 GB de almacenamiento</li>
-                            <li style="color: #fff; margin-bottom: 8px;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>2,000,000 API calls/mes</li>
-                            <li style="color: #fff; margin-bottom: 8px;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>1000 trabajadores</li>
-                            <li style="color: #fff;"><i class="fas fa-check me-2" style="color: var(--accent-green);"></i>Soporte dedicado 24/7</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button onclick="contactarParaUpgrade('pro')" class="btn" style="background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; font-weight: 600; padding: 14px;">
-                            <i class="fas fa-credit-card me-2"></i>Contratar Plan Pro
-                        </button>
-                        <button onclick="contactarParaUpgrade('enterprise')" class="btn" style="background: var(--accent-purple); color: #fff; padding: 12px;">
-                            <i class="fas fa-envelope me-2"></i>Contactar para Enterprise
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            
-            // Cerrar al hacer clic fuera del modal
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) cerrarModalUpgrade();
-            });
-        }
-        
-        function cerrarModalUpgrade() {
-            const modal = document.getElementById('modalUpgradePlan');
-            if (modal) modal.remove();
-        }
-        
-        function contactarParaUpgrade(plan) {
-            const mensaje = plan === 'pro' 
-                ? 'Hola, quiero contratar el Plan Pro de FinanGest para aumentar mis límites.'
-                : 'Hola, me interesa el Plan Enterprise de FinanGest. Quisiera más información.';
-            
-            // Abrir WhatsApp o email
-            const whatsapp = 'https://wa.me/5579985555813?text=' + encodeURIComponent(mensaje);
-            window.open(whatsapp, '_blank');
-            
-            cerrarModalUpgrade();
-            alert('📱 Te redirigimos a WhatsApp para completar tu solicitud.\\n\\nTambién puedes escribirnos a: finangestsoftware@gmail.com');
-        }
         
         // ============ ADMIN: SEGURIDAD ============
         
