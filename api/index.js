@@ -1,6 +1,7 @@
 const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const { enviarCodigoVerificacion } = require('./_email-service');
+const { crearPagoPix, verificarPago, buscarPagoPorReferencia } = require('./_mercadopago-service');
 
 // Generar código de 6 dígitos
 function generarCodigo() {
@@ -280,24 +281,176 @@ module.exports = async (req, res) => {
 
         // ============ CREAR PAGO PIX ============
         if (pathname === '/api/crear-pago-pix' && req.method === 'POST') {
-            // Placeholder para crear pago PIX
-            return res.json({ 
-                success: true, 
-                pixKey: 'placeholder@pix.com',
-                qrCode: 'data:image/png;base64,placeholder',
-                amount: req.body.amount || 0,
-                message: 'Pago PIX creado (funcionalidad en desarrollo)'
-            });
+            const { email, nombre, amount, userId, numCarteras } = req.body;
+            
+            console.log('💳 Crear pago PIX:', { email, nombre, amount, userId, numCarteras });
+            
+            if (!email || !amount || !userId) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Datos incompletos' 
+                });
+            }
+            
+            try {
+                const description = `FinanGest - ${numCarteras || 1} cartera(s) - R$ ${amount}`;
+                
+                const resultado = await crearPagoPix({
+                    email,
+                    nombre: nombre || email,
+                    amount: parseFloat(amount),
+                    description,
+                    userId
+                });
+                
+                if (resultado.success) {
+                    console.log('✅ Pago PIX creado:', resultado.preferenceId);
+                    
+                    // Guardar referencia del pago en MongoDB
+                    const db = await connectToDatabase();
+                    await db.collection('pagos_pendientes').insertOne({
+                        userId,
+                        email,
+                        amount: parseFloat(amount),
+                        numCarteras: parseInt(numCarteras) || 1,
+                        preferenceId: resultado.preferenceId,
+                        status: 'pending',
+                        fechaCreacion: new Date()
+                    });
+                    
+                    return res.json({
+                        success: true,
+                        preferenceId: resultado.preferenceId,
+                        initPoint: resultado.initPoint,
+                        qrCode: resultado.qrCode,
+                        qrCodeBase64: resultado.qrCodeBase64
+                    });
+                } else {
+                    throw new Error('Error al crear pago');
+                }
+            } catch (error) {
+                console.error('❌ Error en crear-pago-pix:', error);
+                return res.status(500).json({
+                    success: false,
+                    error: error.message || 'Error al crear pago PIX'
+                });
+            }
         }
 
         // ============ VERIFICAR PAGO ============
         if (pathname === '/api/verificar-pago' && req.method === 'POST') {
-            // Placeholder para verificar pago
-            return res.json({ 
-                success: true, 
-                paid: false,
-                message: 'Verificación de pago (funcionalidad en desarrollo)'
-            });
+            const { userId, preferenceId } = req.body;
+            
+            console.log('🔍 Verificar pago:', { userId, preferenceId });
+            
+            if (!userId) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'userId requerido' 
+                });
+            }
+            
+            try {
+                const db = await connectToDatabase();
+                
+                // Buscar pago por userId
+                const resultado = await buscarPagoPorReferencia(userId);
+                
+                if (resultado.found && resultado.paid) {
+                    console.log('✅ Pago encontrado y aprobado');
+                    
+                    // Buscar info del pago pendiente
+                    const pagoPendiente = await db.collection('pagos_pendientes').findOne({ userId });
+                    
+                    if (pagoPendiente) {
+                        // Actualizar usuario con carteras pagadas
+                        await db.collection('users').updateOne(
+                            { _id: new ObjectId(userId) },
+                            { 
+                                $inc: { carterasPagadas: pagoPendiente.numCarteras },
+                                $set: { activo: true }
+                            }
+                        );
+                        
+                        // Marcar pago como completado
+                        await db.collection('pagos_pendientes').updateOne(
+                            { userId },
+                            { $set: { status: 'completed', fechaPago: new Date() } }
+                        );
+                        
+                        console.log(`✅ Usuario activado con ${pagoPendiente.numCarteras} cartera(s)`);
+                        
+                        return res.json({
+                            success: true,
+                            paid: true,
+                            numCarteras: pagoPendiente.numCarteras
+                        });
+                    }
+                }
+                
+                return res.json({
+                    success: true,
+                    paid: false,
+                    message: 'Pago aún no detectado'
+                });
+                
+            } catch (error) {
+                console.error('❌ Error en verificar-pago:', error);
+                return res.status(500).json({
+                    success: false,
+                    error: error.message || 'Error al verificar pago'
+                });
+            }
+        }
+
+        // ============ WEBHOOK MERCADO PAGO ============
+        if (pathname === '/api/mercadopago-webhook' && req.method === 'POST') {
+            console.log('🔔 Webhook de Mercado Pago recibido:', req.body);
+            
+            try {
+                const { type, data } = req.body;
+                
+                if (type === 'payment') {
+                    const paymentId = data.id;
+                    console.log('💳 Pago recibido:', paymentId);
+                    
+                    // Verificar el pago
+                    const paymentInfo = await verificarPago(paymentId);
+                    
+                    if (paymentInfo.paid) {
+                        const userId = paymentInfo.externalReference;
+                        console.log('✅ Pago aprobado para usuario:', userId);
+                        
+                        const db = await connectToDatabase();
+                        const pagoPendiente = await db.collection('pagos_pendientes').findOne({ userId });
+                        
+                        if (pagoPendiente && pagoPendiente.status === 'pending') {
+                            // Actualizar usuario
+                            await db.collection('users').updateOne(
+                                { _id: new ObjectId(userId) },
+                                { 
+                                    $inc: { carterasPagadas: pagoPendiente.numCarteras },
+                                    $set: { activo: true }
+                                }
+                            );
+                            
+                            // Marcar pago como completado
+                            await db.collection('pagos_pendientes').updateOne(
+                                { userId },
+                                { $set: { status: 'completed', fechaPago: new Date(), paymentId } }
+                            );
+                            
+                            console.log(`✅ Usuario ${userId} activado automáticamente`);
+                        }
+                    }
+                }
+                
+                return res.status(200).json({ success: true });
+                
+            } catch (error) {
+                console.error('❌ Error en webhook:', error);
+                return res.status(200).json({ success: true }); // Siempre retornar 200 para webhooks
+            }
         }
 
         const db = await connectToDatabase();
