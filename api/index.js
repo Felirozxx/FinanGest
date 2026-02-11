@@ -340,24 +340,44 @@ module.exports = async (req, res) => {
 
         // ============ CREAR PAGO PIX ============
         if (pathname === '/api/crear-pago-pix' && req.method === 'POST') {
-            const { email, nombre, amount, userId, numCarteras } = req.body;
+            // Aceptar tanto 'amount' como 'monto', y 'numCarteras' como 'cantidadCarteras'
+            const { 
+                email, 
+                nombre, 
+                amount, 
+                monto,
+                userId, 
+                numCarteras,
+                cantidadCarteras 
+            } = req.body;
             
-            console.log('💳 Crear pago PIX:', { email, nombre, amount, userId, numCarteras });
+            const finalAmount = amount || monto;
+            const finalNumCarteras = numCarteras || cantidadCarteras;
             
-            if (!email || !amount || !userId) {
+            console.log('💳 Crear pago PIX:', { 
+                email, 
+                nombre, 
+                finalAmount, 
+                userId, 
+                finalNumCarteras,
+                bodyReceived: req.body 
+            });
+            
+            if (!email || !finalAmount || !userId) {
+                console.error('❌ Datos incompletos:', { email: !!email, amount: !!finalAmount, userId: !!userId });
                 return res.status(400).json({ 
                     success: false, 
-                    error: 'Datos incompletos' 
+                    error: 'Datos incompletos: ' + (!email ? 'email ' : '') + (!finalAmount ? 'monto ' : '') + (!userId ? 'userId' : '')
                 });
             }
             
             try {
-                const description = `FinanGest - ${numCarteras || 1} cartera(s) - R$ ${amount}`;
+                const description = `FinanGest - ${finalNumCarteras || 1} cartera(s) - R$ ${finalAmount}`;
                 
                 const resultado = await crearPagoPix({
                     email,
                     nombre: nombre || email,
-                    amount: parseFloat(amount),
+                    amount: parseFloat(finalAmount),
                     description,
                     userId
                 });
@@ -370,8 +390,8 @@ module.exports = async (req, res) => {
                     await db.collection('pagos_pendientes').insertOne({
                         userId,
                         email,
-                        amount: parseFloat(amount),
-                        numCarteras: parseInt(numCarteras) || 1,
+                        amount: parseFloat(finalAmount),
+                        numCarteras: parseInt(finalNumCarteras) || 1,
                         preferenceId: resultado.preferenceId,
                         status: 'pending',
                         fechaCreacion: new Date()
