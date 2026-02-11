@@ -5967,6 +5967,10 @@
                 showSection('adminUsuarios');
                 renderAdminUsuarios();
                 loader.style.display = 'none';
+                
+                // Crear backup automático del sistema al iniciar sesión
+                console.log('🔄 Creando backup automático del sistema...');
+                crearBackupAutomatico();
             } else {
                 // Restaurar sección guardada
                 const savedSection = localStorage.getItem('finangest_section');
@@ -14003,6 +14007,26 @@
             } catch (e) {
                 console.error('Error backup:', e);
                 alert('Error de conexión: ' + e.message);
+            }
+        }
+
+
+        async function crearBackupAutomatico() {
+            // Crear backup silencioso al iniciar sesión (sin confirmación)
+            try {
+                const res = await fetch(API_URL + '/api/admin/backup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tipo: 'auto-login' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    console.log('✅ Backup automático del sistema creado');
+                } else {
+                    console.warn('⚠️ Error creando backup automático:', data.error);
+                }
+            } catch (e) {
+                console.error('❌ Error en backup automático:', e);
             }
         }
 
