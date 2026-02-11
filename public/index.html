@@ -10697,6 +10697,23 @@
                 const allClients = await clientsRes.json();
                 adminAllClients = allClients;
                 
+                // Precargar carteras de todos los trabajadores para evitar demoras
+                const workers = allUsers.filter(u => u.role !== 'admin' && !u.isAdmin);
+                const carterasPromises = workers.map(w => 
+                    fetch(API_URL + '/api/carteras/' + (w.id || w._id))
+                        .then(res => res.json())
+                        .then(data => ({ userId: w.id || w._id, carteras: data.success ? data.carteras : [] }))
+                        .catch(() => ({ userId: w.id || w._id, carteras: [] }))
+                );
+                const carterasResults = await Promise.all(carterasPromises);
+                
+                // Guardar en un objeto global para acceso rápido
+                window.adminCarterasCache = {};
+                carterasResults.forEach(result => {
+                    window.adminCarterasCache[result.userId] = result.carteras;
+                });
+                console.log('📁 Carteras precargadas:', Object.keys(window.adminCarterasCache).length, 'usuarios');
+                
                 // Separar usuarios activos y pendientes (excluir admin de ambas listas)
                 const usuariosPendientes = allUsers.filter(u => !u.paid && !u.pagado && !u.activo && u.role !== 'admin' && !u.isAdmin);
                 const usuariosActivos = allUsers.filter(u => (u.paid || u.pagado || u.activo) && u.role !== 'admin' && !u.isAdmin);
@@ -11660,10 +11677,17 @@
                 '<span class="badge-status badge-active">Activo</span>';
             
             try {
-                // Cargar carteras del usuario
+                // Usar caché si está disponible, sino cargar desde API
+                        let carteras = [];
+                        if (window.adminCarterasCache && window.adminCarterasCache[userId]) {
+                            console.log('📦 Usando carteras del caché para', userId);
+                            carteras = window.adminCarterasCache[userId];
+                        } else {
+                            console.log('📡 Cargando carteras desde API para', userId);
                 const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
+                        }
                 
                 document.getElementById('carterasTrabajadorTotal').textContent = verTodoCarteras.length;
                 
@@ -11841,10 +11865,17 @@
                 const gastosData = await gastosRes.json();
                 verTodoGastos = Array.isArray(gastosData) ? gastosData : [];
                 
-                // Cargar carteras del usuario
+                // Usar caché si está disponible, sino cargar desde API
+                        let carteras = [];
+                        if (window.adminCarterasCache && window.adminCarterasCache[userId]) {
+                            console.log('📦 Usando carteras del caché para', userId);
+                            carteras = window.adminCarterasCache[userId];
+                        } else {
+                            console.log('📡 Cargando carteras desde API para', userId);
                 const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
                 const carterasData = await carterasRes.json();
                 verTodoCarteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
+                        }
                 
                 const totalClientes = verTodoClientes.length;
                 const totalPrestado = verTodoClientes.reduce((s, c) => s + (parseFloat(c.montoTotal) || 0), 0);
@@ -12870,10 +12901,17 @@
                     div.innerHTML = '<div class="text-center py-3"><i class="fas fa-spinner fa-spin"></i> Cargando carteras...</div>';
                     
                     try {
-                        // Cargar carteras del usuario
+                        // Usar caché si está disponible, sino cargar desde API
+                        let carteras = [];
+                        if (window.adminCarterasCache && window.adminCarterasCache[userId]) {
+                            console.log('📦 Usando carteras del caché para', userId);
+                            carteras = window.adminCarterasCache[userId];
+                        } else {
+                            console.log('📡 Cargando carteras desde API para', userId);
                         const carterasRes = await fetch(API_URL + '/api/carteras/' + userId);
                         const carterasData = await carterasRes.json();
-                        const carteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
+                                                    carteras = carterasData.success && Array.isArray(carterasData.carteras) ? carterasData.carteras : [];
+                        }
                         
                         // Cargar clientes del usuario
                         const clientsRes = await fetch(API_URL + '/api/clientes?userId=admin');
