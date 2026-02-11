@@ -93,34 +93,67 @@ module.exports = async (req, res) => {
         if (pathname === '/api/send-code' && req.method === 'POST') {
             const { email } = req.body;
             
+            console.log('📧 Send code request for email:', email);
+            
             if (!email) {
                 return res.status(400).json({ success: false, error: 'Email requerido' });
             }
             
-            // Generar código de 6 dígitos
-            const codigo = generarCodigo();
-            const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
-            
-            // Guardar código en MongoDB
-            const db = await connectToDatabase();
-            await db.collection('verification_codes').updateOne(
-                { email },
-                { $set: { codigo, expira, tipo: 'registro', fecha: new Date() } },
-                { upsert: true }
-            );
-            
-            // Enviar email
-            const resultado = await enviarCodigoVerificacion(email, codigo, 'registro');
-            
-            if (resultado.success) {
-                return res.json({ 
-                    success: true, 
-                    message: 'Código enviado a tu email'
+            try {
+                // Generar código de 6 dígitos
+                const codigo = generarCodigo();
+                const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
+                
+                console.log('🔢 Código generado:', codigo, 'tipo:', typeof codigo);
+                console.log('⏰ Expira en:', new Date(expira).toLocaleString());
+                
+                // Guardar código en MongoDB
+                const db = await connectToDatabase();
+                
+                // Primero eliminar cualquier código anterior
+                await db.collection('verification_codes').deleteOne({ email });
+                console.log('🧹 Código anterior eliminado (si existía)');
+                
+                // Insertar nuevo código
+                const result = await db.collection('verification_codes').insertOne({
+                    email,
+                    codigo,
+                    expira,
+                    tipo: 'registro',
+                    fecha: new Date()
                 });
-            } else {
+                
+                console.log('💾 Código insertado con ID:', result.insertedId);
+                
+                // Verificar que se guardó correctamente
+                const verificar = await db.collection('verification_codes').findOne({ email });
+                console.log('✅ Verificación guardado:', JSON.stringify(verificar));
+                
+                if (!verificar || !verificar.codigo) {
+                    throw new Error('El código no se guardó correctamente en MongoDB');
+                }
+                
+                // Enviar email
+                const resultado = await enviarCodigoVerificacion(email, codigo, 'registro');
+                
+                if (resultado.success) {
+                    console.log('📨 Email enviado exitosamente');
+                    return res.json({ 
+                        success: true, 
+                        message: 'Código enviado a tu email'
+                    });
+                } else {
+                    console.error('❌ Error enviando email:', resultado.error);
+                    return res.status(500).json({ 
+                        success: false, 
+                        error: 'Error enviando email: ' + resultado.error
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Error en send-code:', error);
                 return res.status(500).json({ 
                     success: false, 
-                    error: 'Error enviando email: ' + resultado.error
+                    error: 'Error generando código: ' + error.message
                 });
             }
         }
@@ -129,48 +162,75 @@ module.exports = async (req, res) => {
         if (pathname === '/api/send-recovery-code' && req.method === 'POST') {
             const { email } = req.body;
             
+            console.log('🔑 Recovery code request for email:', email);
+            
             if (!email) {
                 return res.status(400).json({ success: false, error: 'Email requerido' });
             }
             
-            // Verificar que el usuario existe
-            const db = await connectToDatabase();
-            const user = await db.collection('users').findOne({ email });
-            
-            if (!user) {
-                return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
-            }
-            
-            // Generar código de 6 dígitos
-            const codigo = generarCodigo();
-            const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
-            
-            // Guardar código en MongoDB
-            await db.collection('verification_codes').updateOne(
-                { email },
-                { $set: { codigo, expira, tipo: 'recuperacion', fecha: new Date() } },
-                { upsert: true }
-            );
-            
-            // Enviar email
-            const resultado = await enviarCodigoVerificacion(email, codigo, 'recuperacion');
-            
-            if (resultado.success) {
-                return res.json({ 
-                    success: true, 
-                    message: 'Código de recuperación enviado a tu email'
+            try {
+                // Verificar que el usuario existe
+                const db = await connectToDatabase();
+                const user = await db.collection('users').findOne({ email });
+                
+                if (!user) {
+                    return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+                }
+                
+                // Generar código de 6 dígitos
+                const codigo = generarCodigo();
+                const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
+                
+                console.log('🔢 Código generado:', codigo, 'tipo:', typeof codigo);
+                
+                // Eliminar código anterior
+                await db.collection('verification_codes').deleteOne({ email });
+                
+                // Insertar nuevo código
+                const result = await db.collection('verification_codes').insertOne({
+                    email,
+                    codigo,
+                    expira,
+                    tipo: 'recuperacion',
+                    fecha: new Date()
                 });
-            } else {
+                
+                console.log('💾 Código insertado con ID:', result.insertedId);
+                
+                // Verificar guardado
+                const verificar = await db.collection('verification_codes').findOne({ email });
+                if (!verificar || !verificar.codigo) {
+                    throw new Error('El código no se guardó correctamente en MongoDB');
+                }
+                
+                // Enviar email
+                const resultado = await enviarCodigoVerificacion(email, codigo, 'recuperacion');
+                
+                if (resultado.success) {
+                    console.log('📨 Email de recuperación enviado');
+                    return res.json({ 
+                        success: true, 
+                        message: 'Código de recuperación enviado a tu email'
+                    });
+                } else {
+                    console.error('❌ Error enviando email:', resultado.error);
+                    return res.status(500).json({ 
+                        success: false, 
+                        error: 'Error enviando email: ' + resultado.error
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Error en send-recovery-code:', error);
                 return res.status(500).json({ 
                     success: false, 
-                    error: 'Error enviando email: ' + resultado.error
+                    error: 'Error generando código: ' + error.message
                 });
             }
         }
 
         // ============ VERIFY CODE ============
         if (pathname === '/api/verify-code' && req.method === 'POST') {
-            console.log('📥 Verify code request body:', req.body);
+            console.log('📥 Verify code request body:', JSON.stringify(req.body));
             
             const { email, codigo, code } = req.body;
             const codigoIngresado = codigo || code;
@@ -178,39 +238,36 @@ module.exports = async (req, res) => {
             console.log('📧 Email:', email);
             console.log('🔢 Código ingresado:', codigoIngresado);
             
-            // TEMPORAL: Aceptar cualquier código para testing
-            console.log('⚠️ MODO DEBUG: Aceptando cualquier código');
-            return res.json({ 
-                success: true, 
-                message: 'Código verificado correctamente (modo debug)',
-                tipo: 'registro'
-            });
-            
-            /* CÓDIGO ORIGINAL COMENTADO TEMPORALMENTE
             if (!email || !codigoIngresado) {
                 console.log('❌ Faltan datos - email:', !!email, 'codigo:', !!codigoIngresado);
                 return res.status(400).json({ success: false, error: 'Email y código requeridos' });
             }
             
+            // Buscar código en MongoDB
             const db = await connectToDatabase();
             const codigoGuardado = await db.collection('verification_codes').findOne({ email });
             
-            console.log('🔍 Código guardado:', codigoGuardado);
+            console.log('🔍 Código guardado en DB:', JSON.stringify(codigoGuardado));
             
-            if (!codigoGuardado) {
-                return res.status(400).json({ success: false, error: 'Código no encontrado o expirado' });
+            if (!codigoGuardado || !codigoGuardado.codigo) {
+                console.log('❌ Código no encontrado en DB');
+                return res.status(400).json({ success: false, error: 'Código no encontrado. Por favor solicita un nuevo código.' });
             }
             
+            // Verificar expiración
             if (Date.now() > codigoGuardado.expira) {
+                console.log('❌ Código expirado');
                 await db.collection('verification_codes').deleteOne({ email });
-                return res.status(400).json({ success: false, error: 'Código expirado' });
+                return res.status(400).json({ success: false, error: 'Código expirado. Por favor solicita un nuevo código.' });
             }
             
+            // Verificar código
             if (codigoGuardado.codigo !== codigoIngresado) {
                 console.log('❌ Código incorrecto - esperado:', codigoGuardado.codigo, 'recibido:', codigoIngresado);
                 return res.status(400).json({ success: false, error: 'Código incorrecto' });
             }
             
+            // Código válido - eliminar
             await db.collection('verification_codes').deleteOne({ email });
             console.log('✅ Código verificado correctamente');
             
@@ -219,7 +276,6 @@ module.exports = async (req, res) => {
                 message: 'Código verificado correctamente',
                 tipo: codigoGuardado.tipo
             });
-            */
         }
 
         // ============ CREAR PAGO PIX ============
