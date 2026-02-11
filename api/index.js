@@ -159,9 +159,10 @@ module.exports = async (req, res) => {
 
         // ============ VERIFY CODE ============
         if (pathname === '/api/verify-code' && req.method === 'POST') {
-            const { email, codigo } = req.body;
+            const { email, codigo, code } = req.body;
+            const codigoIngresado = codigo || code; // Aceptar ambos nombres
             
-            if (!email || !codigo) {
+            if (!email || !codigoIngresado) {
                 return res.status(400).json({ success: false, error: 'Email y código requeridos' });
             }
             
@@ -179,7 +180,7 @@ module.exports = async (req, res) => {
             }
             
             // Verificar código
-            if (codigoGuardado.codigo !== codigo) {
+            if (codigoGuardado.codigo !== codigoIngresado) {
                 return res.status(400).json({ success: false, error: 'Código incorrecto' });
             }
             
