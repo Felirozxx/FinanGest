@@ -18,7 +18,7 @@
     "mongodb": "^7.0.0",
     "mongoose": "^7.5.0",
     "node-fetch": "^2.7.0",
-    "nodemailer": "^7.0.12",
+    "nodemailer": "^7.0.13",
     "pg": "^8.11.3"
   },
   "devDependencies": {

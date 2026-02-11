@@ -1,5 +1,9 @@
 const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
+const { generarCodigo, enviarCodigoVerificacion } = require('./_email-service');
+
+// Almacén temporal de códigos (en producción usar Redis o MongoDB)
+const codigosVerificacion = new Map(); // { email: { codigo, expira, tipo } }
 
 let cachedDb = null;
 
@@ -85,28 +89,107 @@ module.exports = async (req, res) => {
 
         // ============ SEND CODE ============
         if (pathname === '/api/send-code' && req.method === 'POST') {
-            // Placeholder para envío de código de verificación
-            return res.json({ 
-                success: true, 
-                message: 'Código enviado (funcionalidad en desarrollo)'
-            });
+            const { email } = req.body;
+            
+            if (!email) {
+                return res.status(400).json({ success: false, error: 'Email requerido' });
+            }
+            
+            // Generar código de 6 dígitos
+            const codigo = generarCodigo();
+            const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
+            
+            // Guardar código temporalmente
+            codigosVerificacion.set(email, { codigo, expira, tipo: 'registro' });
+            
+            // Enviar email
+            const resultado = await enviarCodigoVerificacion(email, codigo, 'registro');
+            
+            if (resultado.success) {
+                return res.json({ 
+                    success: true, 
+                    message: 'Código enviado a tu email'
+                });
+            } else {
+                return res.status(500).json({ 
+                    success: false, 
+                    error: 'Error enviando email: ' + resultado.error
+                });
+            }
         }
 
         // ============ SEND RECOVERY CODE ============
         if (pathname === '/api/send-recovery-code' && req.method === 'POST') {
-            // Placeholder para envío de código de recuperación
-            return res.json({ 
-                success: true, 
-                message: 'Código de recuperación enviado (funcionalidad en desarrollo)'
-            });
+            const { email } = req.body;
+            
+            if (!email) {
+                return res.status(400).json({ success: false, error: 'Email requerido' });
+            }
+            
+            // Verificar que el usuario existe
+            const db = await connectToDatabase();
+            const user = await db.collection('users').findOne({ email });
+            
+            if (!user) {
+                return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+            }
+            
+            // Generar código de 6 dígitos
+            const codigo = generarCodigo();
+            const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
+            
+            // Guardar código temporalmente
+            codigosVerificacion.set(email, { codigo, expira, tipo: 'recuperacion' });
+            
+            // Enviar email
+            const resultado = await enviarCodigoVerificacion(email, codigo, 'recuperacion');
+            
+            if (resultado.success) {
+                return res.json({ 
+                    success: true, 
+                    message: 'Código de recuperación enviado a tu email'
+                });
+            } else {
+                return res.status(500).json({ 
+                    success: false, 
+                    error: 'Error enviando email: ' + resultado.error
+                });
+            }
         }
 
         // ============ VERIFY CODE ============
         if (pathname === '/api/verify-code' && req.method === 'POST') {
-            // Placeholder para verificación de código
+            const { email, codigo } = req.body;
+            
+            if (!email || !codigo) {
+                return res.status(400).json({ success: false, error: 'Email y código requeridos' });
+            }
+            
+            // Verificar código
+            const codigoGuardado = codigosVerificacion.get(email);
+            
+            if (!codigoGuardado) {
+                return res.status(400).json({ success: false, error: 'Código no encontrado o expirado' });
+            }
+            
+            // Verificar expiración
+            if (Date.now() > codigoGuardado.expira) {
+                codigosVerificacion.delete(email);
+                return res.status(400).json({ success: false, error: 'Código expirado' });
+            }
+            
+            // Verificar código
+            if (codigoGuardado.codigo !== codigo) {
+                return res.status(400).json({ success: false, error: 'Código incorrecto' });
+            }
+            
+            // Código válido - eliminar
+            codigosVerificacion.delete(email);
+            
             return res.json({ 
                 success: true, 
-                message: 'Código verificado (funcionalidad en desarrollo)'
+                message: 'Código verificado correctamente',
+                tipo: codigoGuardado.tipo
             });
         }
 
