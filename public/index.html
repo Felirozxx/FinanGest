@@ -5592,10 +5592,14 @@
                 if (data.success) {
                     // Guardar datos del usuario pendiente (cuenta no creada aún)
                     pendingUser = { ...data.user, id: data.userId || (data.user && data.user.id), email, recoveryEmail, timezone };
+                    console.log('✅ Código verificado. pendingUser:', pendingUser);
+                    console.log('   data.userId:', data.userId);
+                    console.log('   data.user:', data.user);
                     // Mostrar pantalla de pago
                     document.getElementById('registerStep2').style.display = 'none';
                     document.getElementById('registerStep3').style.display = 'block';
                     // Generar PIX con userId
+                    console.log('💳 Generando pago con userId:', pendingUser?.id);
                     if (pendingUser && pendingUser.id) {
                         generarPagoPix(pendingUser.id, nombre, email);
                     } else {
