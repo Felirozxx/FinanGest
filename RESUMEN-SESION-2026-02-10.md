@@ -92,3 +92,44 @@
 ---
 
 **Última actualización**: 10 de Febrero 2026, 21:00
+
+---
+
+## TASK 13: Implement email verification system with Gmail
+**STATUS**: ✅ COMPLETED
+
+**USER QUERIES**: "no anda llegando el code de crear la cuenta ni el de reenviar y me gustaria q en vez de usar esa cuenta mia para enviar code q envie de mi cuenta el code q se llama finangestsoftware@gmail.com", "ya inicie session de mi cuenta de finangestsoftware@gmail.com y ahora?", "crvj dhgw dsgy cskw. sin el punto", "pero esque no funcionaa", "pero esque quiero q me hagas bien ese sistema", "continuemos q quede todo impecable"
+
+**DETAILS**:
+- **Completed**:
+  - Installed nodemailer package
+  - Created `api/_email-service.js` with email templates and sending logic
+  - Updated `.env` with `EMAIL_USER=finangestsoftware@gmail.com` and `EMAIL_PASS=crvjdhgwdsgycskw` (Gmail app password)
+  - Updated Vercel environment variables with new credentials
+  - Implemented 3 endpoints in `api/index.js`:
+    - `/api/send-code` - Generates 6-digit code, saves to MongoDB, sends email
+    - `/api/send-recovery-code` - Same for password recovery
+    - `/api/verify-code` - Verifies code from MongoDB
+  - Moved `generarCodigo()` function directly into `api/index.js` to avoid import issues
+  - Codes stored in MongoDB `verification_codes` collection with 10-minute expiration
+  - Email sending works correctly (tested locally and in production)
+
+- **Problem Solved**:
+  - Root cause: Codes were being saved with `codigo: undefined` in MongoDB
+  - Changed from `updateOne` with `$set` to `insertOne` for guaranteed code storage
+  - Added deletion of old code before inserting new one
+  - Added validation after save to ensure code exists
+  - Added comprehensive error handling with try-catch blocks
+  - Added detailed logging for debugging
+
+- **Testing**:
+  - Local tests: ✅ All passing (`test-full-verification-flow.js`)
+  - Production tests: ✅ All passing (`test-production-verification.js`)
+  - Email delivery: ✅ Working (emails arrive in ~5 seconds)
+  - Code verification: ✅ Working (`test-verify-code.js`)
+  - Code expiration: ✅ Working (10 minutes)
+  - Code deletion after verification: ✅ Working
+
+**FILEPATHS**: `api/index.js`, `api/_email-service.js`, `.env`, `test-email-local.js`, `check-verification-codes.js`, `clean-verification-codes.js`, `test-full-verification-flow.js`, `test-production-verification.js`, `test-verify-code.js`, `VERIFICACION-EMAIL-FUNCIONANDO.md`
+
+---
