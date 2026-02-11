@@ -6031,6 +6031,9 @@
                     <div class="nav-item" onclick="showSection('adminConfig')"><i class="fas fa-cog"></i><span data-translate="configuracion">Configuración</span></div>
                     <div class="nav-item" onclick="showSection('adminSeguridad')"><i class="fas fa-shield-alt"></i><span data-translate="seguridad">Seguridad</span></div>
                 `;
+                // Ocultar selector de carteras para admin
+                const carteraBtn = document.getElementById('carteraBtn');
+                if (carteraBtn) carteraBtn.style.display = 'none';
                 // Restaurar sección guardada o ir a Usuarios por defecto
                 const savedSection = localStorage.getItem('finangest_section');
                 const adminSections = ['adminUsuarios', 'adminCalendario', 'adminBackups', 'adminConfig', 'adminSeguridad'];
