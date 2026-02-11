@@ -5591,12 +5591,17 @@
                 const data = await res.json();
                 if (data.success) {
                     // Guardar datos del usuario pendiente (cuenta no creada aún)
-                    pendingUser = { ...data.user, email, recoveryEmail, timezone };
+                    pendingUser = { ...data.user, id: data.userId || (data.user && data.user.id), email, recoveryEmail, timezone };
                     // Mostrar pantalla de pago
                     document.getElementById('registerStep2').style.display = 'none';
                     document.getElementById('registerStep3').style.display = 'block';
-                    // Generar PIX (sin userId porque la cuenta no existe aún)
-                    generarPagoPix(null, nombre, email);
+                    // Generar PIX con userId
+                    if (pendingUser && pendingUser.id) {
+                        generarPagoPix(pendingUser.id, nombre, email);
+                    } else {
+                        console.error("No userId available after verification");
+                        alert("Error: No se pudo obtener el ID de usuario");
+                    }
                 } else {
                     btn.innerHTML = btnTextoOriginal;
                     btn.disabled = false;
@@ -5795,7 +5800,7 @@
                 
                 // Regenerar PIX con la nueva cantidad de carteras
                 setTimeout(() => {
-                    generarPagoPix(null, pendingUser.nombre, pendingUser.email);
+                    generarPagoPix(pendingUser.id, pendingUser.nombre, pendingUser.email);
                 }, 500);
             }
         }
