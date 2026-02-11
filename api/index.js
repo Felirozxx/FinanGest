@@ -1,6 +1,11 @@
 const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
-const { generarCodigo, enviarCodigoVerificacion } = require('./_email-service');
+const { enviarCodigoVerificacion } = require('./_email-service');
+
+// Generar código de 6 dígitos
+function generarCodigo() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 let cachedDb = null;
 
