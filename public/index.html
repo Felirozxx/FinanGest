@@ -6003,6 +6003,9 @@
                         loader.style.display = 'none';
                         // Iniciar sistema de notificaciones después de cargar datos
                         initNotificationSystem();
+                                // Crear backup automático individual del trabajador
+                                console.log('🔄 Creando backup automático individual...');
+                                crearBackupTrabajadorAutomatico();
                         // Iniciar sistema de cierre nocturno (12 AM - 6 AM)
                         initCierreNocturno();
                     });
@@ -13801,6 +13804,35 @@
             } catch (e) {
                 alert('Error de conexión');
                 return false;
+            }
+        }
+
+
+        async function crearBackupTrabajadorAutomatico() {
+            // Crear backup silencioso individual al iniciar sesión (sin confirmación)
+            try {
+                // Verificar si backups están bloqueados
+                const usersRes = await fetch(API_URL + '/api/users');
+                const allUsers = await usersRes.json();
+                const myUser = allUsers.find(u => u.id === currentUser.id || u._id === currentUser.id);
+                
+                if (myUser?.backupBlocked) {
+                    console.log('🔒 Backups bloqueados por admin');
+                    return;
+                }
+                
+                // Crear backup individual
+                const userId = currentUser.id || currentUser._id;
+                const res = await fetch(API_URL + '/api/admin/backup-trabajador/' + userId, { method: 'POST' });
+                const data = await res.json();
+                
+                if (data.success) {
+                    console.log('✅ Backup automático individual creado');
+                } else {
+                    console.warn('⚠️ Error creando backup individual:', data.error);
+                }
+            } catch (e) {
+                console.error('❌ Error en backup automático individual:', e);
             }
         }
 
