@@ -165,16 +165,24 @@ module.exports = async (req, res) => {
 
         // ============ VERIFY CODE ============
         if (pathname === '/api/verify-code' && req.method === 'POST') {
+            console.log('📥 Verify code request body:', req.body);
+            
             const { email, codigo, code } = req.body;
             const codigoIngresado = codigo || code; // Aceptar ambos nombres
             
+            console.log('📧 Email:', email);
+            console.log('🔢 Código ingresado:', codigoIngresado);
+            
             if (!email || !codigoIngresado) {
+                console.log('❌ Faltan datos - email:', !!email, 'codigo:', !!codigoIngresado);
                 return res.status(400).json({ success: false, error: 'Email y código requeridos' });
             }
             
             // Buscar código en MongoDB
             const db = await connectToDatabase();
             const codigoGuardado = await db.collection('verification_codes').findOne({ email });
+            
+            console.log('🔍 Código guardado:', codigoGuardado);
             
             if (!codigoGuardado) {
                 return res.status(400).json({ success: false, error: 'Código no encontrado o expirado' });
@@ -188,11 +196,13 @@ module.exports = async (req, res) => {
             
             // Verificar código
             if (codigoGuardado.codigo !== codigoIngresado) {
+                console.log('❌ Código incorrecto - esperado:', codigoGuardado.codigo, 'recibido:', codigoIngresado);
                 return res.status(400).json({ success: false, error: 'Código incorrecto' });
             }
             
             // Código válido - eliminar
             await db.collection('verification_codes').deleteOne({ email });
+            console.log('✅ Código verificado correctamente');
             
             return res.json({ 
                 success: true, 
