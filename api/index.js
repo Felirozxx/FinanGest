@@ -2,9 +2,6 @@ const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const { generarCodigo, enviarCodigoVerificacion } = require('./_email-service');
 
-// Almacén temporal de códigos (en producción usar Redis o MongoDB)
-const codigosVerificacion = new Map(); // { email: { codigo, expira, tipo } }
-
 let cachedDb = null;
 
 async function connectToDatabase() {
@@ -99,8 +96,13 @@ module.exports = async (req, res) => {
             const codigo = generarCodigo();
             const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
             
-            // Guardar código temporalmente
-            codigosVerificacion.set(email, { codigo, expira, tipo: 'registro' });
+            // Guardar código en MongoDB
+            const db = await connectToDatabase();
+            await db.collection('verification_codes').updateOne(
+                { email },
+                { $set: { codigo, expira, tipo: 'registro', fecha: new Date() } },
+                { upsert: true }
+            );
             
             // Enviar email
             const resultado = await enviarCodigoVerificacion(email, codigo, 'registro');
@@ -138,8 +140,12 @@ module.exports = async (req, res) => {
             const codigo = generarCodigo();
             const expira = Date.now() + 10 * 60 * 1000; // 10 minutos
             
-            // Guardar código temporalmente
-            codigosVerificacion.set(email, { codigo, expira, tipo: 'recuperacion' });
+            // Guardar código en MongoDB
+            await db.collection('verification_codes').updateOne(
+                { email },
+                { $set: { codigo, expira, tipo: 'recuperacion', fecha: new Date() } },
+                { upsert: true }
+            );
             
             // Enviar email
             const resultado = await enviarCodigoVerificacion(email, codigo, 'recuperacion');
@@ -166,8 +172,9 @@ module.exports = async (req, res) => {
                 return res.status(400).json({ success: false, error: 'Email y código requeridos' });
             }
             
-            // Verificar código
-            const codigoGuardado = codigosVerificacion.get(email);
+            // Buscar código en MongoDB
+            const db = await connectToDatabase();
+            const codigoGuardado = await db.collection('verification_codes').findOne({ email });
             
             if (!codigoGuardado) {
                 return res.status(400).json({ success: false, error: 'Código no encontrado o expirado' });
@@ -175,7 +182,7 @@ module.exports = async (req, res) => {
             
             // Verificar expiración
             if (Date.now() > codigoGuardado.expira) {
-                codigosVerificacion.delete(email);
+                await db.collection('verification_codes').deleteOne({ email });
                 return res.status(400).json({ success: false, error: 'Código expirado' });
             }
             
@@ -185,7 +192,7 @@ module.exports = async (req, res) => {
             }
             
             // Código válido - eliminar
-            codigosVerificacion.delete(email);
+            await db.collection('verification_codes').deleteOne({ email });
             
             return res.json({ 
                 success: true, 
