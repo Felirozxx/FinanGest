@@ -233,7 +233,7 @@ module.exports = async (req, res) => {
         if (pathname === '/api/verify-code' && req.method === 'POST') {
             console.log('📥 Verify code request body:', JSON.stringify(req.body));
             
-            const { email, codigo, code } = req.body;
+            const { email, codigo, code, password, username, recoveryEmail, timezone } = req.body;
             const codigoIngresado = codigo || code;
             
             console.log('📧 Email:', email);
@@ -271,6 +271,65 @@ module.exports = async (req, res) => {
             // Código válido - eliminar
             await db.collection('verification_codes').deleteOne({ email });
             console.log('✅ Código verificado correctamente');
+            
+            // Si es registro (tiene password), crear usuario inactivo
+            if (password && username) {
+                console.log('👤 Creando usuario inactivo para:', email);
+                
+                // Verificar si el usuario ya existe
+                const existingUser = await db.collection('users').findOne({ email });
+                
+                if (!existingUser) {
+                    // Hashear contraseña
+                    const hashedPassword = await bcrypt.hash(password, 10);
+                    
+                    // Crear usuario inactivo
+                    const newUser = {
+                        email,
+                        username,
+                        password: hashedPassword,
+                        nombre: username,
+                        role: 'worker',
+                        activo: false, // Inactivo hasta que pague
+                        carterasPagadas: 0,
+                        recoveryEmail: recoveryEmail || email,
+                        timezone: timezone || 'America/Sao_Paulo',
+                        fechaCreacion: new Date()
+                    };
+                    
+                    const result = await db.collection('users').insertOne(newUser);
+                    const userId = result.insertedId.toString();
+                    console.log('✅ Usuario creado con ID:', userId);
+                    
+                    return res.json({ 
+                        success: true, 
+                        message: 'Código verificado correctamente',
+                        tipo: codigoGuardado.tipo,
+                        userId: userId,
+                        user: {
+                            id: userId,
+                            email,
+                            username,
+                            nombre: username
+                        }
+                    });
+                } else {
+                    const userId = existingUser._id.toString();
+                    console.log('⚠️ Usuario ya existe:', userId);
+                    return res.json({ 
+                        success: true, 
+                        message: 'Código verificado correctamente',
+                        tipo: codigoGuardado.tipo,
+                        userId: userId,
+                        user: {
+                            id: userId,
+                            email: existingUser.email,
+                            username: existingUser.username,
+                            nombre: existingUser.nombre
+                        }
+                    });
+                }
+            }
             
             return res.json({ 
                 success: true, 
