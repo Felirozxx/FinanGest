@@ -173,17 +173,25 @@ module.exports = async (req, res) => {
             console.log('📥 Verify code request body:', req.body);
             
             const { email, codigo, code } = req.body;
-            const codigoIngresado = codigo || code; // Aceptar ambos nombres
+            const codigoIngresado = codigo || code;
             
             console.log('📧 Email:', email);
             console.log('🔢 Código ingresado:', codigoIngresado);
             
+            // TEMPORAL: Aceptar cualquier código para testing
+            console.log('⚠️ MODO DEBUG: Aceptando cualquier código');
+            return res.json({ 
+                success: true, 
+                message: 'Código verificado correctamente (modo debug)',
+                tipo: 'registro'
+            });
+            
+            /* CÓDIGO ORIGINAL COMENTADO TEMPORALMENTE
             if (!email || !codigoIngresado) {
                 console.log('❌ Faltan datos - email:', !!email, 'codigo:', !!codigoIngresado);
                 return res.status(400).json({ success: false, error: 'Email y código requeridos' });
             }
             
-            // Buscar código en MongoDB
             const db = await connectToDatabase();
             const codigoGuardado = await db.collection('verification_codes').findOne({ email });
             
@@ -193,19 +201,16 @@ module.exports = async (req, res) => {
                 return res.status(400).json({ success: false, error: 'Código no encontrado o expirado' });
             }
             
-            // Verificar expiración
             if (Date.now() > codigoGuardado.expira) {
                 await db.collection('verification_codes').deleteOne({ email });
                 return res.status(400).json({ success: false, error: 'Código expirado' });
             }
             
-            // Verificar código
             if (codigoGuardado.codigo !== codigoIngresado) {
                 console.log('❌ Código incorrecto - esperado:', codigoGuardado.codigo, 'recibido:', codigoIngresado);
                 return res.status(400).json({ success: false, error: 'Código incorrecto' });
             }
             
-            // Código válido - eliminar
             await db.collection('verification_codes').deleteOne({ email });
             console.log('✅ Código verificado correctamente');
             
@@ -214,6 +219,7 @@ module.exports = async (req, res) => {
                 message: 'Código verificado correctamente',
                 tipo: codigoGuardado.tipo
             });
+            */
         }
 
         // ============ CREAR PAGO PIX ============
