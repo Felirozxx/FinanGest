@@ -25,14 +25,53 @@ async function connectDB() {
         }
         
         console.log('🔄 Conectando a MongoDB Atlas...');
-        const client = new MongoClient(mongoUri);
+        
+        // Opciones de conexión mejoradas
+        const options = {
+            connectTimeoutMS: 10000,
+            socketTimeoutMS: 45000,
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            retryWrites: true,
+            retryReads: true,
+            w: 'majority'
+        };
+        
+        const client = new MongoClient(mongoUri, options);
         await client.connect();
+        
+        // Verificar conexión
+        await client.db('admin').command({ ping: 1 });
+        
         db = client.db('finangest');
         console.log('✅ Conectado a MongoDB Atlas - Base de datos: finangest');
+        
+        // Crear índices si no existen
+        await db.collection('users').createIndex({ email: 1 }, { unique: true });
+        await db.collection('clientes').createIndex({ creadoPor: 1 });
+        await db.collection('carteras').createIndex({ creadoPor: 1 });
+        console.log('✅ Índices creados correctamente');
+        
     } catch (e) {
         console.error('❌ Error conectando a MongoDB:', e.message);
-        console.error('💡 Verifica que MONGODB_URI esté correctamente configurada');
+        
+        if (e.message.includes('ENOTFOUND')) {
+            console.error('💡 Error de DNS: No se puede resolver el hostname de MongoDB Atlas');
+            console.error('💡 Posibles soluciones:');
+            console.error('   1. Verifica tu conexión a Internet');
+            console.error('   2. Verifica que el cluster de MongoDB Atlas esté activo');
+            console.error('   3. Verifica que la IP esté en la whitelist de MongoDB Atlas');
+            console.error('   4. Intenta usar una conexión VPN diferente si estás usando una');
+        } else if (e.message.includes('authentication')) {
+            console.error('💡 Error de autenticación: Usuario o contraseña incorrectos');
+            console.error('💡 Verifica MONGODB_URI en el archivo .env');
+        }
+        
         console.log('⚠️ El servidor continuará sin base de datos');
+        
+        // Reintentar después de 10 segundos
+        console.log('🔄 Reintentando conexión en 10 segundos...');
+        setTimeout(() => connectDB(), 10000);
     }
 }
 
